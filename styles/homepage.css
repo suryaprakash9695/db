@@ -1,0 +1,21 @@
+.care{
+	display: flex;
+	flex-wrap: wrap;
+	padding: 20px 0px;
+}
+
+.care_section{
+	background: #6592e6;
+	width: 45%;
+	margin: 2.5%;
+	border-radius: 15px;
+	box-shadow: 2px 2px 5px 5px rgba(0,0,0,0.01);
+	text-align: center;
+	padding:15px;
+}
+
+.care_section:hover{
+	box-shadow: 2px 2px 5px 5px rgba(0,0,0,0.2);
+	cursor: pointer;
+}
+

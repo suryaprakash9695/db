@@ -1,0 +1,16 @@
+.chatbot-section{
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+}
+
+.chatbot-section div{
+	width: 20%;
+	margin:2.5%;
+}
+
+.chatbot-section iframe{
+	width: 45%;
+	margin: 15px 2.5%;
+}
