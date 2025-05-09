@@ -2,14 +2,40 @@
 session_start();
 require_once('config.php'); // Assumes config.php sets up the $con variable for DB connection
 
+// Prevent browser caching of pages
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
+// Define the session timeout duration (in seconds)
+$timeout_duration = 1800; // 30 minutes
+
+// Check if the 'LAST_ACTIVITY' session variable is set
+if (isset($_SESSION['LAST_ACTIVITY'])) {
+    // Calculate the session lifetime
+    $elapsed_time = time() - $_SESSION['LAST_ACTIVITY'];
+
+    // If the session is inactive for too long, destroy it
+    if ($elapsed_time > $timeout_duration) {
+        session_unset();    // Unset all session variables
+        session_destroy();  // Destroy the session
+        header("Location: login.php"); // Redirect to login page
+        exit();
+    }
+}
+
+// Update the 'LAST_ACTIVITY' timestamp for the session
+$_SESSION['LAST_ACTIVITY'] = time();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get and sanitize form inputs
     $u_name = trim($_POST['u_name']);
     $pass = $_POST['password'];
+    $role = isset($_POST['doctor']) ? 'doctor' : 'patient';
 
     // Prepare query to fetch user details from the database
-    $stmt = $con->prepare("SELECT * FROM wecare_signup WHERE username = ?");
-    $stmt->bind_param("s", $u_name);
+    $stmt = $con->prepare("SELECT * FROM wecare_signup WHERE username = ? AND role = ?");
+    $stmt->bind_param("ss", $u_name, $role);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -24,20 +50,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['id'] = $row['userid'];
             $_SESSION['role'] = $row['role']; // Store the role in the session
 
+            // Set session activity timestamp
+            $_SESSION['LAST_ACTIVITY'] = time();
+            session_regenerate_id(true); // Regenerate session ID for security
+
             // Redirect based on the role
-            if ($_SESSION['role'] == 'doctor') {
-                // Redirect to doctor tools
+            if ($role == 'doctor') {
                 header('Location: ./doctorTools.html');
-            } elseif ($_SESSION['role'] == 'patient') {
-                // Redirect to patient tools
-                header('Location: ./patientTools.html');
+            } elseif ($role == 'patient') {
+                header('Location: ./patientdashboard1.php');
             }
-            exit;
+            exit();
         } else {
-            echo "<p style='color:red;'>Incorrect Password.</p>";
+            echo "<script>alert('Incorrect Password.');</script>";
         }
     } else {
-        echo "<p style='color:red;'>No such user found.</p>";
+        $alertMessage = ($role === 'doctor') ? "You are not a doctor." : "You are not a patient.";
+        echo "<script>alert('$alertMessage');</script>";
     }
 
     // Close the statement and connection
@@ -141,9 +170,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <label for="password">Password</label>
                                 <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
                             </div>
-                            <button type="submit" class="btn btn-primary" name="patient">Login As Patient</button>
-                            OR
                             <button type="submit" class="btn btn-primary" name="doctor">Login As Doctor</button>
+                            OR
+                            <button type="submit" class="btn btn-primary" name="patient">Login As Patient</button>
                             <div class="form-floating form-field-login" style="text-align:center; margin:15px;">
                                 <a href="signup.php">New member? Click here to Sign up.</a>
                             </div>
