@@ -27,53 +27,75 @@ if (isset($_SESSION['LAST_ACTIVITY'])) {
 // Update the 'LAST_ACTIVITY' timestamp for the session
 $_SESSION['LAST_ACTIVITY'] = time();
 
+// Admin credentials (plain-text password)
+$admin_username = "admin";
+$admin_password = "admin123";  // Plain-text password
+
+// Check if the admin credentials are already in the database
+$result = $con->query("SELECT * FROM wecare_signup WHERE username = 'admin' AND role = 'admin'");
+
+if ($result->num_rows == 0) {
+    // Admin user doesn't exist, create admin in the database
+    $stmt = $con->prepare("INSERT INTO wecare_signup (username, password, role) VALUES (?, ?, ?)");
+    $role = 'admin';
+    $stmt->bind_param("sss", $admin_username, $admin_password, $role);
+    $stmt->execute();
+    $stmt->close();
+}
+
+// Handle the login process
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get and sanitize form inputs
     $u_name = trim($_POST['u_name']);
     $pass = $_POST['password'];
-    $role = isset($_POST['doctor']) ? 'doctor' : 'patient';
+    $role = isset($_POST['doctor']) ? 'doctor' : (isset($_POST['patient']) ? 'patient' : (isset($_POST['admin']) ? 'admin' : '')); // Default to empty if no role is selected
 
-    // Prepare query to fetch user details from the database
-    $stmt = $con->prepare("SELECT * FROM wecare_signup WHERE username = ? AND role = ?");
-    $stmt->bind_param("ss", $u_name, $role);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        // Fetch the user details
-        $row = $result->fetch_assoc();
-
-        // Verify password
-        if (password_verify($pass, $row['password'])) {
-            // Set session variables
-            $_SESSION['username'] = $row['username'];
-            $_SESSION['id'] = $row['userid'];
-            $_SESSION['role'] = $row['role']; // Store the role in the session
-
-            // Set session activity timestamp
-            $_SESSION['LAST_ACTIVITY'] = time();
-            session_regenerate_id(true); // Regenerate session ID for security
-
-            // Redirect based on the role
-            if ($role == 'doctor') {
-                header('Location: ./doctorTools.html');
-            } elseif ($role == 'patient') {
-                header('Location: ./patientdashboard1.php');
-            }
-            exit();
-        } else {
-            echo "<script>alert('Incorrect Password.');</script>";
-        }
+    if (empty($role)) {
+        echo "<script>alert('Please select a role to log in.');</script>";
     } else {
-        $alertMessage = ($role === 'doctor') ? "You are not a doctor." : "You are not a patient.";
-        echo "<script>alert('$alertMessage');</script>";
-    }
+        // Prepare query to fetch user details from the database
+        $stmt = $con->prepare("SELECT * FROM wecare_signup WHERE username = ? AND role = ?");
+        $stmt->bind_param("ss", $u_name, $role);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    // Close the statement and connection
-    $stmt->close();
-    $con->close();
+        if ($result->num_rows > 0) {
+            // Fetch the user details
+            $row = $result->fetch_assoc();
+
+            // Direct password comparison for plain-text password
+            if ($pass === $row['password']) {
+                // Set session variables
+                $_SESSION['username'] = $row['username'];
+                $_SESSION['id'] = $row['userid'];
+                $_SESSION['role'] = $row['role']; // Store the role in the session
+
+                // Set session activity timestamp
+                $_SESSION['LAST_ACTIVITY'] = time();
+                session_regenerate_id(true); // Regenerate session ID for security
+
+                // Redirect based on the role
+                if ($role == 'doctor') {
+                    header('Location: ./doctordashboard1.php');
+                } elseif ($role == 'patient') {
+                    header('Location: ./patientdashboard1.php');
+                } elseif ($role == 'admin') {
+                    header('Location: ./admin_dashboard.php');
+                }
+                exit();
+            } else {
+                echo "<script>alert('Incorrect Password.');</script>";
+            }
+        } else {
+            echo "<script>alert('User not found.');</script>";
+        }
+        // Close the statement and connection
+        $stmt->close();
+        $con->close();
+    }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -85,7 +107,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
     <link rel="shortcut icon" href="assets/images/thrive_small_logo.png" type="image/x-icon">
     <meta name="description" content="">
-
     <title>Login</title>
     <link rel="stylesheet" href="styles/login.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
@@ -103,9 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-
     <section class="menu cid-s48OLK6784" once="menu" id="menu1-h">
-
         <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
             <div class="container-fluid">
                 <div class="navbar-brand">
@@ -138,7 +157,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <a class="nav-link link text-black display-4" href="signup.php">Dashboard</a>
                         </li>
                     </ul>
-
                     <div class="navbar-buttons mbr-section-btn">
                         <a class="btn btn-primary display-4" href="signup.php">
                             Log In/Sign Up
@@ -147,7 +165,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
         </nav>
-
     </section>
 
     <section class="image1 login-section" id="image1-m" style="padding:0px 10%;">
@@ -164,15 +181,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <form method="post">
                             <div class="form-floating form-field-login">
                                 <label for="u_name">Name</label>
-                                <input type="text" class="form-control" id="floatingInput" placeholder="Name" name="u_name">
+                                <input type="text" class="form-control" id="floatingInput" placeholder="Name" name="u_name" required>
                             </div>
                             <div class="form-floating form-field-login">
                                 <label for="password">Password</label>
-                                <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
+                                <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password" required>
                             </div>
                             <button type="submit" class="btn btn-primary" name="doctor">Login As Doctor</button>
                             OR
                             <button type="submit" class="btn btn-primary" name="patient">Login As Patient</button>
+                            OR
+                            <button type="submit" class="btn btn-primary" name="admin">Login As WeCare Admin</button>
                             <div class="form-floating form-field-login" style="text-align:center; margin:15px;">
                                 <a href="signup.php">New member? Click here to Sign up.</a>
                             </div>
@@ -186,7 +205,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <section class="footer3 cid-s48P1Icc8J" once="footers" id="footer3-i">
         <div class="container">
             <div class="media-container-row align-center mbr-white">
-
                 <div class="row social-row">
                     <div class="social-list align-right pb-2">
                         <div class="soc-item">
@@ -215,7 +233,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="assets/dropdown/js/navbar-dropdown.js"></script>
     <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
     <script src="assets/theme/js/script.js"></script>
-
 </body>
 
 </html>

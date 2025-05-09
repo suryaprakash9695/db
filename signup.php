@@ -9,7 +9,6 @@
     <link rel="shortcut icon" href="assets/images/thrive_logo_small.png" type="image/x-icon">
     <meta name="description" content="">
 
-
     <title>Signup</title>
     <link rel="stylesheet" href="styles/login.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
@@ -47,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <a href='login.php'>Go back to Login Page</a></h3>";
         exit();
     }
+    
     $checkUsername = $con->prepare("SELECT * FROM `wecare_signup` WHERE username=?");
     $checkUsername->bind_param("s", $u_name);
     $checkUsername->execute();
@@ -58,9 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    // Insert the user data into the database
     $sql = $con->prepare("INSERT INTO `wecare_signup` (`userid`, `username`, `password`, `email`, `role`) 
                           VALUES (?, ?, ?, ?, ?)");
-    $sql->bind_param("sssss", $uid, $u_name, $securepass, $email, $occupation);
+    $sql->bind_param("sssss", $uid, $u_name, $pass, $email, $occupation);
 
     if ($sql->execute()) {
         echo "<script type='text/javascript'>
@@ -75,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $con->close();
 }
 ?>
+
 <body>
 
     <section class="menu cid-s48OLK6784" once="menu" id="menu1-h">
@@ -131,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="col-12 col-lg-6">
                 <div class="text-wrapper align-items-right">
-                    <h3 class="mbr-section-title mbr-fonts-style  display-5">
+                    <h3 class="mbr-section-title mbr-fonts-style display-5">
                         <strong style="font-family: 'Dancing Script', cursive; ">Sign Up</strong>
                     </h3>
                     <div>
@@ -158,8 +160,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <a href="login.php">Already a member? Click here to Login.</a>
                             </div>
                         </form>
-
-
                     </div>
                 </div>
             </div>
@@ -200,13 +200,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
     <script src="assets/theme/js/script.js"></script>
 
-
 </body>
-<!-- <script>
-    $("#signupForm").submit(function(e){
-        e.preventDefault();
-        console.log("aaya");
-    })
-</script> -->
 
 </html>
