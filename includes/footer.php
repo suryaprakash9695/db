@@ -11,7 +11,7 @@
                     </div>
                 </div>
                 <div class="row row-copirayt">
-                    <p class="mbr-text mb-0 mbr-fonts-style mbr-white align-center display-7">Made With ❤️ by Team ENIGMA&nbsp;</p>
+                    <p class="mbr-text mb-0 mbr-fonts-style mbr-white align-center display-7">&copy; 2025 WeCare. Designed and Developed by Team ENIGMA.</p>
                 </div>
             </div>
         </div>
@@ -36,5 +36,3 @@
     <script src="<?php echo $script; ?>"></script>
     <?php endforeach; ?>
     <?php endif; ?>
-    </body>
-</html> 

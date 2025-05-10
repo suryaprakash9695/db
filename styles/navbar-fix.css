@@ -1,0 +1,11 @@
+/* Fix for vertical navbar text */
+.navbar-nav .nav-link,
+.navbar-nav .nav-link * {
+    display: inline !important;
+    writing-mode: initial !important;
+    text-orientation: initial !important;
+    white-space: normal !important;
+    letter-spacing: normal !important;
+    word-break: normal !important;
+    text-align: center !important;
+} 

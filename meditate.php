@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
-    <title>Meditate</title>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="generator" content="Mobirise v5.2.0, mobirise.com">
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
     <link rel="shortcut icon" href="assets/images/thrive_logo_small.png" type="image/x-icon">
     <meta name="description" content="">
 
+
+    <title>WeCare</title>
+    <link rel="stylesheet" href="styles/homepage.css">
     <link rel="stylesheet" href="styles/meditate.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
     <link rel="stylesheet" href="assets/tether/tether.min.css">
@@ -21,22 +23,15 @@
     <link rel="stylesheet" href="assets/theme/css/style.css">
     <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
-    
-    <!-- font-awesome -->
-    <link rel="stylesheet" href="css/font-awesome.min.css">
-    <!-- custom -->
-    <link rel="stylesheet" href="css/templatemo-style.css">
-    <!-- google font -->
-    <link href='//fonts.googleapis.com/css?family=Signika:400,300,600,700' rel='stylesheet' type='text/css'>
-    <link href='//fonts.googleapis.com/css?family=Chewy' rel='stylesheet' type='text/css'>
-  </head>
+</head>
 
-  <body>
-    <?php include 'navbar.php'; ?>
+<body>
 
-    <div class="app">
+<?php include 'includes/navbar.php'; ?>
+
+<div class="app">
       <div class="vid-container">
         <video loop>
           <source src="assets/video/rain.mp4" type="video/mp4" video="./assets/video/rain.mp4">
@@ -66,37 +61,11 @@
         <button data-sound="./assets/sounds/beach.mp3" data-video="./assets/video/beach.mp4"><img src="./assets/svg/beach.svg" alt=""></button>
       </div>
     </div>
+    
+    <a href="https://mobirise.site/e"></a>
+    
+<?php include 'includes/footer.php'; ?>
 
-    <section class="footer3 cid-s48P1Icc8J" once="footers" id="footer3-i">
-      <div class="container">
-        <div class="media-container-row align-center mbr-white">
-          <div class="row social-row">
-            <div class="social-list align-right pb-2">
-              <div class="soc-item">
-                <a href="https://github.com/Saavanx/wecare_iitm" target="_blank">
-                  <span class="mbr-iconfont mbr-iconfont-social socicon-github socicon"></span>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="row row-copirayt">
-            <p class="mbr-text mb-0 mbr-fonts-style mbr-white align-center display-7">Made With ❤️ by Team ENIGMA&nbsp;</p>
-          </div>
-        </div>
-      </div>
-    </section>
+</body>
 
-    <script src="assets/web/assets/jquery/jquery.min.js"></script>
-    <script src="assets/popper/popper.min.js"></script>
-    <script src="assets/tether/tether.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/smoothscroll/smooth-scroll.js"></script>
-    <script src="assets/parallax/jarallax.min.js"></script>
-    <script src="assets/mbr-tabs/mbr-tabs.js"></script>
-    <script src="assets/dropdown/js/nav-dropdown.js"></script>
-    <script src="assets/dropdown/js/navbar-dropdown.js"></script>
-    <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
-    <script src="assets/theme/js/script.js"></script>
-    <script src="app.js"></script>
-  </body>
-</html> 
+</html>

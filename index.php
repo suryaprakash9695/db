@@ -28,61 +28,7 @@
 
 <body>
 
-    <section class="menu cid-s48OLK6784" once="menu" id="menu1-h">
-
-        <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
-            <div class="container-fluid">
-                <div class="navbar-brand">
-                    <span class="navbar-logo">
-                        <a href="index.php">
-                            <img src="assets/images/thrive_logo.png" alt="Mobirise" style="height: 5rem;">
-                        </a>
-                    </span>
-                </div>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <div class="hamburger">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav nav-dropdown" data-app-modern-menu="true">
-                        <li class="nav-item">
-                            <a class="nav-link link text-black display-4" href="#features1-n">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link text-black display-4" href="#features1-n">Features</a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link link text-black display-4" href="body.php">Body Care</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link text-black display-4" href="mind.php">Mind Care</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link link text-black display-4" href="signup.php">Dashboard</a>
-                        </li>
-                    </ul>
-
-                    <div class="navbar-buttons mbr-section-btn">
-                        <div class="dropdown">
-                            <button class="btn btn-primary display-4 dropdown-toggle" type="button" id="loginDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Log In/Sign Up
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="loginDropdown">
-                                <a class="dropdown-item" href="patient/patient_login.php">Login as Patient</a>
-                                <a class="dropdown-item" href="doctor/doctor_login.php">Login as Doctor</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-    </section>
+<?php include 'includes/navbar.php'; ?>
 
     <section class="header7 cid-smIipas6Mf mbr-fullscreen" id="header7-u">
         <div class="text-right container">
@@ -236,7 +182,7 @@
                             <h4 class="card-title mbr-fonts-style align-center mb-4 display-1"><strong style="font-family: 'Dancing Script', cursive;">Join Us Today!</strong></h4>
                             <p class="mbr-text mbr-fonts-style mb-4 display-7">
                                 Log In or Sign Up to have your own dedicated dashboard, get expert consultancy and greater access to our services.</p>
-                            <div class="mbr-section-btn mt-3"><a class="btn btn-primary display-4" href="signup.php">Go to Dashboard<br></a></div>
+                            <div class="mbr-section-btn mt-3"><a class="btn btn-primary display-4" href="main_login_signup.php">LOG IN/SIGN UP PAGE<br></a></div>
                         </div>
                     </div>
                 </div>
@@ -245,26 +191,7 @@
     </section>
 
 
-    <section class="footer3 cid-s48P1Icc8J" once="footers" id="footer3-i">
-        <div class="container">
-            <div class="media-container-row align-center mbr-white">
-
-                <div class="row social-row">
-                    <div class="social-list align-right pb-2">
-                        <div class="soc-item">
-                            <a href="https://github.com/Saavanx/wecare_iitm" target="_blank">
-                                <span class="mbr-iconfont mbr-iconfont-social socicon-github socicon"></span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="row row-copirayt">
-                    <p class="mbr-text mb-0 mbr-fonts-style mbr-white align-center display-7">Made with ❤️ by Team ENIGMA&nbsp;</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    
     <a href="https://mobirise.site/e"></a>
     <script src="assets/web/assets/jquery/jquery.min.js"></script>
     <script src="assets/popper/popper.min.js"></script>
@@ -277,6 +204,8 @@
     <script src="assets/dropdown/js/navbar-dropdown.js"></script>
     <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
     <script src="assets/theme/js/script.js"></script>
+
+<?php include 'includes/footer.php'; ?>
 
 </body>
 
