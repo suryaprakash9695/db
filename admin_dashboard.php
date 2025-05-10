@@ -2,15 +2,23 @@
 session_start();
 require_once('config.php');
 
-// Encryption Key
-define('SECRET_KEY', 'your-secret-key'); // Replace with a secure key
+// Error reporting for debugging
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-function encryptPassword($password) {
-    return openssl_encrypt($password, 'AES-128-ECB', SECRET_KEY);
+// Define encryption key for password hashing (use bcrypt)
+define('ENCRYPTION_KEY', 'your-encryption-key'); // Optional for bcrypt, can be left out
+
+// Function to hash password using bcrypt
+function encryptPassword($password)
+{
+    return password_hash($password, PASSWORD_BCRYPT);
 }
 
-function decryptPassword($encryptedPassword) {
-    return openssl_decrypt($encryptedPassword, 'AES-128-ECB', SECRET_KEY);
+// Function to verify password using bcrypt
+function verifyPassword($inputPassword, $encryptedPassword)
+{
+    return password_verify($inputPassword, $encryptedPassword);
 }
 
 // Check if admin is logged in
@@ -22,55 +30,78 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 // Handle adding a doctor or patient
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_doctor'])) {
-        $doctor_name = $_POST['doctor_name'];
-        $doctor_email = $_POST['doctor_email'];
-        $doctor_password = encryptPassword($_POST['doctor_password']);
+        $name = $_POST['doctor_name'];
+        $email = $_POST['doctor_email'];
+        $password = encryptPassword($_POST['doctor_password']);
         $role = 'doctor';
 
         $stmt = $con->prepare("INSERT INTO wecare_signup (username, email, password, role) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $doctor_name, $doctor_email, $doctor_password, $role);
-        $stmt->execute();
-        $stmt->close();
-        echo "<script>alert('Doctor added successfully!');</script>";
+        if ($stmt === false) {
+            echo "Error preparing statement: " . $con->error;
+        } else {
+            $stmt->bind_param("ssss", $name, $email, $password, $role);
+            if ($stmt->execute()) {
+                echo "<script>alert('Doctor added successfully!'); window.location.href='admin_dashboard.php';</script>";
+            } else {
+                echo "<script>alert('Error: " . $stmt->error . "');</script>";
+            }
+            $stmt->close();
+        }
     } elseif (isset($_POST['add_patient'])) {
-        $patient_name = $_POST['patient_name'];
-        $patient_email = $_POST['patient_email'];
-        $patient_password = encryptPassword($_POST['patient_password']);
+        $name = $_POST['patient_name'];
+        $email = $_POST['patient_email'];
+        $password = encryptPassword($_POST['patient_password']);
         $role = 'patient';
 
         $stmt = $con->prepare("INSERT INTO wecare_signup (username, email, password, role) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $patient_name, $patient_email, $patient_password, $role);
-        $stmt->execute();
+        if ($stmt === false) {
+            echo "Error preparing statement: " . $con->error;
+        } else {
+            $stmt->bind_param("ssss", $name, $email, $password, $role);
+            if ($stmt->execute()) {
+                echo "<script>alert('Patient added successfully!'); window.location.href='admin_dashboard.php';</script>";
+            } else {
+                echo "<script>alert('Error: " . $stmt->error . "');</script>";
+            }
+            $stmt->close();
+        }
+    } elseif (isset($_POST['edit_user'])) {
+        // Edit user details
+        $id = $_POST['userid'];
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $password = !empty($_POST['password']) ? encryptPassword($_POST['password']) : null; // Optional: Update password if changed
+
+        if ($password) {
+            $stmt = $con->prepare("UPDATE wecare_signup SET username = ?, email = ?, password = ? WHERE userid = ?");
+            $stmt->bind_param("sssi", $name, $email, $password, $id);
+        } else {
+            $stmt = $con->prepare("UPDATE wecare_signup SET username = ?, email = ? WHERE userid = ?");
+            $stmt->bind_param("ssi", $name, $email, $id);
+        }
+
+        if ($stmt->execute()) {
+            echo "<script>alert('User updated successfully!'); window.location.href='admin_dashboard.php';</script>";
+        } else {
+            echo "<script>alert('Error: " . $stmt->error . "');</script>";
+        }
         $stmt->close();
-        echo "<script>alert('Patient added successfully!');</script>";
     }
-}
-
-// Handle editing a user
-if (isset($_POST['edit_user'])) {
-    $userid = $_POST['userid'];
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = encryptPassword($_POST['password']);
-    $role = $_POST['role'];
-
-    $stmt = $con->prepare("UPDATE wecare_signup SET username = ?, email = ?, password = ? WHERE userid = ? AND role = ?");
-    $stmt->bind_param("sssis", $username, $email, $password, $userid, $role);
-    $stmt->execute();
-    $stmt->close();
-    echo "<script>alert('User details updated successfully!');</script>";
 }
 
 // Handle deleting a user
 if (isset($_GET['delete_id']) && isset($_GET['role'])) {
-    $userid = $_GET['delete_id'];
+    $id = $_GET['delete_id'];
     $role = $_GET['role'];
 
     $stmt = $con->prepare("DELETE FROM wecare_signup WHERE userid = ? AND role = ?");
-    $stmt->bind_param("is", $userid, $role);
-    $stmt->execute();
+    $stmt->bind_param("is", $id, $role);
+    if ($stmt->execute()) {
+        echo "<script>alert('User deleted successfully!'); window.location.href='admin_dashboard.php';</script>";
+    } else {
+        echo "<script>alert('Error: " . $stmt->error . "');</script>";
+    }
     $stmt->close();
-    echo "<script>alert('User deleted successfully!'); window.location.href='admin_dashboard.php';</script>";
 }
 
 // Fetch doctors and patients
@@ -89,109 +120,148 @@ $patients = $con->query("SELECT * FROM wecare_signup WHERE role = 'patient'");
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
 </head>
 
-<body style="padding-top: 20px; padding-bottom: 20px; font-family: Arial, sans-serif; background-color: #f8f9fa;">
-
-    <div class="container" style="padding: 30px; background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); border-radius: 8px;">
+<body>
+    <div class="container mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 style="font-size: 24px; color: #343a40;">Admin Dashboard</h1>
-            <a href="logout.php" class="btn btn-danger" style="font-size: 14px; padding: 8px 16px;">Logout</a>
+            <h1>Admin Dashboard</h1>
+            <a href="logout.php" class="btn btn-danger">Logout</a>
         </div>
 
         <div class="row">
             <!-- Doctors Section -->
-            <div class="col-lg-6 col-md-12">
-                <div class="card border-primary" style="border-radius: 8px; margin-bottom: 20px;">
-                    <div class="card-header bg-primary text-white" style="font-size: 18px; padding: 15px;">
+            <div class="col-md-6">
+                <div class="card border-primary mb-4">
+                    <div class="card-header bg-primary text-white">
                         <h3 class="card-title">Doctors</h3>
                     </div>
-                    <div class="card-body" style="padding: 15px;">
-                        <div class="table-responsive" style="overflow-x: auto;">
-                            <table class="table table-bordered" style="width: 100%; text-align: center;">
-                                <thead>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Password</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($doctor = $doctors->fetch_assoc()) { ?>
                                     <tr>
-                                        <th style="padding: 12px;">ID</th>
-                                        <th style="padding: 12px;">Name</th>
-                                        <th style="padding: 12px;">Email</th>
-                                        <th style="padding: 12px;">Password</th>
-                                        <th style="padding: 12px;">Actions</th>
+                                        <td><?= $doctor['userid'] ?></td>
+                                        <td><?= $doctor['username'] ?></td>
+                                        <td><?= $doctor['email'] ?></td>
+                                        <td>******</td> <!-- Do not show plain passwords -->
+                                        <td>
+                                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editDoctorModal<?= $doctor['userid'] ?>">Edit</button>
+                                            <a href="?delete_id=<?= $doctor['userid'] ?>&role=doctor" class="btn btn-danger btn-sm">Delete</a>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php while ($doctor = $doctors->fetch_assoc()) { ?>
-                                        <tr>
-                                            <td><?= $doctor['userid'] ?></td>
-                                            <td><?= $doctor['username'] ?></td>
-                                            <td><?= $doctor['email'] ?></td>
-                                            <td><?= decryptPassword($doctor['password']) ?></td>
-                                            <td>
-                                                <a href="?delete_id=<?= $doctor['userid'] ?>&role=doctor" class="btn btn-danger btn-sm" style="font-size: 12px;">Delete</a>
-                                                <a href="admin_dashboard.php?edit_id=<?= $doctor['userid'] ?>&role=doctor" class="btn btn-warning btn-sm" style="font-size: 12px;">Edit</a>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-                        </div>
 
-                        <form method="POST" style="padding: 15px; background-color: #f1f1f1; border-radius: 8px;">
+                                    <!-- Edit Doctor Modal -->
+                                    <div class="modal fade" id="editDoctorModal<?= $doctor['userid'] ?>" tabindex="-1" role="dialog" aria-labelledby="editDoctorModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editDoctorModalLabel">Edit Doctor</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST">
+                                                        <input type="hidden" name="userid" value="<?= $doctor['userid'] ?>">
+                                                        <input type="text" name="name" class="form-control mb-2" value="<?= $doctor['username'] ?>" required>
+                                                        <input type="email" name="email" class="form-control mb-2" value="<?= $doctor['email'] ?>" required>
+                                                        <input type="password" name="password" class="form-control mb-2" placeholder="New Password (optional)">
+                                                        <button type="submit" name="edit_user" class="btn btn-primary">Update Doctor</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                        <form method="POST" class="mt-3">
                             <h4>Add Doctor</h4>
-                            <input type="text" name="doctor_name" placeholder="Name" class="form-control" required style="margin-bottom: 10px;">
-                            <input type="email" name="doctor_email" placeholder="Email" class="form-control" required style="margin-bottom: 10px;">
-                            <input type="password" name="doctor_password" placeholder="Password" class="form-control" required style="margin-bottom: 10px;">
-                            <button type="submit" name="add_doctor" class="btn btn-primary" style="width: 100%; padding: 10px;">Add Doctor</button>
+                            <input type="text" name="doctor_name" placeholder="Name" class="form-control mb-2" required>
+                            <input type="email" name="doctor_email" placeholder="Email" class="form-control mb-2" required>
+                            <input type="password" name="doctor_password" placeholder="Password" class="form-control mb-2" required>
+                            <button type="submit" name="add_doctor" class="btn btn-primary">Add Doctor</button>
                         </form>
                     </div>
                 </div>
             </div>
 
             <!-- Patients Section -->
-            <div class="col-lg-6 col-md-12">
-                <div class="card border-success" style="border-radius: 8px; margin-bottom: 20px;">
-                    <div class="card-header bg-success text-white" style="font-size: 18px; padding: 15px;">
+            <div class="col-md-6">
+                <div class="card border-success mb-4">
+                    <div class="card-header bg-success text-white">
                         <h3 class="card-title">Patients</h3>
                     </div>
-                    <div class="card-body" style="padding: 15px;">
-                        <div class="table-responsive" style="overflow-x: auto;">
-                            <table class="table table-bordered" style="width: 100%; text-align: center;">
-                                <thead>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Password</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php while ($patient = $patients->fetch_assoc()) { ?>
                                     <tr>
-                                        <th style="padding: 12px;">ID</th>
-                                        <th style="padding: 12px;">Name</th>
-                                        <th style="padding: 12px;">Email</th>
-                                        <th style="padding: 12px;">Password</th>
-                                        <th style="padding: 12px;">Actions</th>
+                                        <td><?= $patient['userid'] ?></td>
+                                        <td><?= $patient['username'] ?></td>
+                                        <td><?= $patient['email'] ?></td>
+                                        <td>******</td> <!-- Do not show plain passwords -->
+                                        <td>
+                                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editPatientModal<?= $patient['userid'] ?>">Edit</button>
+                                            <a href="?delete_id=<?= $patient['userid'] ?>&role=patient" class="btn btn-danger btn-sm">Delete</a>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    <?php while ($patient = $patients->fetch_assoc()) { ?>
-                                        <tr>
-                                            <td><?= $patient['userid'] ?></td>
-                                            <td><?= $patient['username'] ?></td>
-                                            <td><?= $patient['email'] ?></td>
-                                            <td><?= decryptPassword($patient['password']) ?></td>
-                                            <td>
-                                                <a href="?delete_id=<?= $patient['userid'] ?>&role=patient" class="btn btn-danger btn-sm" style="font-size: 12px;">Delete</a>
-                                                <a href="admin_dashboard.php?edit_id=<?= $patient['userid'] ?>&role=patient" class="btn btn-warning btn-sm" style="font-size: 12px;">Edit</a>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                </tbody>
-                            </table>
-                        </div>
 
-                        <form method="POST" style="padding: 15px; background-color: #f1f1f1; border-radius: 8px;">
+                                    <!-- Edit Patient Modal -->
+                                    <div class="modal fade" id="editPatientModal<?= $patient['userid'] ?>" tabindex="-1" role="dialog" aria-labelledby="editPatientModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editPatientModalLabel">Edit Patient</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form method="POST">
+                                                        <input type="hidden" name="userid" value="<?= $patient['userid'] ?>">
+                                                        <input type="text" name="name" class="form-control mb-2" value="<?= $patient['username'] ?>" required>
+                                                        <input type="email" name="email" class="form-control mb-2" value="<?= $patient['email'] ?>" required>
+                                                        <input type="password" name="password" class="form-control mb-2" placeholder="New Password (optional)">
+                                                        <button type="submit" name="edit_user" class="btn btn-primary">Update Patient</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                        <form method="POST" class="mt-3">
                             <h4>Add Patient</h4>
-                            <input type="text" name="patient_name" placeholder="Name" class="form-control" required style="margin-bottom: 10px;">
-                            <input type="email" name="patient_email" placeholder="Email" class="form-control" required style="margin-bottom: 10px;">
-                            <input type="password" name="patient_password" placeholder="Password" class="form-control" required style="margin-bottom: 10px;">
-                            <button type="submit" name="add_patient" class="btn btn-primary" style="width: 100%; padding: 10px;">Add Patient</button>
+                            <input type="text" name="patient_name" placeholder="Name" class="form-control mb-2" required>
+                            <input type="email" name="patient_email" placeholder="Email" class="form-control mb-2" required>
+                            <input type="password" name="patient_password" placeholder="Password" class="form-control mb-2" required>
+                            <button type="submit" name="add_patient" class="btn btn-primary">Add Patient</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <script src="assets/jquery/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
