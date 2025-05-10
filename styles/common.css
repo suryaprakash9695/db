@@ -1,0 +1,98 @@
+/* Common styles for all pages */
+/* Core styles */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+/* Navbar styles */
+.navbar {
+    background-color: white !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand img {
+    height: 5rem;
+}
+
+.nav-link {
+    color: #333 !important;
+    font-weight: 500;
+}
+
+.nav-link.active {
+    color: #ea0faa !important;
+}
+
+/* Card styles */
+.item-wrapper {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.item-wrapper:hover {
+    transform: translateY(-5px);
+}
+
+.item-img img {
+    border-radius: 10px 10px 0 0;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.item-content {
+    padding: 20px;
+}
+
+.item-title {
+    color: #ea0faa !important;
+    font-weight: 600;
+}
+
+.item-btn {
+    background-color: #ea0faa !important;
+    border-color: #ea0faa !important;
+    color: white !important;
+    transition: all 0.3s ease;
+}
+
+.item-btn:hover {
+    background-color: #c80d8d !important;
+    border-color: #c80d8d !important;
+}
+
+/* Footer styles */
+.footer3 {
+    background-color: #333;
+    color: white;
+    padding: 20px 0;
+}
+
+.soc-item a {
+    color: white;
+    font-size: 24px;
+}
+
+.soc-item a:hover {
+    color: #ea0faa;
+}
+
+/* Title styles */
+.card-title {
+    font-family: 'Dancing Script', cursive;
+}
+
+/* Section styles */
+.info3 {
+    margin-top: 30px;
+}
+
+.features4 {
+    background: #eeeeee;
+    padding: 10px;
+}
+
+.container {
+    margin: 5px 5%;
+    min-width: 90%;
+} 

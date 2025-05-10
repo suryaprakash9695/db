@@ -120,9 +120,15 @@ $t=0;$p1=0;
                 </ul>
                 
                 <div class="navbar-buttons mbr-section-btn">
-                    <a class="btn btn-primary display-4" href="signup.php">
-                        Log In/Sign Up
-                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-primary display-4 dropdown-toggle" type="button" id="loginDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Log In/Sign Up
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="loginDropdown">
+                            <a class="dropdown-item" href="patient/patient_login.php">Login as Patient</a>
+                            <a class="dropdown-item" href="doctor/doctor_login.php">Login as Doctor</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -57,10 +57,10 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link link text-black display-4" href="body.html">Body Care</a>
+                            <a class="nav-link link text-black display-4" href="body.php">Body Care</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link link text-black display-4" href="mind.html">Mind Care</a>
+                            <a class="nav-link link text-black display-4" href="mind.php">Mind Care</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link link text-black display-4" href="signup.php">Dashboard</a>
@@ -68,9 +68,15 @@
                     </ul>
 
                     <div class="navbar-buttons mbr-section-btn">
-                        <a class="btn btn-primary display-4" href="signup.php">
-                            Log In/Sign Up
-                        </a>
+                        <div class="dropdown">
+                            <button class="btn btn-primary display-4 dropdown-toggle" type="button" id="loginDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Log In/Sign Up
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="loginDropdown">
+                                <a class="dropdown-item" href="patient/patient_login.php">Login as Patient</a>
+                                <a class="dropdown-item" href="doctor/doctor_login.php">Login as Doctor</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -199,7 +205,7 @@
     <section class="care">
 
         <div class="care_section">
-            <a href="body.html" style=" all: unset;">
+            <a href="body.php" style=" all: unset;">
                 <img src="assets/images/body.png" style="width: 80%; margin: 0px 10%;">
                 <h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2" style=" margin-bottom: 10px;">
                     <strong style="font-family: 'Dancing Script', cursive;">Body Care</strong>
@@ -209,7 +215,7 @@
 
 
         <div class="care_section">
-            <a href="mind.html" style=" all: unset;">
+            <a href="mind.php" style=" all: unset;">
                 <img src="assets/images/mind.png" style="width: 60%; margin: 0px 20%;">
 
                 <h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
