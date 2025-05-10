@@ -11,7 +11,7 @@
     
     
     <title>Patient List</title>
-    <link rel="stylesheet" href="styles/patientList.css">
+    <link rel="stylesheet" href="/styles/patientList.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
     <link rel="stylesheet" href="assets/tether/tether.min.css">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
