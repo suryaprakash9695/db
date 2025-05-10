@@ -223,7 +223,6 @@ $patients = $con->query("SELECT * FROM wecare_signup WHERE role = 'patient'");
                                             <a href="?delete_id=<?= $patient['userid'] ?>&role=patient" class="btn btn-danger btn-sm">Delete</a>
                                         </td>
                                     </tr>
-
                                     <!-- Edit Patient Modal -->
                                     <div class="modal fade" id="editPatientModal<?= $patient['userid'] ?>" tabindex="-1" role="dialog" aria-labelledby="editPatientModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
@@ -261,6 +260,7 @@ $patients = $con->query("SELECT * FROM wecare_signup WHERE role = 'patient'");
             </div>
         </div>
     </div>
+
     <script src="assets/jquery/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
