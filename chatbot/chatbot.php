@@ -185,7 +185,7 @@ async function sendMessage() {
             body: JSON.stringify({
                 message: message,
                 history: conversationHistory,
-                apiKey: 'YOUR_OPENAI_API_KEY' // Replace with your actual API key
+                apiKey: 'API_KEY' // Replace with your actual API key
             })
         });
         

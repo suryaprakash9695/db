@@ -1,0 +1,60 @@
+# Query: apikey
+# ContextLines: 1
+
+16 results - 6 files
+
+patient_login.php:
+  466                  message: message,
+  467:                 apiKey: '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',
+  468                  history: conversationHistory
+
+  605  
+  606:     function checkApiKey() {
+  607:         const apiKey = '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';
+  608:         if (!apiKey) {
+  609              console.warn('API key is missing');
+
+  625                  message: 'Test connection',
+  626:                 apiKey: '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'
+  627              })
+
+  667              // Check API key before proceeding
+  668:             if (!checkApiKey()) {
+  669                  chatbotBody.innerHTML += `
+
+proxy.php:
+   9  
+  10: if (!isset($data['message']) || !isset($data['apiKey'])) {
+  11      http_response_code(400);
+
+  53      'Content-Type: application/json',
+  54:     'Authorization: Bearer ' . $data['apiKey']
+  55  ];
+
+assets/bootstrap/js/bootstrap.min.js:
+  5    */
+  6: ⟪ 24606 characters skipped ⟫moveClass("show").trigger(e.Event("hidden.bs.dropdown",l)))}}}},t._getParentFromElement=function(t){var e,n=a.getSelectorFromElement(t);return n&&(e=document.querySelector(n)),e||t.parentNode},t._dataApiKeydownHandler=function(n){if(!(/input|textarea/i.test(n.target.tagName)?32===n.which||27!==n.which&&(40!==n.which&&38!==n.which||e(n.target).closest(".dropdown-menu").length):!D.test(n.which))&&!this.disabled&&!e(this).hasClass("disabled")){var i=t._getParentFromElement(this),o=e(i).hasClass("show");if(o||27!==n.which){if(n.preventDefault(),n.stopPropagation(),!o||o&&(27===n.which||32===n.which))return 27===n.which&&e(i.querySelector('[data-toggle="dropdown"]')).trigger("focus"),void e(this).trigger("click");var s=[].slice.call(i.querySelectorAll(".dropdown-menu .dropdown-item:not(.disabled):not(:disabled)")).filter((function(t){return e(t).is(":visible")}));if(0!==s.length){var r=s.indexOf(n.target);38===n.which&&r>0&&r--,40===n.which&&r<s.length-1&&r++,r<0&&(r=0),s[r].focus()}}}},o(t,null,[{key:"VERSION",get:function(){return"4.5.2"}},{key:"Default",get:function(){return N}},{key:"DefaultType",get:function(){return A}}]),t}();e(document).on("keydown.bs.dropdown.data-api",'[data-toggle="dropdown"]',I._dataApiKeydownHandler).on("keydown.bs.dropdown.data-api",".dropdown-menu",I._dataApiKeydownHandler).on("click.bs.dropdown.data-api keyup.bs.dropdown.data-api",I._clearMenus).on("click.bs.dropdown.data-api",'[data-toggle="dropdown"]',(function(t){t.preventDefault(),t.stopPropagation(),I._jQueryInterface.call(e(this),"toggle")})).on("click.bs.dropdown.data-api",".dropdown form",(function(t){t.stopPropagation()})),e.fn[S]=I._jQueryInterface,e.fn[S].Constructor=I,e.fn[S].noConflict=function(){return e.fn[S]=k,I._jQueryInterface};var O=e.fn.modal,j={backdrop:!0,keyboard:!0,focus:!0,show:!0},x={backdrop:"(boolean|string)",keyboard:"boolean",focus:"boolean",show:"boolean"},P=function(){function t(t,e){this._config=this._getConfig(e),this._element=t,this._dialog=t.querySelector(".modal-dialog"),this._backdrop=null,this._isShown=!1,this._isBodyOverflowing=!1,this._ignoreBackdropClick=!1,this._isTransitioning=!1,this._scrollbarWidth=0}var n=t.prototype;return n.toggle=function(t){return this._isShown?this.hide():this.show(t)},n.show=function(t){var n=this;if(!this._isShown&&
+  7  //# sourceMappingURL=bootstrap.min.js.map
+
+assets/dropdown/js/nav-dropdown.js:
+  13  c=b(a.target.parentNode).parents(".dropdown").find('>[data-toggle="dropdown-submenu"]'):b(".dropdown-backdrop").remove()}c=a.data&&a.data.toggles&&b(a.data.toggles).parent().find('[data-toggle="dropdown-submenu"]')||b.makeArray(b('[data-toggle="dropdown-submenu"]').not(c));for(g=0;g<c.length;g++){var h=c[g].parentNode,k={relatedTarget:c[g]};if(b(h).hasClass("open")&&("click"!==a.type||!/input|textarea/i.test(a.target.tagName)||!b.contains(h,a.target))){var l=b.Event("hide.bs.nav-dropdown",k);b(h).trigger(l);
+  14: l.isDefaultPrevented()||(c[g].setAttribute("aria-expanded","false"),b(h).removeClass("open").trigger(b.Event("hidden.bs.nav-dropdown",k)))}}d&&b(document).trigger(d)}};f._dataApiKeydownHandler=function(a){if(!/input|textarea/i.test(a.target.tagName)){var c,e;for(e in d)if(c=d[e]===a.which)break;c&&(a.preventDefault(),a.stopPropagation(),a.which==d.ESC?f._isCollapsed(this)||(a=b(a.target).parents(".dropdown.open").last().find('>[data-toggle="dropdown-submenu"]'),f._clearMenus(),a.trigger("focus")):
+  15  "A"==a.target.tagName&&(c=h(a.target),c.prop(":flat",f._isCollapsed(c.root())),c.is(":flat")?a.which===d.DOWN||a.which===d.UP?c[a.which===d.UP?"prev":"next"]().focus():a.which===d.LEFT?c.is(":opened")?c.close():c.parent().close().focus():a.which===d.RIGHT&&c.is(":toggle")&&c.open():c.is(":upper")?a.which===d.LEFT||a.which===d.RIGHT?(c[a.which===d.LEFT?"prev":"next"]().focus().open(),c.is(":toggle")&&c.close()):a.which!==d.DOWN&&a.which!==d.UP||!c.is(":toggle")||c.children()[a.which===d.DOWN?"first":
+
+  17  function(){b(".nav-dropdown").each(function(){var a=f._isCollapsed(this);b(this).find(".dropdown").removeClass("open");b(this).find('[aria-expanded="true"]').attr("aria-expanded","false");var c=b(".dropdown-backdrop")[0];c&&c.parentNode.removeChild(c);a!=b(this).hasClass("nav-dropdown-sm")&&(a?b(this).addClass("nav-dropdown-sm"):b(this).removeClass("nav-dropdown-sm"))})};b.fn.navDropdown=function(a){return this.each(function(){var c=b(this).data("bs.nav-dropdown");c||b(this).data("bs.nav-dropdown",
+  18: c=new f(this));if("string"===typeof a){if(void 0===c[a])throw Error('No method named "'+a+'"');c[a].call(this)}})};b.fn.navDropdown.noConflict=function(){b.fn.navDropdown=g;return this};b.fn.navDropdown.Constructor=f;b.fn.navDropdown.$$=h;b(window).on("resize.bs.nav-dropdown.data-api ready.bs.nav-dropdown.data-api",f._dataApiResizeHandler);b(document).on("keydown.bs.nav-dropdown.data-api",".nav-dropdown",f._dataApiKeydownHandler).on("collapse.bs.navbar-dropdown",f._clearMenus).on("click.bs.nav-dropdown.data-api",
+  19  f._clearMenus).on("click.bs.nav-dropdown.data-api",'[data-toggle="dropdown-submenu"]',f.prototype.toggle).on("click.bs.nav-dropdown.data-api",".dropdown form",function(a){a.stopPropagation()});b(window).trigger("ready.bs.nav-dropdown")})(jQuery);
+
+chatbot/chatbot.php:
+  187                  history: conversationHistory,
+  188:                 apiKey: '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' // Replace with your actual API key
+  189              })
+
+chatbot/proxy.php:
+   9  
+  10: if (!isset($data['message']) || !isset($data['apiKey'])) {
+  11      http_response_code(400);
+
+  53      'Content-Type: application/json',
+  54:     'Authorization: Bearer ' . $data['apiKey']
+  55  ];

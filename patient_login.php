@@ -464,7 +464,7 @@
             },
             body: JSON.stringify({
                 message: message,
-                apiKey: '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',
+                apiKey: 'API_KEY',
                 history: conversationHistory
             })
         })
@@ -604,7 +604,7 @@
     }
 
     function checkApiKey() {
-        const apiKey = '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';
+        const apiKey = 'API_KEY';
         if (!apiKey) {
             console.warn('API key is missing');
             return false;
@@ -623,7 +623,7 @@
             },
             body: JSON.stringify({
                 message: 'Test connection',
-                apiKey: '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'
+                apiKey: 'API_KEY'
             })
         })
         .then(response => {
