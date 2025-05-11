@@ -23,160 +23,230 @@
     <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
     <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        }
         .form-control {
             border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            border-radius: 12px;
             transition: all 0.3s ease;
             background-color: #f8f9fa;
+            padding: 1rem 1.2rem;
+            font-size: 1.1rem;
         }
         .form-control:focus {
             border-color: #e71f68;
-            box-shadow: 0 0 0 0.2rem rgba(231, 31, 104, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(231, 31, 104, 0.15);
             background-color: #fff;
+            transform: translateY(-2px);
         }
         .form-group label {
             color: #333;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
             transition: all 0.3s ease;
             letter-spacing: 0.5px;
+            font-size: 1.1rem;
+            display: block;
+            padding-left: 0.5rem;
         }
         .form-group:hover label {
             color: #e71f68;
+            transform: translateX(5px);
         }
         .btn {
-            border-radius: 8px;
+            border-radius: 12px;
             transition: all 0.3s ease;
             border: none;
-            font-weight: 500;
+            font-weight: 600;
             letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            padding: 1rem 0;
+            position: relative;
+            overflow: hidden;
         }
         .btn:hover {
             background-color: #d41a5d !important;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(231, 31, 104, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(231, 31, 104, 0.3);
+        }
+        .btn:active {
+            transform: translateY(-1px);
         }
         .card {
-            border-radius: 15px;
+            border-radius: 20px;
             border: none;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
         .form-control::placeholder {
             color: #aaa;
             font-size: 1rem;
-            font-weight: 300;
+            font-weight: 400;
+            transition: all 0.3s ease;
         }
         .card-header {
             border-bottom: 2px solid #f0f0f0;
-            background: linear-gradient(to right, #fff, #fff);
+            background: transparent;
+            padding: 2rem 0 1.5rem;
         }
         .form-group {
             position: relative;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
         .form-control:focus::placeholder {
             color: #e71f68;
             opacity: 0.7;
+            transform: translateX(5px);
         }
         .form-control:hover {
             border-color: #e71f68;
+            background-color: #fff;
         }
 
-        /* Responsive Styles */
+        /* Enhanced Responsive Styles */
         @media (max-width: 991.98px) {
             .container {
-                padding: 0 15px;
+                padding: 0 20px;
             }
             .card {
                 min-width: 100% !important;
-                margin: 0 10px;
+                margin: 0 15px;
             }
             .card-header h3 {
-                font-size: 1.8rem !important;
+                font-size: 2rem !important;
             }
             .form-group label {
-                font-size: 1.1rem !important;
+                font-size: 1.2rem !important;
             }
             .form-control {
-                font-size: 1rem !important;
-                padding: 0.8rem 0.75rem !important;
+                font-size: 1.1rem !important;
+                padding: 1rem 1.2rem !important;
             }
             .btn {
-                font-size: 1.2rem !important;
-                padding: 0.75rem 0 !important;
+                font-size: 1.3rem !important;
+                padding: 1rem 0 !important;
             }
         }
 
         @media (max-width: 767.98px) {
             .container {
-                margin-top: 30px !important;
+                margin-top: 40px !important;
             }
             .card {
-                padding: 1.5rem 1rem !important;
+                padding: 2rem 1.5rem !important;
             }
             .card-header {
-                padding: 1rem 0 !important;
+                padding: 1.5rem 0 !important;
             }
             .card-header h3 {
-                font-size: 1.6rem !important;
+                font-size: 1.8rem !important;
             }
             .form-group {
-                margin-bottom: 1rem !important;
+                margin-bottom: 1.5rem !important;
             }
             .form-group label {
-                font-size: 1rem !important;
+                font-size: 1.1rem !important;
             }
             .form-control {
-                font-size: 0.95rem !important;
-                padding: 0.7rem 0.75rem !important;
+                font-size: 1rem !important;
+                padding: 0.9rem 1.1rem !important;
             }
             .btn {
-                font-size: 1.1rem !important;
-                padding: 0.7rem 0 !important;
+                font-size: 1.2rem !important;
+                padding: 0.9rem 0 !important;
             }
         }
 
         @media (max-width: 575.98px) {
             .container {
-                margin-top: 20px !important;
+                margin-top: 30px !important;
             }
             .card {
-                padding: 1rem 0.75rem !important;
+                padding: 1.5rem 1.2rem !important;
             }
             .card-header h3 {
-                font-size: 1.4rem !important;
+                font-size: 1.6rem !important;
             }
             .form-group {
-                margin-bottom: 0.75rem !important;
+                margin-bottom: 1.2rem !important;
             }
             .form-group label {
-                font-size: 0.95rem !important;
+                font-size: 1rem !important;
             }
             .form-control {
-                font-size: 0.9rem !important;
-                padding: 0.6rem 0.75rem !important;
+                font-size: 0.95rem !important;
+                padding: 0.8rem 1rem !important;
             }
             .btn {
-                font-size: 1rem !important;
-                padding: 0.6rem 0 !important;
+                font-size: 1.1rem !important;
+                padding: 0.8rem 0 !important;
             }
         }
 
-        /* Ensure the image is responsive */
+        /* Enhanced Image Styling */
         .img-fluid {
             max-width: 100%;
             height: auto;
             object-fit: cover;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .img-fluid:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        /* Adjust container padding for better mobile view */
+        /* Container Adjustments */
         @media (max-width: 767.98px) {
             .container {
-                padding-left: 10px;
-                padding-right: 10px;
+                padding-left: 15px;
+                padding-right: 15px;
             }
+        }
+
+        /* Add subtle animation to the card */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Add hover effect to form inputs */
+        .form-control {
+            position: relative;
+            z-index: 1;
+        }
+        .form-control:hover {
+            z-index: 2;
+        }
+
+        /* Add subtle gradient to the button */
+        .btn {
+            background: linear-gradient(45deg, #e71f68, #ff4d8d);
+            background-size: 200% 200%;
+            animation: gradientBG 3s ease infinite;
+        }
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
     </style>
 </head>
@@ -188,24 +258,24 @@
 <div class="container" style="margin-top: 60px;">
     <div class="row justify-content-center align-items-center">
         <div class="col-lg-7 d-none d-lg-block text-center">
-            <img src="assets/images/login.jpg" alt="Admin Login" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 400px; object-fit: cover;">
+            <img src="assets/images/login.jpg" alt="Admin Login" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 450px; object-fit: cover;">
         </div>
         <div class="col-lg-5 col-md-10">
-            <div class="card shadow" style="padding: 2.5rem 1.5rem; min-width: 380px;">
+            <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px;">
                 <div class="card-header text-center" style="padding: 1.2rem 0;">
-                    <h3 style="font-size: 2.2rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #e71f68;">WeCare Admin Login</h3>
+                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #e71f68; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">WeCare Admin Login</h3>
                 </div>
                 <div class="card-body">
                     <form>
                         <div class="form-group mb-4">
-                            <label for="email" style="font-size: 1.2rem;">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required style="font-size: 1.15rem; padding: 0.9rem 0.75rem;">
+                            <label for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
                         </div>
                         <div class="form-group mb-4">
-                            <label for="password" style="font-size: 1.2rem;">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required style="font-size: 1.15rem; padding: 0.9rem 0.75rem;">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
                         </div>
-                        <button type="submit" class="btn w-100" style="font-size: 1.3rem; padding: 0.85rem 0; background-color: #e71f68; color: white;">Login</button>
+                        <button type="submit" class="btn w-100" style="color: white;">Login to Dashboard</button>
                     </form>
                 </div>
             </div>
