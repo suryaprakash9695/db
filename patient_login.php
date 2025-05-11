@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
     <meta name="description" content="">
 
 
-    <title>WeCare - Login/Signup</title>
+    <title>WeCare</title>
     <link rel="stylesheet" href="styles/homepage.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
     <link rel="stylesheet" href="assets/tether/tether.min.css">
@@ -26,16 +26,38 @@
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
 </head>
 
-<body style="background: url('assets/images/thrive_logo.png') no-repeat center center fixed; background-size: cover; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+<body>
 
 <?php include 'includes/navbar.php'; ?>
 
-<div class="container" style="margin-top: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh;">
-    <div class="login-btns-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 30px;">
-        <a href="patient_signup.php" style="width: 300px; font-size: 1.3rem; padding: 18px 0; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; background: #e71f68; color: #fff; margin: 5px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: box-shadow 0.2s;">Signup as Patient</a>
-        <a href="patient_login.php" style="width: 300px; font-size: 1.3rem; padding: 18px 0; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; background: #0080ff; color: #fff; margin: 5px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: box-shadow 0.2s;">Login as Patient</a>
-        <a href="doctor_login.php" style="width: 300px; font-size: 1.3rem; padding: 18px 0; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; background: #28a745; color: #fff; margin: 5px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: box-shadow 0.2s;">Login as Doctor</a>
-        <a href="admin_login.php" style="width: 300px; font-size: 1.3rem; padding: 18px 0; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; background: #ff6600; color: #fff; margin: 5px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: box-shadow 0.2s;">Login as WeCare Admin</a>
+<div class="container" style="margin-top: 60px;">
+    <div class="row justify-content-center align-items-center">
+        <div class="col-lg-7 d-none d-lg-block text-center">
+            <img src="assets/images/login.jpg" alt="Patient Login" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 400px; object-fit: cover;">
+        </div>
+        <div class="col-lg-5 col-md-10">
+            <div class="card shadow" style="padding: 2.5rem 1.5rem; min-width: 380px;">
+                <div class="card-header bg-primary text-white text-center" style="font-size: 2.2rem; padding: 1.2rem 0;">
+                    <h3 style="font-size: 2.2rem; margin-bottom: 0;">Patient Login</h3>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group mb-4">
+                            <label for="email" style="font-size: 1.2rem;">Email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required style="font-size: 1.15rem; padding: 0.9rem 0.75rem;">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="password" style="font-size: 1.2rem;">Password</label>
+                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required style="font-size: 1.15rem; padding: 0.9rem 0.75rem;">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100" style="font-size: 1.3rem; padding: 0.85rem 0;">Login</button>
+                    </form>
+                    <div class="mt-4 text-center">
+                        <a href="patient_signup.php" style="font-size: 1.1rem;">Don't have an account? Sign up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
