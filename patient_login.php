@@ -464,7 +464,7 @@
             },
             body: JSON.stringify({
                 message: message,
-                apiKey: 'API_KEY',
+                apiKey: 'YOUR_API_KEY_HERE',
                 history: conversationHistory
             })
         })
@@ -604,7 +604,7 @@
     }
 
     function checkApiKey() {
-        const apiKey = 'API_KEY';
+        const apiKey = 'YOUR_API_KEY_HERE';
         if (!apiKey) {
             console.warn('API key is missing');
             return false;
@@ -623,7 +623,7 @@
             },
             body: JSON.stringify({
                 message: 'Test connection',
-                apiKey: 'API_KEY'
+                apiKey: 'YOUR_API_KEY_HERE'
             })
         })
         .then(response => {

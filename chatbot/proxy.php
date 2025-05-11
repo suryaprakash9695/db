@@ -13,105 +13,52 @@ if (!isset($data['message']) || !isset($data['apiKey'])) {
     exit;
 }
 
-// OpenAI API endpoint
-$apiUrl = 'https://api.openai.com/v1/chat/completions';
-
-// Function to make API request with retry logic
-function makeApiRequest($url, $headers, $data, $maxRetries = 3) {
-    $retryCount = 0;
-    $retryDelay = 1; // Initial delay in seconds
-    
-    while ($retryCount < $maxRetries) {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
-        if ($httpCode === 429) {
-            // Rate limit hit, wait and retry
-            $retryCount++;
-            if ($retryCount < $maxRetries) {
-                sleep($retryDelay);
-                $retryDelay *= 2; // Exponential backoff
-                continue;
-            }
-        }
-        
-        curl_close($ch);
-        return ['code' => $httpCode, 'response' => $response];
-    }
-    
-    return ['code' => 429, 'response' => 'Rate limit exceeded after ' . $maxRetries . ' retries'];
-}
-
-// Prepare the request
-$headers = [
-    'Content-Type: application/json',
-    'Authorization: Bearer ' . $data['apiKey']
-];
-
-// Prepare the messages array with conversation history
-$messages = [
-    [
-        'role' => 'system',
-        'content' => 'You are a helpful healthcare assistant for WeCare. Provide concise, professional responses. For login, registration, or account issues, direct users to contact the admin.'
-    ]
-];
-
-// Add conversation history if available
-if (isset($data['history']) && is_array($data['history'])) {
-    foreach ($data['history'] as $message) {
-        if (isset($message['role']) && isset($message['content'])) {
-            $messages[] = [
-                'role' => $message['role'],
-                'content' => $message['content']
-            ];
-        }
-    }
-}
-
-// Add the current message
-$messages[] = [
-    'role' => 'user',
-    'content' => $data['message']
-];
-
-// Prepare the request data
-$requestData = [
-    'model' => 'gpt-3.5-turbo',
-    'messages' => $messages,
-    'max_tokens' => 150,
-    'temperature' => 0.7
-];
-
-// Make the API request with retry logic
-$result = makeApiRequest($apiUrl, $headers, $requestData);
-
-if ($result['code'] === 429) {
-    http_response_code(429);
-    echo json_encode([
-        'error' => 'Rate limit exceeded',
-        'message' => 'Please wait a moment before trying again. The system is currently processing many requests.'
-    ]);
+// Verify API key
+$validApiKey = 'YOUR_API_KEY'; // Replace with your actual API key
+if ($data['apiKey'] !== $validApiKey) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Invalid API key']);
     exit;
 }
 
-if ($result['code'] !== 200) {
-    http_response_code($result['code']);
-    echo json_encode(['error' => 'API error: ' . $result['response']]);
-    exit;
+// Simple response system based on keywords
+function getResponse($message) {
+    $message = strtolower($message);
+    
+    // Common healthcare-related keywords and responses
+    $responses = [
+        'hello' => 'Hello! How can I help you today?',
+        'hi' => 'Hi there! How can I assist you?',
+        'help' => 'I can help you with general healthcare information, appointment scheduling, and basic medical queries. What would you like to know?',
+        'appointment' => 'To schedule an appointment, please visit our appointment booking page or contact our reception.',
+        'doctor' => 'We have qualified doctors available. Would you like to know about our specialties or schedule a consultation?',
+        'emergency' => 'If this is a medical emergency, please call emergency services immediately.',
+        'hours' => 'Our clinic is open Monday to Friday, 9 AM to 6 PM, and Saturday, 9 AM to 1 PM.',
+        'location' => 'We are located at [Your Clinic Address]. Would you like directions?',
+        'insurance' => 'We accept most major insurance providers. Please contact our billing department for specific coverage details.',
+        'prescription' => 'For prescription refills, please contact your doctor or visit our prescription request page.',
+        'test' => 'We offer various diagnostic tests. Please specify which test you're interested in.',
+        'payment' => 'We accept cash, credit cards, and insurance. For payment plans, please contact our billing department.',
+        'login' => 'For login issues, please contact our admin support.',
+        'register' => 'To register as a new patient, please visit our registration page or contact our reception.',
+        'thank' => 'You\'re welcome! Is there anything else I can help you with?',
+        'bye' => 'Thank you for chatting with me. Take care!'
+    ];
+    
+    // Check for keywords in the message
+    foreach ($responses as $keyword => $response) {
+        if (strpos($message, $keyword) !== false) {
+            return $response;
+        }
+    }
+    
+    // Default response if no keywords match
+    return "I'm sorry, I don't have specific information about that. For detailed assistance, please contact our staff or visit our website.";
 }
 
-// Process the response
-$responseData = json_decode($result['response'], true);
-if (isset($responseData['choices'][0]['message']['content'])) {
-    echo json_encode(['response' => $responseData['choices'][0]['message']['content']]);
-} else {
-    http_response_code(500);
-    echo json_encode(['error' => 'Invalid API response format']);
-}
+// Get response based on the message
+$response = getResponse($data['message']);
+
+// Return the response
+echo json_encode(['response' => $response]);
 ?> 

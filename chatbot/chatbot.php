@@ -170,12 +170,6 @@ async function sendMessage() {
     addMessage(message, true);
     input.value = '';
     
-    // Add message to conversation history
-    conversationHistory.push({
-        role: 'user',
-        content: message
-    });
-    
     try {
         const response = await fetch('chatbot/proxy.php', {
             method: 'POST',
@@ -184,8 +178,7 @@ async function sendMessage() {
             },
             body: JSON.stringify({
                 message: message,
-                history: conversationHistory,
-                apiKey: 'API_KEY' // Replace with your actual API key
+                apiKey: 'YOUR_API_KEY_HERE' // Replace with your actual API key
             })
         });
         
@@ -195,10 +188,6 @@ async function sendMessage() {
             addMessage('Sorry, I encountered an error. Please try again later.');
         } else {
             addMessage(data.response);
-            conversationHistory.push({
-                role: 'assistant',
-                content: data.response
-            });
         }
     } catch (error) {
         addMessage('Sorry, I encountered an error. Please try again later.');
