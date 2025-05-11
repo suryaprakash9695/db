@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
     <style>
         body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            background: linear-gradient(135deg, #f0f7f4 0%, #ffffff 100%);
         }
         .form-control {
             border: 2px solid #e0e0e0;
@@ -35,8 +35,8 @@
             font-size: 1.1rem;
         }
         .form-control:focus {
-            border-color: #e71f68;
-            box-shadow: 0 0 0 0.2rem rgba(231, 31, 104, 0.15);
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
             background-color: #fff;
             transform: translateY(-2px);
         }
@@ -51,10 +51,10 @@
             padding-left: 0.5rem;
         }
         .form-group:hover label {
-            color: #e71f68;
+            color: #28a745;
             transform: translateX(5px);
         }
-        .btn {
+        .login-btn {
             border-radius: 12px;
             transition: all 0.3s ease;
             border: none;
@@ -65,13 +65,17 @@
             padding: 1rem 0;
             position: relative;
             overflow: hidden;
+            background: linear-gradient(45deg, #28a745, #34ce57);
+            background-size: 200% 200%;
+            animation: gradientBG 3s ease infinite;
+            color: white !important;
         }
-        .btn:hover {
-            background-color: #d41a5d !important;
+        .login-btn:hover {
+            background-color: #218838 !important;
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(231, 31, 104, 0.3);
+            box-shadow: 0 6px 15px rgba(40, 167, 69, 0.3);
         }
-        .btn:active {
+        .login-btn:active {
             transform: translateY(-1px);
         }
         .card {
@@ -102,12 +106,12 @@
             margin-bottom: 2rem;
         }
         .form-control:focus::placeholder {
-            color: #e71f68;
+            color: #28a745;
             opacity: 0.7;
             transform: translateX(5px);
         }
         .form-control:hover {
-            border-color: #e71f68;
+            border-color: #28a745;
             background-color: #fff;
         }
 
@@ -130,7 +134,7 @@
                 font-size: 1.1rem !important;
                 padding: 1rem 1.2rem !important;
             }
-            .btn {
+            .login-btn {
                 font-size: 1.3rem !important;
                 padding: 1rem 0 !important;
             }
@@ -159,7 +163,7 @@
                 font-size: 1rem !important;
                 padding: 0.9rem 1.1rem !important;
             }
-            .btn {
+            .login-btn {
                 font-size: 1.2rem !important;
                 padding: 0.9rem 0 !important;
             }
@@ -185,7 +189,7 @@
                 font-size: 0.95rem !important;
                 padding: 0.8rem 1rem !important;
             }
-            .btn {
+            .login-btn {
                 font-size: 1.1rem !important;
                 padding: 0.8rem 0 !important;
             }
@@ -238,11 +242,6 @@
         }
 
         /* Add subtle gradient to the button */
-        .btn {
-            background: linear-gradient(45deg, #e71f68, #ff4d8d);
-            background-size: 200% 200%;
-            animation: gradientBG 3s ease infinite;
-        }
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -263,7 +262,7 @@
         <div class="col-lg-5 col-md-10">
             <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px;">
                 <div class="card-header text-center" style="padding: 1.2rem 0;">
-                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #e71f68; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">WeCare Admin Login</h3>
+                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #28a745; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">WeCare Admin Login</h3>
                 </div>
                 <div class="card-body">
                     <form>
@@ -275,7 +274,7 @@
                             <label for="password">Password</label>
                             <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
                         </div>
-                        <button type="submit" class="btn w-100" style="color: white;">Login to Dashboard</button>
+                        <button type="submit" class="btn login-btn w-100">Login to Dashboard</button>
                     </form>
                 </div>
             </div>

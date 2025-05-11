@@ -9,8 +9,7 @@
     <link rel="shortcut icon" href="assets/images/thrive_logo_small.png" type="image/x-icon">
     <meta name="description" content="">
 
-
-    <title>WeCare - Login/Signup</title>
+    <title>WeCare - Login</title>
     <link rel="stylesheet" href="styles/homepage.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
     <link rel="stylesheet" href="assets/tether/tether.min.css">
@@ -22,20 +21,134 @@
     <link rel="stylesheet" href="assets/theme/css/style.css">
     <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .login-container {
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+        }
+        .card {
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        .card-body {
+            padding: 2.5rem;
+            text-align: center;
+        }
+        .icon-wrapper {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .card:hover .icon-wrapper {
+            transform: scale(1.1);
+            background: rgba(255,255,255,0.3);
+        }
+        .card-title {
+            color: white;
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .card-text {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        .login-btn {
+            border-radius: 30px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            background: white;
+            color: #333;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #333;
+            text-decoration: none;
+        }
+        .patient-card {
+            background: linear-gradient(135deg, #0080ff 0%, #00bfff 100%);
+        }
+        .doctor-card {
+            background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+        }
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 2rem;
+            }
+            .card-title {
+                font-size: 2rem;
+            }
+            .card-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 
 <body style="background: url('assets/images/thrive_logo.png') no-repeat center center fixed; background-size: cover; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
 
 <?php include 'includes/navbar.php'; ?>
 
-<div class="container" style="margin-top: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh;">
-    <div class="login-btns-container" style="display: flex; flex-direction: column; align-items: center; gap: 20px; margin-top: 30px;">
-        <a href="patient_signup.php" style="width: 300px; font-size: 1.3rem; padding: 18px 0; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; background: #e71f68; color: #fff; margin: 5px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: box-shadow 0.2s;">Signup as Patient</a>
-        <a href="patient_login.php" style="width: 300px; font-size: 1.3rem; padding: 18px 0; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; background: #0080ff; color: #fff; margin: 5px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: box-shadow 0.2s;">Login as Patient</a>
-        <a href="doctor_login.php" style="width: 300px; font-size: 1.3rem; padding: 18px 0; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; background: #28a745; color: #fff; margin: 5px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: box-shadow 0.2s;">Login as Doctor</a>
-        <a href="admin_login.php" style="width: 300px; font-size: 1.3rem; padding: 18px 0; border-radius: 8px; font-weight: 600; text-align: center; text-decoration: none; background: #ff6600; color: #fff; margin: 5px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: box-shadow 0.2s;">Login as WeCare Admin</a>
+<div class="login-container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card patient-card">
+                <div class="card-body">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-user-injured" style="font-size: 2.5rem; color: white;"></i>
+                    </div>
+                    <h3 class="card-title">Patient Care</h3>
+                    <p class="card-text">
+                        Access personalized healthcare services, schedule appointments, and manage your medical records all in one place.
+                    </p>
+                    <a href="patient_login.php" class="login-btn">Login as Patient</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card doctor-card">
+                <div class="card-body">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-user-md" style="font-size: 2.5rem; color: white;"></i>
+                    </div>
+                    <h3 class="card-title">Doctor Portal</h3>
+                    <p class="card-text">
+                        Manage your practice, view patient records, and provide quality healthcare services through our integrated platform.
+                    </p>
+                    <a href="doctor_login.php" class="login-btn">Login as Doctor</a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

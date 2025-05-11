@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
     <style>
         body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            background: linear-gradient(135deg, #f0fff0 0%, #ffffff 100%);
         }
         .form-control {
             border: 2px solid #e0e0e0;
@@ -35,8 +35,8 @@
             font-size: 1.1rem;
         }
         .form-control:focus {
-            border-color: #e71f68;
-            box-shadow: 0 0 0 0.2rem rgba(231, 31, 104, 0.15);
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.15);
             background-color: #fff;
             transform: translateY(-2px);
         }
@@ -51,10 +51,10 @@
             padding-left: 0.5rem;
         }
         .form-group:hover label {
-            color: #e71f68;
+            color: #2ecc71;
             transform: translateX(5px);
         }
-        .btn {
+        .login-btn {
             border-radius: 12px;
             transition: all 0.3s ease;
             border: none;
@@ -77,14 +77,58 @@
         .card {
             border-radius: 20px;
             border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.15);
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(135deg, #ffffff 0%, #f0fff0 100%);
             backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #2ecc71, #27ae60);
         }
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 35px rgba(46, 204, 113, 0.2);
+        }
+        .card-header {
+            border-bottom: 2px solid rgba(46, 204, 113, 0.1);
+            background: transparent;
+            padding: 2rem 0 1.5rem;
+        }
+        .form-control {
+            border: 2px solid rgba(46, 204, 113, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 1rem 1.2rem;
+            font-size: 1.1rem;
+        }
+        .form-control:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 0.2rem rgba(46, 204, 113, 0.15);
+            background-color: #fff;
+            transform: translateY(-2px);
+        }
+        .form-group label {
+            color: #2ecc71;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            font-size: 1.1rem;
+            display: block;
+            padding-left: 0.5rem;
+        }
+        .form-group:hover label {
+            color: #27ae60;
+            transform: translateX(5px);
         }
         .form-control::placeholder {
             color: #aaa;
@@ -92,22 +136,13 @@
             font-weight: 400;
             transition: all 0.3s ease;
         }
-        .card-header {
-            border-bottom: 2px solid #f0f0f0;
-            background: transparent;
-            padding: 2rem 0 1.5rem;
-        }
-        .form-group {
-            position: relative;
-            margin-bottom: 2rem;
-        }
         .form-control:focus::placeholder {
-            color: #e71f68;
+            color: #2ecc71;
             opacity: 0.7;
             transform: translateX(5px);
         }
         .form-control:hover {
-            border-color: #e71f68;
+            border-color: #2ecc71;
             background-color: #fff;
         }
 
@@ -248,6 +283,43 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+
+        /* Doctor Login Page Specific Button */
+        .doctor-page-login-btn {
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+            padding: 1rem 0;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            background-size: 200% 200%;
+            animation: gradientBG 3s ease infinite;
+            color: white;
+            width: 100%;
+        }
+
+        .doctor-page-login-btn:hover {
+            background-color: #27ae60 !important;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(46, 204, 113, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .doctor-page-login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
     </style>
 </head>
 
@@ -261,9 +333,9 @@
             <img src="assets/images/login.jpg" alt="Doctor Login" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 450px; object-fit: cover;">
         </div>
         <div class="col-lg-5 col-md-10">
-            <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px;">
+            <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px; background: linear-gradient(135deg, #ffffff 0%, #f0fff0 100%);">
                 <div class="card-header text-center" style="padding: 1.2rem 0;">
-                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #e71f68; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Doctor Login</h3>
+                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #2ecc71; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Doctor Login</h3>
                 </div>
                 <div class="card-body">
                     <form>
@@ -275,10 +347,11 @@
                             <label for="password">Password</label>
                             <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
                         </div>
-                        <button type="submit" class="btn w-100" style="color: white;">Login to Dashboard</button>
+                        <button type="submit" class="doctor-page-login-btn">Login to Dashboard</button>
                     </form>
                     <div class="mt-4 text-center">
-                        <a href="doctor_signup.php" class="signup-link" style="font-size: 1.1rem;">Don't have an account? Sign up</a>
+                        <p class="mb-2" style="font-size: 1.1rem;">NOTE : For Login Details Contact to Admin</p>
+                        <a href="admin_login.php" class="text-decoration-none" style="color: #2ecc71; font-weight: 600; font-size: 1.1rem;">Admin Login</a>
                     </div>
                 </div>
             </div>

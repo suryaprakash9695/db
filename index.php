@@ -30,6 +30,9 @@
 
 <?php include 'includes/navbar.php'; ?>
 
+<!-- Include Chatbot -->
+<?php include 'chatbot/chatbot.php'; ?>
+
     <section class="header7 cid-smIipas6Mf mbr-fullscreen" id="header7-u">
         <div class="text-right container">
             <div class="row justify-content-end">
@@ -190,8 +193,76 @@
         </div>
     </section>
 
+    <div class="container" style="margin-top: 80px;">
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 patient-card" style="border-radius: 20px; overflow: hidden; transition: all 0.3s ease; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <div class="card-body text-center p-5" style="background: linear-gradient(135deg, #0080ff 0%, #00bfff 100%);">
+                        <div class="icon-wrapper mb-4" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user-injured" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                        <h3 class="card-title mb-4" style="color: white; font-family: 'Dancing Script', cursive; font-size: 2.5rem;">Patient Care</h3>
+                        <p class="card-text mb-4" style="color: rgba(255,255,255,0.9); font-size: 1.1rem; line-height: 1.6;">
+                            Access personalized healthcare services, schedule appointments, and manage your medical records all in one place.
+                        </p>
+                        <a href="main_login_signup.php" class="btn btn-light btn-lg" style="border-radius: 30px; padding: 12px 30px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease;">
+                            Get Started
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 doctor-card" style="border-radius: 20px; overflow: hidden; transition: all 0.3s ease; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                    <div class="card-body text-center p-5" style="background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);">
+                        <div class="icon-wrapper mb-4" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user-md" style="font-size: 2.5rem; color: white;"></i>
+                        </div>
+                        <h3 class="card-title mb-4" style="color: white; font-family: 'Dancing Script', cursive; font-size: 2.5rem;">Doctor Portal</h3>
+                        <p class="card-text mb-4" style="color: rgba(255,255,255,0.9); font-size: 1.1rem; line-height: 1.6;">
+                            Manage your practice, view patient records, and provide quality healthcare services through our integrated platform.
+                        </p>
+                        <a href="main_login_signup.php" class="btn btn-light btn-lg" style="border-radius: 30px; padding: 12px 30px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease;">
+                            Join Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    
+    <style>
+        .patient-card:hover, .doctor-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .patient-card .btn:hover, .doctor-card .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .icon-wrapper {
+            transition: all 0.3s ease;
+        }
+
+        .patient-card:hover .icon-wrapper, .doctor-card:hover .icon-wrapper {
+            transform: scale(1.1);
+            background: rgba(255,255,255,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 2rem !important;
+            }
+            .card-title {
+                font-size: 2rem !important;
+            }
+            .card-text {
+                font-size: 1rem !important;
+            }
+        }
+    </style>
+
     <a href="https://mobirise.site/e"></a>
     <script src="assets/web/assets/jquery/jquery.min.js"></script>
     <script src="assets/popper/popper.min.js"></script>

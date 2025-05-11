@@ -122,7 +122,7 @@ $t=0;$p1=0;
                 <div class="navbar-buttons mbr-section-btn">
                     <div class="dropdown">
                         <button class="btn btn-primary display-4 dropdown-toggle" type="button" id="loginDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Log In/Sign Up
+                        Log In/Sign Up
                         </button>
                         <div class="dropdown-menu" aria-labelledby="loginDropdown">
                             <a class="dropdown-item" href="patient/patient_login.php">Login as Patient</a>
