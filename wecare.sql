@@ -1,193 +1,270 @@
--- Drop database if exists to start fresh
-DROP DATABASE IF EXISTS wecare;
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1:3306
+-- Generation Time: May 12, 2025 at 09:04 AM
+-- Server version: 8.0.31
+-- PHP Version: 8.0.26
 
--- Create the WeCare database
-CREATE DATABASE IF NOT EXISTS wecare;
-USE wecare;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
--- Create admin table
-CREATE TABLE admin (
-    admin_id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(191) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY unique_email (email)
-);
 
--- Insert default admin credentials
-INSERT INTO admin (email, password) VALUES ('admin@gmail.com', 'admin1');
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
--- Create doctors table
-CREATE TABLE IF NOT EXISTS doctors (
-    doctor_id INT PRIMARY KEY AUTO_INCREMENT,
-    full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    phone VARCHAR(20),
-    specialization VARCHAR(100) NOT NULL,
-    qualification VARCHAR(100) NOT NULL,
-    experience INT NOT NULL,
-    license_no VARCHAR(50) UNIQUE NOT NULL,
-    is_verified BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+--
+-- Database: `wecare`
+--
 
--- Create patients table
-CREATE TABLE IF NOT EXISTS patients (
-    patient_id INT PRIMARY KEY AUTO_INCREMENT,
-    full_name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    phone VARCHAR(20),
-    date_of_birth DATE,
-    gender ENUM('Male', 'Female', 'Other'),
-    address TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- --------------------------------------------------------
 
--- Create medical_records table
-CREATE TABLE IF NOT EXISTS medical_records (
-    record_id INT PRIMARY KEY AUTO_INCREMENT,
-    patient_id INT NOT NULL,
-    doctor_id INT NOT NULL,
-    diagnosis TEXT NOT NULL,
-    treatment TEXT NOT NULL,
-    notes TEXT,
-    record_date DATE NOT NULL,
-    next_followup DATE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE,
-    FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE
-);
+--
+-- Table structure for table `admin`
+--
 
--- Create appointments table
-CREATE TABLE IF NOT EXISTS appointments (
-    appointment_id INT PRIMARY KEY AUTO_INCREMENT,
-    patient_id INT NOT NULL,
-    doctor_id INT NOT NULL,
-    appointment_date DATE NOT NULL,
-    appointment_time TIME NOT NULL,
-    reason TEXT NOT NULL,
-    notes TEXT,
-    preferred_communication VARCHAR(50) NOT NULL,
-    status VARCHAR(20) NOT NULL DEFAULT 'Scheduled',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE,
-    FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE
-);
+DROP TABLE IF EXISTS `admin`;
+CREATE TABLE IF NOT EXISTS `admin` (
+  `admin_id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(191) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`admin_id`),
+  UNIQUE KEY `unique_email` (`email`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Create consultations table
-CREATE TABLE consultations (
-    consultation_id INT AUTO_INCREMENT PRIMARY KEY,
-    patient_id INT,
-    doctor_id INT,
-    consultation_date DATETIME,
-    status ENUM('Scheduled', 'Completed', 'Cancelled') DEFAULT 'Scheduled',
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE,
-    FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE
-);
+--
+-- Dumping data for table `admin`
+--
 
--- Create feedback table
-CREATE TABLE feedback (
-    feedback_id INT AUTO_INCREMENT PRIMARY KEY,
-    patient_id INT,
-    doctor_id INT,
-    rating INT,
-    comment TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE,
-    FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE,
-    CHECK (rating >= 1 AND rating <= 5)
-);
+INSERT INTO `admin` (`admin_id`, `email`, `password`, `created_at`) VALUES
+(1, 'admin@gmail.com', 'admin1', '2025-05-12 01:36:12');
 
--- Create notifications table
-CREATE TABLE notifications (
-    notification_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    user_type ENUM('admin', 'doctor', 'patient'),
-    message TEXT,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+-- --------------------------------------------------------
 
--- Create prescriptions table
-CREATE TABLE IF NOT EXISTS prescriptions (
-    prescription_id INT PRIMARY KEY AUTO_INCREMENT,
-    patient_id INT NOT NULL,
-    doctor_id INT NOT NULL,
-    medications JSON NOT NULL,
-    prescribed_date DATE NOT NULL,
-    valid_until DATE NOT NULL,
-    notes TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (patient_id) REFERENCES patients(patient_id) ON DELETE CASCADE,
-    FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id) ON DELETE CASCADE
-);
+--
+-- Table structure for table `appointments`
+--
 
--- Insert test patient
-INSERT INTO patients (full_name, email, password, phone, date_of_birth, gender) 
-VALUES ('Test Patient', 'test@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '1234567890', '1990-01-01', 'Male')
-ON DUPLICATE KEY UPDATE email = email;
+DROP TABLE IF EXISTS `appointments`;
+CREATE TABLE IF NOT EXISTS `appointments` (
+  `appointment_id` int NOT NULL AUTO_INCREMENT,
+  `patient_id` int NOT NULL,
+  `doctor_id` int NOT NULL,
+  `appointment_date` date NOT NULL,
+  `appointment_time` time NOT NULL,
+  `reason` text NOT NULL,
+  `notes` text,
+  `preferred_communication` varchar(50) NOT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'Scheduled',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`appointment_id`),
+  KEY `patient_id` (`patient_id`),
+  KEY `doctor_id` (`doctor_id`),
+  KEY `idx_appointments_date` (`appointment_date`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- Insert test doctor
-INSERT INTO doctors (full_name, email, password, phone, specialization, qualification, experience, license_no, is_verified) 
-VALUES ('Dr. Test Doctor', 'doctor@example.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '0987654321', 'General Medicine', 'MBBS', 5, 'LIC123456', TRUE)
-ON DUPLICATE KEY UPDATE email = email;
+--
+-- Dumping data for table `appointments`
+--
 
--- Insert sample appointment
-INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, reason, preferred_communication, status)
-SELECT 
-    (SELECT patient_id FROM patients WHERE email = 'test@example.com'),
-    (SELECT doctor_id FROM doctors WHERE email = 'doctor@example.com'),
-    CURDATE(),
-    '10:00:00',
-    'Regular checkup',
-    'Phone',
-    'Scheduled'
-WHERE NOT EXISTS (
-    SELECT 1 FROM appointments 
-    WHERE patient_id = (SELECT patient_id FROM patients WHERE email = 'test@example.com')
-    AND doctor_id = (SELECT doctor_id FROM doctors WHERE email = 'doctor@example.com')
-    AND appointment_date = CURDATE()
-);
+INSERT INTO `appointments` (`appointment_id`, `patient_id`, `doctor_id`, `appointment_date`, `appointment_time`, `reason`, `notes`, `preferred_communication`, `status`, `created_at`) VALUES
+(1, 1, 1, '2025-05-12', '10:00:00', 'Regular checkup', NULL, 'Phone', 'Scheduled', '2025-05-12 01:36:12'),
+(2, 2, 1, '2025-06-30', '14:30:00', 'ghbnsjkm', 'vgvbhjn', 'Phone', 'Scheduled', '2025-05-12 01:53:34'),
+(3, 2, 1, '2025-06-06', '17:00:00', 'ha', 'bhja', 'Phone', 'Scheduled', '2025-05-12 01:55:58'),
+(4, 2, 1, '2025-06-06', '16:30:00', 'ha', 'bhja', 'Phone', 'Scheduled', '2025-05-12 01:57:55');
 
--- Insert sample prescription
-INSERT INTO prescriptions (patient_id, doctor_id, medications, prescribed_date, valid_until, notes)
-SELECT 
-    (SELECT patient_id FROM patients WHERE email = 'test@example.com'),
-    (SELECT doctor_id FROM doctors WHERE email = 'doctor@example.com'),
-    '[{"name": "Paracetamol", "dosage": "500mg", "frequency": "Twice daily"}]',
-    CURDATE(),
-    DATE_ADD(CURDATE(), INTERVAL 7 DAY),
-    'Take after meals'
-WHERE NOT EXISTS (
-    SELECT 1 FROM prescriptions 
-    WHERE patient_id = (SELECT patient_id FROM patients WHERE email = 'test@example.com')
-    AND doctor_id = (SELECT doctor_id FROM doctors WHERE email = 'doctor@example.com')
-    AND prescribed_date = CURDATE()
-);
+-- --------------------------------------------------------
 
--- Insert sample medical record
-INSERT INTO medical_records (patient_id, doctor_id, diagnosis, treatment, record_date, next_followup)
-SELECT 
-    (SELECT patient_id FROM patients WHERE email = 'test@example.com'),
-    (SELECT doctor_id FROM doctors WHERE email = 'doctor@example.com'),
-    'Common cold with mild fever',
-    'Rest and prescribed medications',
-    CURDATE(),
-    DATE_ADD(CURDATE(), INTERVAL 7 DAY)
-WHERE NOT EXISTS (
-    SELECT 1 FROM medical_records 
-    WHERE patient_id = (SELECT patient_id FROM patients WHERE email = 'test@example.com')
-    AND doctor_id = (SELECT doctor_id FROM doctors WHERE email = 'doctor@example.com')
-    AND record_date = CURDATE()
-);
+--
+-- Table structure for table `consultations`
+--
 
--- Add indexes for better performance
-CREATE INDEX idx_doctors_email ON doctors(email);
-CREATE INDEX idx_patients_email ON patients(email);
-CREATE INDEX idx_appointments_date ON appointments(appointment_date);
-CREATE INDEX idx_consultations_date ON consultations(consultation_date);
-CREATE INDEX idx_medical_records_date ON medical_records(record_date); 
+DROP TABLE IF EXISTS `consultations`;
+CREATE TABLE IF NOT EXISTS `consultations` (
+  `consultation_id` int NOT NULL AUTO_INCREMENT,
+  `patient_id` int DEFAULT NULL,
+  `doctor_id` int DEFAULT NULL,
+  `consultation_date` datetime DEFAULT NULL,
+  `status` enum('Scheduled','Completed','Cancelled') DEFAULT 'Scheduled',
+  `notes` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`consultation_id`),
+  KEY `patient_id` (`patient_id`),
+  KEY `doctor_id` (`doctor_id`),
+  KEY `idx_consultations_date` (`consultation_date`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `doctors`
+--
+
+DROP TABLE IF EXISTS `doctors`;
+CREATE TABLE IF NOT EXISTS `doctors` (
+  `doctor_id` int NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `specialization` varchar(100) NOT NULL,
+  `qualification` varchar(100) NOT NULL,
+  `experience` int NOT NULL,
+  `license_no` varchar(50) NOT NULL,
+  `is_verified` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`doctor_id`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `license_no` (`license_no`),
+  KEY `idx_doctors_email` (`email`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `doctors`
+--
+
+INSERT INTO `doctors` (`doctor_id`, `full_name`, `email`, `password`, `phone`, `specialization`, `qualification`, `experience`, `license_no`, `is_verified`, `created_at`) VALUES
+(3, 'Aman', 'am@gmail.com', '$2y$10$tnqZ9hTP5DEyXu.WCZXz0..ccWJyfEdiqKaM63xbhwcMnwFX1I.1S', NULL, 'Neurology', '', 0, '555', 1, '2025-05-12 02:32:14'),
+(4, 'Surya', 'qq@gmail.com', '$2y$10$NjlPosR9UQ5S760uQc9WPuraHR/yYCSfAI/uKiaQj3LwR5aqJYMN6', NULL, 'Cardiology', '', 0, '44', 1, '2025-05-12 02:39:51'),
+(2, 'Doctor', 'd@gmail.com', '$2y$10$oenV8LOm1AZePzINSWNPNOI03S3g4CkbnLkk2aFQNq0FumLLUuY22', NULL, 'Cardiology', '', 0, '', 1, '2025-05-12 02:19:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `feedback`
+--
+
+DROP TABLE IF EXISTS `feedback`;
+CREATE TABLE IF NOT EXISTS `feedback` (
+  `feedback_id` int NOT NULL AUTO_INCREMENT,
+  `patient_id` int DEFAULT NULL,
+  `doctor_id` int DEFAULT NULL,
+  `rating` int DEFAULT NULL,
+  `comment` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`feedback_id`),
+  KEY `patient_id` (`patient_id`),
+  KEY `doctor_id` (`doctor_id`)
+) ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `medical_records`
+--
+
+DROP TABLE IF EXISTS `medical_records`;
+CREATE TABLE IF NOT EXISTS `medical_records` (
+  `record_id` int NOT NULL AUTO_INCREMENT,
+  `patient_id` int NOT NULL,
+  `doctor_id` int NOT NULL,
+  `diagnosis` text NOT NULL,
+  `treatment` text NOT NULL,
+  `notes` text,
+  `record_date` date NOT NULL,
+  `next_followup` date DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`record_id`),
+  KEY `patient_id` (`patient_id`),
+  KEY `doctor_id` (`doctor_id`),
+  KEY `idx_medical_records_date` (`record_date`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `medical_records`
+--
+
+INSERT INTO `medical_records` (`record_id`, `patient_id`, `doctor_id`, `diagnosis`, `treatment`, `notes`, `record_date`, `next_followup`, `created_at`) VALUES
+(1, 1, 1, 'Common cold with mild fever', 'Rest and prescribed medications', NULL, '2025-05-12', '2025-05-19', '2025-05-12 01:36:12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+CREATE TABLE IF NOT EXISTS `notifications` (
+  `notification_id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
+  `user_type` enum('admin','doctor','patient') DEFAULT NULL,
+  `message` text,
+  `is_read` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`notification_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`notification_id`, `user_id`, `user_type`, `message`, `is_read`, `created_at`) VALUES
+(1, 1, 'doctor', 'New appointment request from Surya Prakash Singh', 0, '2025-05-12 01:53:34'),
+(2, 1, 'doctor', 'New appointment request from Surya Prakash Singh', 0, '2025-05-12 01:55:58');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `patients`
+--
+
+DROP TABLE IF EXISTS `patients`;
+CREATE TABLE IF NOT EXISTS `patients` (
+  `patient_id` int NOT NULL AUTO_INCREMENT,
+  `full_name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `gender` enum('Male','Female','Other') DEFAULT NULL,
+  `address` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`patient_id`),
+  UNIQUE KEY `email` (`email`),
+  KEY `idx_patients_email` (`email`)
+) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `patients`
+--
+
+INSERT INTO `patients` (`patient_id`, `full_name`, `email`, `password`, `phone`, `date_of_birth`, `gender`, `address`, `created_at`) VALUES
+(2, 'Surya Prakash Singh', 's@gmail.com', '123456', 's@gmail.com', NULL, NULL, NULL, '2025-05-12 01:37:59');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `prescriptions`
+--
+
+DROP TABLE IF EXISTS `prescriptions`;
+CREATE TABLE IF NOT EXISTS `prescriptions` (
+  `prescription_id` int NOT NULL AUTO_INCREMENT,
+  `patient_id` int NOT NULL,
+  `doctor_id` int NOT NULL,
+  `medications` json NOT NULL,
+  `prescribed_date` date NOT NULL,
+  `valid_until` date NOT NULL,
+  `notes` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`prescription_id`),
+  KEY `patient_id` (`patient_id`),
+  KEY `doctor_id` (`doctor_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `prescriptions`
+--
+
+INSERT INTO `prescriptions` (`prescription_id`, `patient_id`, `doctor_id`, `medications`, `prescribed_date`, `valid_until`, `notes`, `created_at`) VALUES
+(1, 1, 1, '[{\"name\": \"Paracetamol\", \"dosage\": \"500mg\", \"frequency\": \"Twice daily\"}]', '2025-05-12', '2025-05-19', 'Take after meals', '2025-05-12 01:36:12');
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
