@@ -1,3 +1,41 @@
+<?php
+session_start();
+require_once 'includes/db_connect.php';
+
+$error = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $full_name = sanitize_input($_POST['fullname']);
+    $email = sanitize_input($_POST['email']);
+    $phone = sanitize_input($_POST['phone']);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+
+    // Validate password match
+    if ($password !== $confirm_password) {
+        $error = 'Passwords do not match';
+    } else {
+        try {
+            // Check if email already exists
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM patients WHERE email = ?");
+            $stmt->execute([$email]);
+            if ($stmt->fetchColumn() > 0) {
+                $error = 'Email already registered';
+            } else {
+                // Insert new patient
+                $hashed_password = hash_password($password);
+                $stmt = $pdo->prepare("INSERT INTO patients (full_name, email, phone, password) VALUES (?, ?, ?, ?)");
+                $stmt->execute([$full_name, $email, $phone, $hashed_password]);
+                
+                $success = 'Registration successful! You can now login.';
+            }
+        } catch(PDOException $e) {
+            $error = 'Registration failed. Please try again.';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,7 +62,7 @@
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
     <style>
         body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
         }
         .form-control {
             border: 2px solid #e0e0e0;
@@ -35,8 +73,8 @@
             font-size: 1.1rem;
         }
         .form-control:focus {
-            border-color: #e71f68;
-            box-shadow: 0 0 0 0.2rem rgba(231, 31, 104, 0.15);
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
             background-color: #fff;
             transform: translateY(-2px);
         }
@@ -51,8 +89,36 @@
             padding-left: 0.5rem;
         }
         .form-group:hover label {
-            color: #e71f68;
+            color: #3498db;
             transform: translateX(5px);
+        }
+        .card {
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.15);
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.2);
+        }
+        .card-header {
+            border-bottom: 2px solid rgba(52, 152, 219, 0.1);
+            background: transparent;
+            padding: 2rem 0 1.5rem;
         }
         .signup-btn {
             border-radius: 12px;
@@ -61,60 +127,46 @@
             font-weight: 600;
             letter-spacing: 0.5px;
             text-transform: uppercase;
-            font-size: 1.0rem;
+            font-size: 1.2rem;
             padding: 1rem 0;
             position: relative;
             overflow: hidden;
-            background: linear-gradient(45deg, #e71f68, #ff4d8d);
+            background: linear-gradient(45deg, #3498db, #2980b9);
             background-size: 200% 200%;
             animation: gradientBG 3s ease infinite;
+            color: white;
+            width: 100%;
         }
         .signup-btn:hover {
-            background-color: #d41a5d !important;
+            background-color: #2980b9 !important;
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(231, 31, 104, 0.3);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+            color: white;
+            text-decoration: none;
         }
         .signup-btn:active {
             transform: translateY(-1px);
         }
-        .card {
-            border-radius: 20px;
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .alert {
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
             border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            font-weight: 500;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #dc2626;
         }
-        .form-control::placeholder {
-            color: #aaa;
-            font-size: 1rem;
-            font-weight: 400;
-            transition: all 0.3s ease;
+        .alert-success {
+            background-color: #dcfce7;
+            color: #16a34a;
         }
-        .card-header {
-            border-bottom: 2px solid #f0f0f0;
-            background: transparent;
-            padding: 2rem 0 1.5rem;
-        }
-        .form-group {
-            position: relative;
-            margin-bottom: 2rem;
-        }
-        .form-control:focus::placeholder {
-            color: #e71f68;
-            opacity: 0.7;
-            transform: translateX(5px);
-        }
-        .form-control:hover {
-            border-color: #e71f68;
-            background-color: #fff;
-        }
-
-        /* Enhanced Responsive Styles */
         @media (max-width: 991.98px) {
             .container {
                 padding: 0 20px;
@@ -133,132 +185,10 @@
                 font-size: 1.1rem !important;
                 padding: 1rem 1.2rem !important;
             }
-            .signup-btn {
+            .btn {
                 font-size: 1.3rem !important;
                 padding: 1rem 0 !important;
             }
-        }
-
-        @media (max-width: 767.98px) {
-            .container {
-                margin-top: 40px !important;
-            }
-            .card {
-                padding: 2rem 1.5rem !important;
-            }
-            .card-header {
-                padding: 1.5rem 0 !important;
-            }
-            .card-header h3 {
-                font-size: 1.8rem !important;
-            }
-            .form-group {
-                margin-bottom: 1.5rem !important;
-            }
-            .form-group label {
-                font-size: 1.1rem !important;
-            }
-            .form-control {
-                font-size: 1rem !important;
-                padding: 0.9rem 1.1rem !important;
-            }
-            .signup-btn {
-                font-size: 1.2rem !important;
-                padding: 0.9rem 0 !important;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .container {
-                margin-top: 30px !important;
-            }
-            .card {
-                padding: 1.5rem 1.2rem !important;
-            }
-            .card-header h3 {
-                font-size: 1.6rem !important;
-            }
-            .form-group {
-                margin-bottom: 1.2rem !important;
-            }
-            .form-group label {
-                font-size: 1rem !important;
-            }
-            .form-control {
-                font-size: 0.95rem !important;
-                padding: 0.8rem 1rem !important;
-            }
-            .signup-btn {
-                font-size: 1.1rem !important;
-                padding: 0.8rem 0 !important;
-            }
-        }
-
-        /* Enhanced Image Styling */
-        .img-fluid {
-            max-width: 100%;
-            height: auto;
-            object-fit: cover;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        .img-fluid:hover {
-            transform: scale(1.02);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Container Adjustments */
-        @media (max-width: 767.98px) {
-            .container {
-                padding-left: 15px;
-                padding-right: 15px;
-            }
-        }
-
-        /* Add subtle animation to the card */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        .card {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        /* Add hover effect to form inputs */
-        .form-control {
-            position: relative;
-            z-index: 1;
-        }
-        .form-control:hover {
-            z-index: 2;
-        }
-
-        /* Add subtle gradient to the button */
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Style for the login link */
-        .signup-link {
-            color: #e71f68;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            font-weight: 500;
-            font-size: 1.1rem;
-        }
-        .signup-link:hover {
-            color: #d41a5d;
-            text-decoration: underline;
-            transform: translateX(5px);
         }
     </style>
 </head>
@@ -270,35 +200,59 @@
 <div class="container" style="margin-top: 60px;">
     <div class="row justify-content-center align-items-center">
         <div class="col-lg-7 d-none d-lg-block text-center">
-            <img src="assets/images/login.jpg" alt="Patient Signup" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 450px; object-fit: cover;">
+            <img src="assets/images/consult-626x417.jpeg" alt="Patient Signup" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 450px; object-fit: cover;">
         </div>
         <div class="col-lg-5 col-md-10">
-            <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px;">
+            <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px; background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);">
                 <div class="card-header text-center" style="padding: 1.2rem 0;">
-                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #e71f68; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Patient Signup Form</h3>
+                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #3498db; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Join WeCare</h3>
+                    <p style="color: #666; margin-top: 1rem; font-size: 1.1rem;">Create your account to get started</p>
                 </div>
                 <div class="card-body">
-                    <form>
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger"><?php echo $error; ?></div>
+                    <?php endif; ?>
+                    <?php if ($success): ?>
+                        <div class="alert alert-success"><?php echo $success; ?></div>
+                    <?php endif; ?>
+                    <form method="POST" action="">
                         <div class="form-group mb-4">
-                            <label for="username">Username</label>
-                            <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+                            <label for="fullname">Full Name</label>
+                            <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter your full name" required>
                         </div>
                         <div class="form-group mb-4">
                             <label for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
                         </div>
                         <div class="form-group mb-4">
                             <label for="phone">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number" required>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
                         </div>
                         <div class="form-group mb-4">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
                         </div>
-                        <button type="submit" class="signup-btn w-100" style="color: white;">Create Account</button>
+                        <div class="form-group mb-4">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                        </div>
+                        <button type="submit" class="signup-btn">Create Account</button>
                     </form>
                     <div class="mt-4 text-center">
-                        <a href="patient_login.php" class="signup-link">Already have an account? Login</a>
+                        <p style="color: #666; font-size: 1.1rem; margin-bottom: 1rem;">Already have an account?</p>
+                        <a href="patient_login.php" class="btn btn-outline-primary" style="
+                            border: 2px solid #3498db;
+                            color: #3498db;
+                            font-weight: 600;
+                            padding: 0.8rem 2rem;
+                            border-radius: 12px;
+                            transition: all 0.3s ease;
+                            text-decoration: none;
+                            display: inline-block;
+                        " onmouseover="this.style.backgroundColor='#3498db'; this.style.color='white';"
+                          onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3498db';">
+                            Login Here
+                        </a>
                     </div>
                 </div>
             </div>
@@ -306,20 +260,21 @@
     </div>
 </div>
 
-<a href="https://mobirise.site/e"></a>
-<script src="assets/web/assets/jquery/jquery.min.js"></script>
-<script src="assets/popper/popper.min.js"></script>
-<script src="assets/tether/tether.min.js"></script>
-<script src="assets/bootstrap/js/bootstrap.min.js"></script>
-<script src="assets/smoothscroll/smooth-scroll.js"></script>
-<script src="assets/parallax/jarallax.min.js"></script>
-<script src="assets/mbr-tabs/mbr-tabs.js"></script>
-<script src="assets/dropdown/js/nav-dropdown.js"></script>
-<script src="assets/dropdown/js/navbar-dropdown.js"></script>
-<script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
-<script src="assets/theme/js/script.js"></script>
+    <a href="https://mobirise.site/e"></a>
+    <script src="assets/web/assets/jquery/jquery.min.js"></script>
+    <script src="assets/popper/popper.min.js"></script>
+    <script src="assets/tether/tether.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/smoothscroll/smooth-scroll.js"></script>
+    <script src="assets/parallax/jarallax.min.js"></script>
+    <script src="assets/mbr-tabs/mbr-tabs.js"></script>
+    <script src="assets/dropdown/js/nav-dropdown.js"></script>
+    <script src="assets/dropdown/js/navbar-dropdown.js"></script>
+    <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
+    <script src="assets/theme/js/script.js"></script>
 
 <?php include 'includes/footer.php'; ?>
 
 </body>
+
 </html>

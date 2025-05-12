@@ -1,3 +1,32 @@
+<?php
+session_start();
+require_once 'includes/db_connect.php';
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = sanitize_input($_POST['email']);
+    $password = $_POST['password'];
+
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM patients WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        if ($user && verify_password($password, $user['password'])) {
+            $_SESSION['user_id'] = $user['patient_id'];
+            $_SESSION['user_type'] = 'patient';
+            $_SESSION['user_name'] = $user['full_name'];
+            
+            redirect_with_message('patient_dashboard.php', 'Login successful!');
+        } else {
+            $error = 'Invalid email or password';
+        }
+    } catch(PDOException $e) {
+        $error = 'Login failed. Please try again.';
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -244,146 +273,6 @@
                 padding: 0.8rem 0 !important;
             }
         }
-
-        /* Chatbot Button Styles */
-        .chatbot-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            border: none;
-        }
-
-        .chatbot-button:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
-        }
-
-        .chatbot-button img {
-            width: 32px;
-            height: 32px;
-            object-fit: contain;
-        }
-
-        /* Thinking Animation */
-        .thinking {
-            display: flex;
-            align-items: center;
-            padding: 10px 15px;
-            background: #f0f8ff;
-            border-radius: 10px;
-            margin: 10px 0;
-            width: fit-content;
-        }
-
-        .thinking span {
-            width: 8px;
-            height: 8px;
-            background: #3498db;
-            border-radius: 50%;
-            margin: 0 2px;
-            animation: thinking 1.4s infinite ease-in-out;
-        }
-
-        .thinking span:nth-child(1) { animation-delay: 0s; }
-        .thinking span:nth-child(2) { animation-delay: 0.2s; }
-        .thinking span:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes thinking {
-            0%, 80%, 100% { transform: scale(0.6); }
-            40% { transform: scale(1); }
-        }
-
-        .chatbot-container {
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 350px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
-            display: none;
-            z-index: 1000;
-            overflow: hidden;
-        }
-
-        .chatbot-header {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            color: white;
-            padding: 15px 20px;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-
-        .chatbot-body {
-            padding: 20px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .chatbot-message {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            max-width: 80%;
-        }
-
-        .bot-message {
-            background: #f0f8ff;
-            margin-right: auto;
-            border: 1px solid rgba(52, 152, 219, 0.1);
-        }
-
-        .user-message {
-            background: #3498db;
-            color: white;
-            margin-left: auto;
-        }
-
-        .chatbot-input {
-            display: flex;
-            padding: 15px;
-            border-top: 1px solid #eee;
-        }
-
-        .chatbot-input input {
-            flex: 1;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            padding: 8px 15px;
-            margin-right: 10px;
-        }
-
-        .chatbot-input button {
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 15px;
-            cursor: pointer;
-        }
-
-        .chatbot-input button:hover {
-            background: #2980b9;
-        }
-
-        @media (max-width: 576px) {
-            .chatbot-container {
-                width: 300px;
-                right: 20px;
-                bottom: 90px;
-            }
-        }
     </style>
 </head>
 
@@ -391,34 +280,47 @@
 
 <?php include 'includes/navbar.php'; ?>
 
-<!-- Include Chatbot -->
-<?php include 'chatbot/chatbot.php'; ?>
-
 <div class="container" style="margin-top: 60px;">
     <div class="row justify-content-center align-items-center">
         <div class="col-lg-7 d-none d-lg-block text-center">
-            <img src="assets/images/login.jpg" alt="Patient Login" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 450px; object-fit: cover;">
+            <img src="assets/images/consult-626x417.jpeg" alt="Patient Login" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 450px; object-fit: cover;">
         </div>
         <div class="col-lg-5 col-md-10">
             <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px; background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);">
                 <div class="card-header text-center" style="padding: 1.2rem 0;">
-                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #3498db; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Patient Login</h3>
+                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #3498db; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Welcome Back!</h3>
+                    <p style="color: #666; margin-top: 1rem; font-size: 1.1rem;">Please login to access your dashboard</p>
                 </div>
                 <div class="card-body">
-                    <form>
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger"><?php echo $error; ?></div>
+                    <?php endif; ?>
+                    <form method="POST" action="">
                         <div class="form-group mb-4">
                             <label for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
                         </div>
                         <div class="form-group mb-4">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
                         </div>
-                        <button type="submit" class="patient-page-login-btn">Login to Dashboard</button>
+                        <button type="submit" class="patient-page-login-btn">Login</button>
                     </form>
                     <div class="mt-4 text-center">
-                        <p class="mb-2" style="font-size: 1.1rem;">NOTE : For Login Details Contact to Admin</p>
-                        <a href="admin_login.php" class="text-decoration-none" style="color: #3498db; font-weight: 600; font-size: 1.1rem;">Admin Login</a>
+                        <p style="color: #666; font-size: 1.1rem; margin-bottom: 1rem;">Don't have an account?</p>
+                        <a href="patient_signup.php" class="btn btn-outline-primary" style="
+                            border: 2px solid #3498db;
+                            color: #3498db;
+                            font-weight: 600;
+                            padding: 0.8rem 2rem;
+                            border-radius: 12px;
+                            transition: all 0.3s ease;
+                            text-decoration: none;
+                            display: inline-block;
+                        " onmouseover="this.style.backgroundColor='#3498db'; this.style.color='white';"
+                          onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3498db';">
+                            Create Account
+                        </a>
                     </div>
                 </div>
             </div>
@@ -439,249 +341,7 @@
     <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
     <script src="assets/theme/js/script.js"></script>
 
-<script>
-    // Add conversation history array
-    let conversationHistory = [];
-
-    function generateResponse(message) {
-        // Show thinking animation while waiting for AI response
-        showThinking();
-        
-        // Add user message to history
-        conversationHistory.push({
-            role: 'user',
-            content: message
-        });
-        
-        // Use local proxy endpoint
-        const proxyUrl = 'proxy.php';
-        
-        // Make API call through local proxy
-        fetch(proxyUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: message,
-                apiKey: 'YOUR_API_KEY_HERE',
-                history: conversationHistory
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(data => {
-                    throw new Error(data.error || `HTTP error! status: ${response.status}`);
-                });
-            }
-            return response.json();
-        })
-        .then(data => {
-            // Remove thinking animation
-            const thinking = document.querySelector('.thinking');
-            if (thinking) {
-                thinking.remove();
-            }
-            
-            // Get AI response
-            const aiResponse = data.response;
-            
-            // Add AI response to history
-            conversationHistory.push({
-                role: 'assistant',
-                content: aiResponse
-            });
-            
-            // Keep only last 10 messages to prevent token limit issues
-            if (conversationHistory.length > 10) {
-                conversationHistory = conversationHistory.slice(-10);
-            }
-            
-            // Add response to chat
-            const chatbotBody = document.getElementById('chatbotBody');
-            chatbotBody.innerHTML += `
-                <div class="chatbot-message bot-message">
-                    ${aiResponse}
-                </div>
-            `;
-            chatbotBody.scrollTop = chatbotBody.scrollHeight;
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            // Remove thinking animation
-            const thinking = document.querySelector('.thinking');
-            if (thinking) {
-                thinking.remove();
-            }
-            
-            // More detailed error message with troubleshooting steps
-            const chatbotBody = document.getElementById('chatbotBody');
-            let errorMessage = '';
-            
-            if (error.message.includes('Rate limit exceeded')) {
-                errorMessage = `
-                    I apologize, but the system is currently busy. Please:
-                    <br>1. Wait a few moments before trying again
-                    <br>2. Try sending a shorter message
-                    <br>3. If the issue persists, try again in a few minutes
-                `;
-            } else {
-                errorMessage = `
-                    I apologize, but I'm having trouble connecting to the AI service. Please try these steps:
-                    <br>1. Make sure you're connected to the internet
-                    <br>2. Check if the server is running
-                    <br>3. Try refreshing the page
-                    <br>4. Contact the admin if the issue persists
-                    <br><br>
-                    Error details: ${error.message}
-                `;
-            }
-            
-            chatbotBody.innerHTML += `
-                <div class="chatbot-message bot-message">
-                    ${errorMessage}
-                </div>
-            `;
-            chatbotBody.scrollTop = chatbotBody.scrollHeight;
-        });
-    }
-
-    // Add function to clear conversation history
-    function clearConversationHistory() {
-        conversationHistory = [];
-        const chatbotBody = document.getElementById('chatbotBody');
-        chatbotBody.innerHTML = `
-            <div class="chatbot-message bot-message">
-                Hello! I'm your WeCare assistant. How can I help you today?
-            </div>
-        `;
-    }
-
-    // Modify toggleChatbot to include clear history option
-    function toggleChatbot() {
-        const container = document.getElementById('chatbotContainer');
-        container.style.display = container.style.display === 'none' ? 'block' : 'none';
-        
-        if (container.style.display === 'block') {
-            testApiConnection();
-        }
-    }
-
-    // Add clear history button to chatbot header
-    document.querySelector('.chatbot-header').innerHTML += `
-        <button onclick="clearConversationHistory()" style="
-            float: right;
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 0.9rem;
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'"
-           onmouseout="this.style.backgroundColor='transparent'">
-            Clear Chat
-        </button>
-    `;
-
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            sendMessage();
-        }
-    }
-
-    function showThinking() {
-        const chatbotBody = document.getElementById('chatbotBody');
-        chatbotBody.innerHTML += `
-            <div class="thinking">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        `;
-        chatbotBody.scrollTop = chatbotBody.scrollHeight;
-    }
-
-    function checkApiKey() {
-        const apiKey = 'YOUR_API_KEY_HERE';
-        if (!apiKey) {
-            console.warn('API key is missing');
-            return false;
-        }
-        return true;
-    }
-
-    // Add a function to test the API connection
-    function testApiConnection() {
-        const proxyUrl = 'proxy.php';
-        
-        fetch(proxyUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: 'Test connection',
-                apiKey: 'YOUR_API_KEY_HERE'
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            console.log('API connection successful');
-            return response.json();
-        })
-        .catch(error => {
-            console.error('API connection failed:', error);
-            // Show error in chatbot
-            const chatbotBody = document.getElementById('chatbotBody');
-            chatbotBody.innerHTML += `
-                <div class="chatbot-message bot-message">
-                    Connection test failed. Please check if the proxy server is running.
-                    <br>Error: ${error.message}
-                </div>
-            `;
-        });
-    }
-
-    // Modify sendMessage to include API key check
-    function sendMessage() {
-        const input = document.getElementById('userInput');
-        const message = input.value.trim();
-        
-        if (message) {
-            const chatbotBody = document.getElementById('chatbotBody');
-            
-            // Add user message
-            chatbotBody.innerHTML += `
-                <div class="chatbot-message user-message">
-                    ${message}
-                </div>
-            `;
-            
-            // Clear input
-            input.value = '';
-            
-            // Check API key before proceeding
-            if (!checkApiKey()) {
-                chatbotBody.innerHTML += `
-                    <div class="chatbot-message bot-message">
-                        I apologize, but the chatbot is not properly configured. Please contact the admin for assistance.
-                    </div>
-                `;
-                return;
-            }
-            
-            // Generate AI response
-            generateResponse(message);
-        }
-    }
-</script>
-
 <?php include 'includes/footer.php'; ?>
 
 </body>
-
 </html>

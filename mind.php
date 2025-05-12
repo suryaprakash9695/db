@@ -75,7 +75,9 @@
                             Too much on your mind? Use our mental health bot to share and destress.
                         </p>
                     </div>
-                    <div class="mbr-section-btn item-footer mt-2"><a href="chatbot.php" class="btn item-btn btn-primary display-7">Chat Now &gt;</a></div>
+                    <div class="mbr-section-btn item-footer mt-2">
+                        <a href="#" class="btn item-btn btn-primary display-7">Learn More &gt;</a>
+                    </div>
                 </div>
             </div>
 

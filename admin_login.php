@@ -1,3 +1,32 @@
+<?php
+session_start();
+require_once 'includes/db_connect.php';
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = sanitize_input($_POST['email']);
+    $password = $_POST['password'];
+
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = ?");
+        $stmt->execute([$email]);
+        $admin = $stmt->fetch();
+
+        if ($admin && verify_password($password, $admin['password'])) {
+            $_SESSION['user_id'] = $admin['admin_id'];
+            $_SESSION['user_type'] = 'admin';
+            $_SESSION['user_name'] = 'Admin';
+            
+            redirect_with_message('admin_dashboard.php', 'Login successful!');
+        } else {
+            $error = 'Invalid email or password';
+        }
+    } catch(PDOException $e) {
+        $error = 'Login failed. Please try again.';
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -24,7 +53,7 @@
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
     <style>
         body {
-            background: linear-gradient(135deg, #f0f7f4 0%, #ffffff 100%);
+            background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
         }
         .form-control {
             border: 2px solid #e0e0e0;
@@ -35,8 +64,8 @@
             font-size: 1.1rem;
         }
         .form-control:focus {
-            border-color: #28a745;
-            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.15);
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
             background-color: #fff;
             transform: translateY(-2px);
         }
@@ -51,7 +80,7 @@
             padding-left: 0.5rem;
         }
         .form-group:hover label {
-            color: #28a745;
+            color: #3498db;
             transform: translateX(5px);
         }
         .login-btn {
@@ -65,15 +94,18 @@
             padding: 1rem 0;
             position: relative;
             overflow: hidden;
-            background: linear-gradient(45deg, #28a745, #34ce57);
+            background: linear-gradient(45deg, #3498db, #2980b9);
             background-size: 200% 200%;
             animation: gradientBG 3s ease infinite;
-            color: white !important;
+            color: white;
+            width: 100%;
         }
         .login-btn:hover {
-            background-color: #218838 !important;
+            background-color: #2980b9 !important;
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+            color: white;
+            text-decoration: none;
         }
         .login-btn:active {
             transform: translateY(-1px);
@@ -81,14 +113,25 @@
         .card {
             border-radius: 20px;
             border: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.15);
             transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
             backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #3498db, #2980b9);
         }
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.2);
         }
         .form-control::placeholder {
             color: #aaa;
@@ -97,7 +140,7 @@
             transition: all 0.3s ease;
         }
         .card-header {
-            border-bottom: 2px solid #f0f0f0;
+            border-bottom: 2px solid rgba(52, 152, 219, 0.1);
             background: transparent;
             padding: 2rem 0 1.5rem;
         }
@@ -106,12 +149,12 @@
             margin-bottom: 2rem;
         }
         .form-control:focus::placeholder {
-            color: #28a745;
+            color: #3498db;
             opacity: 0.7;
             transform: translateX(5px);
         }
         .form-control:hover {
-            border-color: #28a745;
+            border-color: #3498db;
             background-color: #fff;
         }
 
@@ -247,6 +290,18 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
+
+        .alert {
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: none;
+            font-weight: 500;
+        }
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
     </style>
 </head>
 
@@ -257,25 +312,44 @@
 <div class="container" style="margin-top: 60px;">
     <div class="row justify-content-center align-items-center">
         <div class="col-lg-7 d-none d-lg-block text-center">
-            <img src="assets/images/login.jpg" alt="Admin Login" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 450px; object-fit: cover;">
+            <img src="assets/images/consult-626x417.jpeg" alt="Admin Login" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 450px; object-fit: cover;">
         </div>
         <div class="col-lg-5 col-md-10">
-            <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px;">
+            <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px; background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);">
                 <div class="card-header text-center" style="padding: 1.2rem 0;">
-                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #28a745; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">WeCare Admin Login</h3>
+                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #3498db; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Admin Login</h3>
+                    <p style="color: #666; margin-top: 1rem; font-size: 1.1rem;">Access the admin dashboard</p>
                 </div>
                 <div class="card-body">
-                    <form>
+                    <?php if ($error): ?>
+                        <div class="alert alert-danger"><?php echo $error; ?></div>
+                    <?php endif; ?>
+                    <form method="POST" action="">
                         <div class="form-group mb-4">
                             <label for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
                         </div>
                         <div class="form-group mb-4">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
                         </div>
-                        <button type="submit" class="btn login-btn w-100">Login to Dashboard</button>
+                        <button type="submit" class="login-btn">Login</button>
                     </form>
+                    <div class="mt-4 text-center">
+                        <a href="index.php" class="btn btn-outline-primary" style="
+                            border: 2px solid #3498db;
+                            color: #3498db;
+                            font-weight: 600;
+                            padding: 0.8rem 2rem;
+                            border-radius: 12px;
+                            transition: all 0.3s ease;
+                            text-decoration: none;
+                            display: inline-block;
+                        " onmouseover="this.style.backgroundColor='#3498db'; this.style.color='white';"
+                          onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3498db';">
+                            Back to Home
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

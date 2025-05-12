@@ -22,170 +22,243 @@
     <link rel="stylesheet" href="assets/theme/css/style.css">
     <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
+    <style>
+        /* Custom styles that won't affect navbar */
+        .custom-header {
+            background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('assets/images/background.jpg');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .custom-title {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .custom-btn {
+            background: linear-gradient(45deg, #ea0faa, #ff4d4d);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            animation: fadeInUp 1.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .custom-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(234, 15, 170, 0.2);
+            color: white;
+            text-decoration: none;
+        }
+        .custom-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 15px;
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .custom-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        .custom-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #ea0faa, #ff4d4d);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2rem;
+        }
+        .custom-section {
+            padding: 100px 0;
+            position: relative;
+        }
+        .custom-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(200, 13, 125, 0.7);
+            z-index: 1;
+        }
+        .custom-content {
+            position: relative;
+            z-index: 2;
+        }
+        .custom-image {
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .custom-image:hover {
+            transform: scale(1.02);
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 768px) {
+            .custom-title {
+                font-size: 2.5rem;
+            }
+            .custom-card {
+                margin: 10px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
 <?php include 'includes/navbar.php'; ?>
 
-<!-- Include Chatbot -->
-<?php include 'chatbot/chatbot.php'; ?>
-
-    <section class="header7 cid-smIipas6Mf mbr-fullscreen" id="header7-u">
-        <div class="text-right container">
+    <section class="custom-header" id="header7-u">
+        <div class="container">
             <div class="row justify-content-end">
                 <div class="col-12 col-lg-5">
-                    <h1 class="mbr-section-title mbr-fonts-style mb-3 display-1">
-                        <strong style="font-family: 'Gloock'; color: #000000; text-shadow:1px 1px 1px black, serif;">WeCare is a platform for your complete health and well-being</strong>
+                    <h1 class="custom-title">
+                        <strong style="font-family: 'Gloock';">WeCare is a platform for your complete health and well-being</strong>
                     </h1>
-                    <p class="mbr-text mbr-fonts-style display-7">
-                        <b></b>
-
+                    <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem; animation: fadeInUp 1.1s ease;">
+                        Your trusted partner in healthcare, bringing expert medical services right to your fingertips.
                     </p>
-                    <div class="mbr-section-btn mt-3">
-                        <a class="btn btn-white display-4" href="#image1-m">Explore</a>
+                    <div style="margin-top: 2rem;">
+                        <a class="custom-btn" href="#image1-m">Explore</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="image1 cid-smH5WnU0bc" id="image1-m">
+    <section class="custom-section" id="image1-m">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-12 col-lg-5">
-                    <div class="image-wrapper">
-                        <img src="assets/image/3464737646_A retro computer used as a conference consultation_xl-beta-v2-2-2 (1).png" alt="We're in this together">
-
-                    </div>
+                    <img src="assets/images/consult-626x417.jpeg" alt="We're in this together" class="img-fluid custom-image">
                 </div>
                 <div class="col-12 col-lg">
-                    <div class="text-wrapper">
-                        <h3 class="mbr-section-title mbr-fonts-style mb-3 display-5">
-                            <strong style="font-family: 'Dancing Script', cursive; color:#ea0faa" ;>About Us</strong>
+                    <div style="padding: 20px;">
+                        <h3 style="font-family: 'Dancing Script', cursive; color: #ea0faa; font-size: 2.5rem; margin-bottom: 1.5rem;">
+                            About Us
                         </h3>
-                        <p class="mbr-text mbr-fonts-style display-7">
-                            The website offers people better access to healthcare support
-                            beyond their bounds of convenience and connects them to doctor
-                            , specialists and healthcare experts on a digital platform,
-                            which provides them access to an online expert without a
-                            physical visit. For doctors, it includes a feature to view
-                            -track the medical record of the patient regularly and
-                            efficiently.
-
+                        <p style="font-size: 1.1rem; line-height: 1.8; color: #555;">
+                            The website offers people better access to healthcare support beyond their bounds of convenience and connects them to doctors, specialists and healthcare experts on a digital platform, which provides them access to an online expert without a physical visit.
+                        </p>
+                        <p style="font-size: 1.1rem; line-height: 1.8; color: #555; margin-top: 1rem;">
                             It also has a series of AI tools that assist the doctors in determining the probabilities of diseases like Breast Cancer etc. It also has a dedicated dashboard which keeps track of medical history of the patients.
                         </p>
-                        <br />
-                        <p class="mbr-text mbr-fonts-style display-7">
-                            May it be a pandemic or
-                            the problem of distance. We strive to may the necessary help accessible.
-                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="features1 cid-smH6sYk3vI mbr-parallax-background" id="features1-n">
-
-
-        <div class="mbr-overlay" style="opacity: 0.6; background-color: rgb(200 13 125);">
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
-                        <strong style="font-family: 'Dancing Script', cursive;">Features</strong>
-                    </h3>
-
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="card col-12 col-md-6 col-lg-3">
-                    <div class="card-wrapper">
-                        <div class="card-box align-center">
-                            <div class="iconfont-wrapper">
-                                <span class="mbr-iconfont mobi-mbri-hearth mobi-mbri"></span>
-                            </div>
-                            <h5 class="card-title mbr-fonts-style display-7"><strong>Physical and Mental Health&nbsp;</strong></h5>
-                            <p class="card-text mbr-fonts-style display-7">We provide many tools for your complete health and well-being. This includes a physical health diagnosis tool, menstrual cycle tracker, mental health chat-bot as well as a separate Mind and Body Space.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card col-12 col-md-6 col-lg-3">
-                    <div class="card-wrapper">
-                        <div class="card-box align-center">
-                            <div class="iconfont-wrapper">
-                                <span class="mbr-iconfont mobi-mbri-idea mobi-mbri"></span>
-                            </div>
-                            <h5 class="card-title mbr-fonts-style display-7"><strong> Diagnosis Tools</strong></h5>
-                            <p class="card-text mbr-fonts-style display-7">Leveraging the power of DSS, we provide diagnosis tools for medical professionals to assist them in predicting health issues.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card col-12 col-md-6 col-lg-3">
-                    <div class="card-wrapper">
-                        <div class="card-box align-center">
-                            <div class="iconfont-wrapper">
-                                <span class="mbr-iconfont mobi-mbri-contact-form mobi-mbri"></span>
-                            </div>
-                            <h5 class="card-title mbr-fonts-style display-7"><strong>Medical History Dashboard</strong></h5>
-                            <p class="card-text mbr-fonts-style display-7">A clear &amp; uninterrupted chain of medical records are important to understand the complete condition &amp; provide the necessary treatment. While you heal with us, we maintain the history for you.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card col-12 col-md-6 col-lg-3">
-                    <div class="card-wrapper">
-                        <div class="card-box align-center">
-                            <div class="iconfont-wrapper">
-                                <span class="mbr-iconfont mobi-mbri-responsive-2 mobi-mbri"></span>
-                            </div>
-                            <h5 class="card-title mbr-fonts-style display-7"><strong>Online Expert Consultation</strong></h5>
-                            <p class="card-text mbr-fonts-style display-7">In times of need, wrong consultation(s), lack of consultation, delayed consultation can be detrimental. To avoid such unfortunate circumstances we bring continuous support by experts</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-    </section>
-
-    <section class="care">
-
-        <div class="care_section">
-            <a href="body.php" style=" all: unset;">
-                <img src="assets/images/body.png" style="width: 80%; margin: 0px 10%;">
-                <h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2" style=" margin-bottom: 10px;">
-                    <strong style="font-family: 'Dancing Script', cursive;">Body Care</strong>
-                </h3>
-            </a>
-        </div>
-
-
-        <div class="care_section">
-            <a href="mind.php" style=" all: unset;">
-                <img src="assets/images/mind.png" style="width: 60%; margin: 0px 20%;">
-
-                <h3 class="mbr-section-title mbr-fonts-style align-center mb-0 display-2">
-                    <strong style="font-family: 'Dancing Script', cursive; margin: 10px;">Mind Care</strong>
-                </h3>
-            </a>
-        </div>
-    </section>
-
-    <section class="info3 cid-smHa3xqxC6 mbr-parallax-background" id="info3-r">
-        <div class="mbr-overlay" style="opacity: 0.6; background-color: rgb(200 13 125);">
-        </div>
-        <div class="container">
+    <section class="custom-section" id="features1-n" style="background: url('assets/images/hospital.gif') no-repeat center center; background-size: cover;">
+        <div class="custom-overlay"></div>
+        <div class="container custom-content">
             <div class="row justify-content-center">
-                <div class="card col-12 col-lg-10">
-                    <div class="card-wrapper">
-                        <div class="card-box align-center">
-                            <h4 class="card-title mbr-fonts-style align-center mb-4 display-1"><strong style="font-family: 'Dancing Script', cursive;">Join Us Today!</strong></h4>
-                            <p class="mbr-text mbr-fonts-style mb-4 display-7">
-                                Log In or Sign Up to have your own dedicated dashboard, get expert consultancy and greater access to our services.</p>
-                            <div class="mbr-section-btn mt-3"><a class="btn btn-primary display-4" href="main_login_signup.php">LOG IN/SIGN UP PAGE<br></a></div>
+                <div class="col-12">
+                    <h3 style="font-family: 'Dancing Script', cursive; color: white; font-size: 3rem; text-align: center; margin-bottom: 3rem;">
+                        Features
+                    </h3>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="custom-card" style="height: 400px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                        <div class="custom-icon" style="margin-bottom: 1.5rem;">
+                            <span class="mbr-iconfont mobi-mbri-hearth mobi-mbri"></span>
+                        </div>
+                        <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Physical and Mental Health</h5>
+                        <p style="color: #666; line-height: 1.6; flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                            Comprehensive healthcare tools including physical health diagnosis, menstrual cycle tracking, mental health support, and dedicated Mind and Body Space for holistic wellness.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="custom-card" style="height: 400px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                        <div class="custom-icon" style="margin-bottom: 1.5rem;">
+                            <span class="mbr-iconfont mobi-mbri-idea mobi-mbri"></span>
+                        </div>
+                        <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Diagnosis Tools</h5>
+                        <p style="color: #666; line-height: 1.6; flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                            Advanced Decision Support System (DSS) tools for medical professionals, featuring AI-powered disease prediction and comprehensive diagnostic assistance for accurate healthcare decisions.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="custom-card" style="height: 400px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                        <div class="custom-icon" style="margin-bottom: 1.5rem;">
+                            <span class="mbr-iconfont mobi-mbri-contact-form mobi-mbri"></span>
+                        </div>
+                        <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Medical History Dashboard</h5>
+                        <p style="color: #666; line-height: 1.6; flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                            Comprehensive medical record management system ensuring seamless tracking of patient history, treatments, and progress for better healthcare outcomes and continuity of care.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 col-lg-3 mb-4">
+                    <div class="custom-card" style="height: 400px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+                        <div class="custom-icon" style="margin-bottom: 1.5rem;">
+                            <span class="mbr-iconfont mobi-mbri-responsive-2 mobi-mbri"></span>
+                        </div>
+                        <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Online Expert Consultation</h5>
+                        <p style="color: #666; line-height: 1.6; flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                            Real-time access to healthcare experts through our integrated platform, ensuring timely medical advice and continuous support for optimal patient care and treatment outcomes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section style="padding: 80px 0; background: #f8f9fa;">
+        <div class="container">
+                <div class="col-md-6 mb-4">
+                    <div class="custom-card" style="background: linear-gradient(135deg, #0080ff 0%, #00bfff 100%);">
+                        <div style="text-align: center; color: white;">
+                            <img src="assets/images/patient_dashboard.jpg" alt="Patient Care" class="rounded-circle mb-4" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid rgba(255,255,255,0.3);">
+                            <h3 style="font-family: 'Dancing Script', cursive; font-size: 2.5rem; margin-bottom: 1.5rem;">Patient Care</h3>
+                            <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9; margin-bottom: 2rem;">
+                                Access personalized healthcare services, schedule appointments, and manage your medical records all in one place.
+                            </p>
+                            <a href="main_login_signup.php" class="custom-btn" style="background: white; color: #0080ff;">Get Started</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="custom-card" style="background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);">
+                        <div style="text-align: center; color: white;">
+                            <img src="assets/images/expert.jpg" alt="Doctor Portal" class="rounded-circle mb-4" style="width: 120px; height: 120px; object-fit: cover; border: 4px solid rgba(255,255,255,0.3);">
+                            <h3 style="font-family: 'Dancing Script', cursive; font-size: 2.5rem; margin-bottom: 1.5rem;">Doctor Portal</h3>
+                            <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9; margin-bottom: 2rem;">
+                                Manage your practice, view patient records, and provide quality healthcare services through our integrated platform.
+                            </p>
+                            <a href="main_login_signup.php" class="custom-btn" style="background: white; color: #28a745;">Join Now</a>
                         </div>
                     </div>
                 </div>
@@ -193,75 +266,24 @@
         </div>
     </section>
 
-    <div class="container" style="margin-top: 80px;">
-        <div class="row justify-content-center">
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 patient-card" style="border-radius: 20px; overflow: hidden; transition: all 0.3s ease; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                    <div class="card-body text-center p-5" style="background: linear-gradient(135deg, #0080ff 0%, #00bfff 100%);">
-                        <div class="icon-wrapper mb-4" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-user-injured" style="font-size: 2.5rem; color: white;"></i>
+    <section class="custom-section" id="info3-r" style="background: url('assets/images/meditation.jpg') no-repeat center center; background-size: cover;">
+        <div class="custom-overlay"></div>
+        <div class="container custom-content">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-10">
+                    <div class="custom-card" style="background: rgba(255, 255, 255, 0.95);">
+                        <div style="text-align: center;">
+                            <h4 style="font-family: 'Dancing Script', cursive; font-size: 3rem; color: #ea0faa; margin-bottom: 1.5rem;">Join Us Today!</h4>
+                            <p style="font-size: 1.2rem; color: #666; margin-bottom: 2rem;">
+                                Log In or Sign Up to have your own dedicated dashboard, get expert consultancy and greater access to our services.
+                            </p>
+                            <a href="main_login_signup.php" class="custom-btn">LOG IN/SIGN UP PAGE</a>
                         </div>
-                        <h3 class="card-title mb-4" style="color: white; font-family: 'Dancing Script', cursive; font-size: 2.5rem;">Patient Care</h3>
-                        <p class="card-text mb-4" style="color: rgba(255,255,255,0.9); font-size: 1.1rem; line-height: 1.6;">
-                            Access personalized healthcare services, schedule appointments, and manage your medical records all in one place.
-                        </p>
-                        <a href="main_login_signup.php" class="btn btn-light btn-lg" style="border-radius: 30px; padding: 12px 30px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease;">
-                            Get Started
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-4">
-                <div class="card h-100 doctor-card" style="border-radius: 20px; overflow: hidden; transition: all 0.3s ease; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
-                    <div class="card-body text-center p-5" style="background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);">
-                        <div class="icon-wrapper mb-4" style="width: 80px; height: 80px; margin: 0 auto; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-user-md" style="font-size: 2.5rem; color: white;"></i>
-                        </div>
-                        <h3 class="card-title mb-4" style="color: white; font-family: 'Dancing Script', cursive; font-size: 2.5rem;">Doctor Portal</h3>
-                        <p class="card-text mb-4" style="color: rgba(255,255,255,0.9); font-size: 1.1rem; line-height: 1.6;">
-                            Manage your practice, view patient records, and provide quality healthcare services through our integrated platform.
-                        </p>
-                        <a href="main_login_signup.php" class="btn btn-light btn-lg" style="border-radius: 30px; padding: 12px 30px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s ease;">
-                            Join Now
-                        </a>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <style>
-        .patient-card:hover, .doctor-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-        
-        .patient-card .btn:hover, .doctor-card .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .icon-wrapper {
-            transition: all 0.3s ease;
-        }
-
-        .patient-card:hover .icon-wrapper, .doctor-card:hover .icon-wrapper {
-            transform: scale(1.1);
-            background: rgba(255,255,255,0.3);
-        }
-
-        @media (max-width: 768px) {
-            .card-body {
-                padding: 2rem !important;
-            }
-            .card-title {
-                font-size: 2rem !important;
-            }
-            .card-text {
-                font-size: 1rem !important;
-            }
-        }
-    </style>
+    </section>
 
     <a href="https://mobirise.site/e"></a>
     <script src="assets/web/assets/jquery/jquery.min.js"></script>
