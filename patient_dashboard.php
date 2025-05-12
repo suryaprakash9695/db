@@ -289,20 +289,20 @@ if (isset($_GET['logout'])) {
         <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
             <div style="display: flex; align-items: center;">
                 <img src="assets/images/thrive_logo.png" alt="WeCare Logo" style="height: 40px; margin-right: 1rem;">
-            </div>
+                </div>
             <div style="display: flex; align-items: center; gap: 2rem;">
                 <div class="profile-section">
                     <div class="profile-icon">
                         <?php echo strtoupper(substr($username, 0, 1)); ?>
                     </div>
                     <span style="font-weight: 500;"><?php echo htmlspecialchars($username); ?></span>
-                </div>
+                                    </div>
                 <div style="position: relative;">
                     <a href="notifications.php" class="btn btn-secondary">
                         <i class="fas fa-bell"></i>
                         <?php if (count($notifications) > 0): ?>
                             <span class="notification-badge"><?php echo count($notifications); ?></span>
-                        <?php endif; ?>
+                                <?php endif; ?>
                     </a>
                 </div>
                 <a href="?logout=true" class="btn btn-primary">Logout</a>
@@ -325,12 +325,12 @@ if (isset($_GET['logout'])) {
                     <i class="fas fa-calendar-check"></i>
                     <h3><?php echo count($upcomingAppointments); ?></h3>
                     <p>Upcoming Appointments</p>
-                </div>
+                        </div>
                 <div class="stat-card">
                     <i class="fas fa-file-medical"></i>
                     <h3><?php echo count($medicalRecords); ?></h3>
                     <p>Recent Records</p>
-                </div>
+                    </div>
                 <div class="stat-card">
                     <i class="fas fa-bell"></i>
                     <h3><?php echo count($notifications); ?></h3>
@@ -349,8 +349,8 @@ if (isset($_GET['logout'])) {
                     <div class="action-buttons">
                         <a href="book_appointment.php" class="btn btn-primary">Book Now</a>
                         <a href="appointments.php" class="btn btn-secondary">View All</a>
-                    </div>
-                </div>
+                        </div>
+                        </div>
 
                 <div class="card">
                     <h3 style="margin: 0 0 1rem; color: var(--dark-text);">
@@ -450,9 +450,9 @@ if (isset($_GET['logout'])) {
                                 </div>
                             </div>
                         <?php endforeach; ?>
-                    </div>
+        </div>
                 <?php endif; ?>
-            </section>
+    </section>
 
             <!-- Health Tips -->
             <section class="card">
@@ -468,7 +468,7 @@ if (isset($_GET['logout'])) {
                     <div class="health-tip">
                         <h4><i class="fas fa-running"></i> Regular Exercise</h4>
                         <p>Aim for 30 minutes of moderate exercise daily to maintain a healthy lifestyle.</p>
-                    </div>
+                        </div>
                     <div class="health-tip">
                         <h4><i class="fas fa-bed"></i> Quality Sleep</h4>
                         <p>Get 7-8 hours of sleep each night to boost your immune system and mental health.</p>
@@ -480,4 +480,4 @@ if (isset($_GET['logout'])) {
 
     <?php require_once 'includes/footer.php'; ?>
 </body>
-</html> 
+</html>

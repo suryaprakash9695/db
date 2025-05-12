@@ -1,3 +1,36 @@
+<?php
+session_start();
+require_once 'includes/db_connect.php';
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = sanitize_input($_POST['email']);
+    $password = $_POST['password'];
+
+    try {
+        $stmt = $pdo->prepare("SELECT * FROM doctors WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        if (!$user) {
+            $error = 'No user found with that email.';
+        } elseif (!verify_password($password, $user['password'])) {
+            $error = 'Password does not match.';
+        } else {
+            $_SESSION['user_id'] = $user['doctor_id'];
+            $_SESSION['user_type'] = 'doctor';
+            $_SESSION['user_name'] = $user['full_name'];
+            
+            redirect_with_message('doctor_dashboard.php', 'Login successful!');
+        }
+    } catch(PDOException $e) {
+        $error = 'Login failed. Please try again.';
+    }
+}
+
+$hashed = password_hash('yourpassword', PASSWORD_DEFAULT);
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -338,14 +371,17 @@
                     <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #2ecc71; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Doctor Login</h3>
                 </div>
                 <div class="card-body">
-                    <form>
+                    <form method="POST" action="">
+                        <?php if ($error): ?>
+                            <div class="alert alert-danger"><?php echo $error; ?></div>
+                        <?php endif; ?>
                         <div class="form-group mb-4">
                             <label for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter your email" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
                         </div>
                         <div class="form-group mb-4">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
                         </div>
                         <button type="submit" class="doctor-page-login-btn">Login to Dashboard</button>
                     </form>

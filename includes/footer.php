@@ -4,7 +4,7 @@
             <div style="margin-top: 1rem;">
                 <a href="https://github.com/Saavanx/wecare_iitm" target="_blank" style="color: white; text-decoration: none; margin: 0 0.5rem;">
                     <i class="fab fa-github"></i>
-                </a>
+                        </a>
             </div>
         </div>
     </footer>
