@@ -1,6 +1,8 @@
 <?php
 // Get the current page name to highlight active link
 $current_page = basename($_SERVER['PHP_SELF']);
+
+require_once('notifications.php');
 ?>
 
 <section class="menu cid-s48OLK6784" once="menu" id="menu1-h">
@@ -38,9 +40,31 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </ul>
 
                 <div class="navbar-buttons mbr-section-btn">
-                    <a class="btn display-4" href="main_login_signup.php" style="background-color: #e71f68; border-color: #e71f68; color: #fff;">Log In/Sign Up</a>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <div class="profile-section">
+                            <div class="profile-icon">
+                                <?php echo strtoupper(substr($_SESSION['user_name'], 0, 1)); ?>
+                            </div>
+                            <span style="font-weight: 500;"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                        </div>
+                        <div style="position: relative;">
+                            <button class="notification-bell" onclick="showNotifications()">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge"></span>
+                            </button>
+                            <div class="notifications-dropdown"></div>
+                        </div>
+                        <a href="?logout=true" class="btn display-4" style="background-color: #e71f68; border-color: #e71f68; color: #fff;">Logout</a>
+                    <?php else: ?>
+                        <a class="btn btn-primary display-4" href="patient_login.php">Login</a>
+                        <a class="btn btn-primary display-4" href="patient_signup.php">Sign Up</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </nav>
-</section> 
+</section>
+
+<!-- Include notification scripts and styles -->
+<link rel="stylesheet" href="assets/css/notifications.css">
+<script src="assets/js/notifications.js"></script> 
