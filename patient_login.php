@@ -1,347 +1,329 @@
 <?php
 session_start();
+require_once 'includes/functions.php';
 require_once 'includes/db_connect.php';
 
-$error = '';
+// Check if user is already logged in
+if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'patient') {
+    header("Location: patient/dashboard.php");
+    exit;
+}
 
+// Get logout message if exists
+$logout_message = isset($_SESSION['logout_message']) ? $_SESSION['logout_message'] : '';
+unset($_SESSION['logout_message']); // Clear the message after displaying
+
+// Process login form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = sanitize_input($_POST['email']);
     $password = $_POST['password'];
-
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM patients WHERE email = ?");
-        $stmt->execute([$email]);
-        $user = $stmt->fetch();
-
-        if ($user && verify_password($password, $user['password'])) {
-            $_SESSION['user_id'] = $user['patient_id'];
-            $_SESSION['user_type'] = 'patient';
-            $_SESSION['user_name'] = $user['full_name'];
+    
+    // Validate input
+    if (empty($email) || empty($password)) {
+        $_SESSION['error'] = "Please fill in all fields";
+    } else {
+        // Check if patient exists
+        $query = "SELECT * FROM patients WHERE email = ?";
+        $result = execute_query($query, [$email], 's');
+        
+        if ($result->num_rows === 1) {
+            $patient = $result->fetch_assoc();
             
-            redirect_with_message('patient_dashboard.php', 'Login successful!');
+            // Verify password
+            if (verify_password($password, $patient['password'])) {
+                // Set session variables
+                $_SESSION['user_id'] = $patient['patient_id'];
+                $_SESSION['user_type'] = 'patient';
+                $_SESSION['full_name'] = $patient['full_name'];
+                
+                // Redirect to dashboard
+                header("Location: patient/dashboard.php");
+                exit;
+            } else {
+                $_SESSION['error'] = "Invalid email or password";
+            }
         } else {
-            $error = 'Invalid email or password';
+            $_SESSION['error'] = "Invalid email or password";
         }
-    } catch(PDOException $e) {
-        $error = 'Login failed. Please try again.';
     }
 }
 ?>
-<!DOCTYPE html>
-<html>
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="generator" content="Mobirise v5.2.0, mobirise.com">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-    <link rel="shortcut icon" href="assets/images/thrive_logo_small.png" type="image/x-icon">
-    <meta name="description" content="">
-
-
-    <title>WeCare Patient Login</title>
-    <link rel="stylesheet" href="styles/homepage.css">
-    <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
-    <link rel="stylesheet" href="assets/tether/tether.min.css">
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-grid.min.css">
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-reboot.min.css">
-    <link rel="stylesheet" href="assets/dropdown/css/style.css">
-    <link rel="stylesheet" href="assets/socicon/css/styles.css">
-    <link rel="stylesheet" href="assets/theme/css/style.css">
-    <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Login - WeCare</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #f0f8ff 0%, #ffffff 100%);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
         }
-        .form-control {
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
-            padding: 1rem 1.2rem;
-            font-size: 1.1rem;
-        }
-        .form-control:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
-            background-color: #fff;
-            transform: translateY(-2px);
-        }
-        .form-group label {
-            color: #333;
-            font-weight: 600;
-            margin-bottom: 0.7rem;
-            transition: all 0.3s ease;
-            letter-spacing: 0.5px;
-            font-size: 1.1rem;
-            display: block;
-            padding-left: 0.5rem;
-        }
-        .form-group:hover label {
-            color: #3498db;
-            transform: translateX(5px);
-        }
-        .card {
+
+        .login-container {
+            background: white;
             border-radius: 20px;
-            border: none;
-            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.15);
-            transition: all 0.3s ease;
-            background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
-            backdrop-filter: blur(10px);
-            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             overflow: hidden;
+            width: 1000px;
+            max-width: 100%;
+            display: flex;
+            min-height: 600px;
         }
-        .card::before {
+
+        .login-image {
+            flex: 1;
+            background: url('assets/images/patient-login.jpg') center/cover;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: white;
+        }
+
+        .login-image::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, #3498db, #2980b9);
+            bottom: 0;
+            background: rgba(52, 152, 219, 0.8);
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(52, 152, 219, 0.2);
+
+        .login-image-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
         }
-        .card-header {
-            border-bottom: 2px solid rgba(52, 152, 219, 0.1);
-            background: transparent;
-            padding: 2rem 0 1.5rem;
+
+        .login-image-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
         }
-        .form-control {
-            border: 2px solid rgba(52, 152, 219, 0.2);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 1rem 1.2rem;
+
+        .login-image-content p {
             font-size: 1.1rem;
+            opacity: 0.9;
         }
+
+        .login-form {
+            flex: 1;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .login-header p {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
         .form-control:focus {
             border-color: #3498db;
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.15);
-            background-color: #fff;
-            transform: translateY(-2px);
-        }
-        .form-group label {
-            color: #3498db;
-            font-weight: 600;
-            margin-bottom: 0.7rem;
-            transition: all 0.3s ease;
-            letter-spacing: 0.5px;
-            font-size: 1.1rem;
-            display: block;
-            padding-left: 0.5rem;
-        }
-        .form-group:hover label {
-            color: #2980b9;
-            transform: translateX(5px);
-        }
-        .form-control::placeholder {
-            color: #aaa;
-            font-size: 1rem;
-            font-weight: 400;
-            transition: all 0.3s ease;
-        }
-        .form-control:focus::placeholder {
-            color: #3498db;
-            opacity: 0.7;
-            transform: translateX(5px);
-        }
-        .form-control:hover {
-            border-color: #3498db;
-            background-color: #fff;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
         }
 
-        /* Patient Login Page Specific Button */
-        .patient-page-login-btn {
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            border: none;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            padding: 1rem 0;
-            position: relative;
-            overflow: hidden;
+        .btn-login {
             background: linear-gradient(45deg, #3498db, #2980b9);
-            background-size: 200% 200%;
-            animation: gradientBG 3s ease infinite;
             color: white;
+            padding: 0.75rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 500;
             width: 100%;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .patient-page-login-btn:hover {
-            background-color: #2980b9 !important;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
-            color: white;
+        .btn-login:hover {
+            background: linear-gradient(45deg, #2980b9, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .alert {
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #6c757d;
+        }
+
+        .signup-link a {
+            color: #3498db;
             text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
 
-        .patient-page-login-btn:active {
-            transform: translateY(-1px);
+        .signup-link a:hover {
+            color: #2980b9;
+            text-decoration: underline;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        .form-control::placeholder {
+            color: #adb5bd;
+            font-size: 0.9rem;
         }
 
-        /* Enhanced Responsive Styles */
-        @media (max-width: 991.98px) {
-            .container {
-                padding: 0 20px;
+        .form-control:focus::placeholder {
+            color: #6c757d;
+        }
+
+        .form-group label {
+            transition: all 0.3s ease;
+        }
+
+        .form-group:hover label {
+            color: #3498db;
+        }
+
+        @media (max-width: 991px) {
+            .login-container {
+                flex-direction: column;
+                width: 100%;
+                max-width: 500px;
             }
-            .card {
-                min-width: 100% !important;
-                margin: 0 15px;
+
+            .login-image {
+                display: none;
             }
-            .card-header h3 {
-                font-size: 2rem !important;
+
+            .login-form {
+                padding: 2rem;
             }
-            .form-group label {
-                font-size: 1.2rem !important;
+        }
+
+        @media (max-width: 576px) {
+            .login-form {
+                padding: 1.5rem;
             }
+
+            .login-header h2 {
+                font-size: 1.75rem;
+            }
+
             .form-control {
-                font-size: 1.1rem !important;
-                padding: 1rem 1.2rem !important;
+                font-size: 0.9rem;
             }
-            .btn {
-                font-size: 1.3rem !important;
-                padding: 1rem 0 !important;
-            }
-        }
 
-        @media (max-width: 767.98px) {
-            .container {
-                margin-top: 40px !important;
-            }
-            .card {
-                padding: 2rem 1.5rem !important;
-            }
-            .card-header {
-                padding: 1.5rem 0 !important;
-            }
-            .card-header h3 {
-                font-size: 1.8rem !important;
-            }
-            .form-group {
-                margin-bottom: 1.5rem !important;
-            }
-            .form-group label {
-                font-size: 1.1rem !important;
-            }
-            .form-control {
-                font-size: 1rem !important;
-                padding: 0.9rem 1.1rem !important;
-            }
-            .btn {
-                font-size: 1.2rem !important;
-                padding: 0.9rem 0 !important;
-            }
-        }
-
-        @media (max-width: 575.98px) {
-            .container {
-                margin-top: 30px !important;
-            }
-            .card {
-                padding: 1.5rem 1.2rem !important;
-            }
-            .card-header h3 {
-                font-size: 1.6rem !important;
-            }
-            .form-group {
-                margin-bottom: 1.2rem !important;
-            }
-            .form-group label {
-                font-size: 1rem !important;
-            }
-            .form-control {
-                font-size: 0.95rem !important;
-                padding: 0.8rem 1rem !important;
-            }
-            .btn {
-                font-size: 1.1rem !important;
-                padding: 0.8rem 0 !important;
+            .btn-login {
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
-
 <body>
-
-<?php include 'includes/navbar.php'; ?>
-
-<div class="container" style="margin-top: 60px;">
-    <div class="row justify-content-center align-items-center">
-        <div class="col-lg-7 d-none d-lg-block text-center">
-            <img src="assets/images/consult-626x417.jpeg" alt="Patient Login" class="img-fluid rounded shadow" style="max-width: 95%; min-height: 450px; object-fit: cover;">
+    <div class="login-container">
+        <div class="login-image">
+            <div class="login-image-content">
+                <h2>Welcome Back!</h2>
+                <p>Access your healthcare dashboard and manage your appointments</p>
+            </div>
         </div>
-        <div class="col-lg-5 col-md-10">
-            <div class="card shadow" style="padding: 2.5rem 2rem; min-width: 380px; background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);">
-                <div class="card-header text-center" style="padding: 1.2rem 0;">
-                    <h3 style="font-size: 2.4rem; margin-bottom: 0; font-family: 'Dancing Script', cursive; color: #3498db; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">Welcome Back!</h3>
-                    <p style="color: #666; margin-top: 1rem; font-size: 1.1rem;">Please login to access your dashboard</p>
+        <div class="login-form">
+            <div class="login-header">
+                <h2>Patient Login</h2>
+                <p>Welcome back! Please login to your account.</p>
+            </div>
+
+            <?php if ($logout_message): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <?php echo htmlspecialchars($logout_message); ?>
                 </div>
-                <div class="card-body">
-                    <?php if ($error): ?>
-                        <div class="alert alert-danger"><?php echo $error; ?></div>
-                    <?php endif; ?>
-                    <form method="POST" action="">
-                        <div class="form-group mb-4">
-                            <label for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
-                        </div>
-                        <div class="form-group mb-4">
-                            <label for="password">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
-                        </div>
-                        <button type="submit" class="patient-page-login-btn">Login</button>
-                    </form>
-                    <div class="mt-4 text-center">
-                        <p style="color: #666; font-size: 1.1rem; margin-bottom: 1rem;">Don't have an account?</p>
-                        <a href="patient_signup.php" class="btn btn-outline-primary" style="
-                            border: 2px solid #3498db;
-                            color: #3498db;
-                            font-weight: 600;
-                            padding: 0.8rem 2rem;
-                            border-radius: 12px;
-                            transition: all 0.3s ease;
-                            text-decoration: none;
-                            display: inline-block;
-                        " onmouseover="this.style.backgroundColor='#3498db'; this.style.color='white';"
-                          onmouseout="this.style.backgroundColor='transparent'; this.style.color='#3498db';">
-                            Create Account
-                        </a>
-                    </div>
+            <?php endif; ?>
+
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <?php 
+                        echo htmlspecialchars($_SESSION['error']);
+                        unset($_SESSION['error']);
+                    ?>
                 </div>
+            <?php endif; ?>
+
+            <form method="POST" action="">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" name="email" class="form-control" placeholder="Enter your email address" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn btn-login">Login to Your Account</button>
+            </form>
+
+            <div class="signup-link">
+                Don't have an account? <a href="patient_signup.php">Create Account</a>
             </div>
         </div>
     </div>
-</div>
 
-    <a href="https://mobirise.site/e"></a>
-    <script src="assets/web/assets/jquery/jquery.min.js"></script>
-    <script src="assets/popper/popper.min.js"></script>
-    <script src="assets/tether/tether.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/smoothscroll/smooth-scroll.js"></script>
-    <script src="assets/parallax/jarallax.min.js"></script>
-    <script src="assets/mbr-tabs/mbr-tabs.js"></script>
-    <script src="assets/dropdown/js/nav-dropdown.js"></script>
-    <script src="assets/dropdown/js/navbar-dropdown.js"></script>
-    <script src="assets/touchswipe/jquery.touch-swipe.min.js"></script>
-    <script src="assets/theme/js/script.js"></script>
-
-<?php include 'includes/footer.php'; ?>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

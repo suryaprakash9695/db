@@ -23,12 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $endTime = $_POST['end_time'];
             $maxPatients = $_POST['max_patients'];
 
-            $stmt = $con->prepare("INSERT INTO doctor_schedule (doctor_id, day, start_time, end_time, max_patients) VALUES (?, ?, ?, ?, ?)");
+            $stmt = $con->prepare("INSERT INTO doctor_schedules (doctor_id, day, start_time, end_time, max_patients) VALUES (?, ?, ?, ?, ?)");
+            if ($stmt === false) {
+                die("Error preparing statement: " . $con->error);
+            }
             $stmt->bind_param("isssi", $doctorId, $day, $startTime, $endTime, $maxPatients);
             $stmt->execute();
         } elseif ($_POST['action'] === 'delete' && isset($_POST['schedule_id'])) {
             $scheduleId = $_POST['schedule_id'];
-            $stmt = $con->prepare("DELETE FROM doctor_schedule WHERE schedule_id = ? AND doctor_id = ?");
+            $stmt = $con->prepare("DELETE FROM doctor_schedules WHERE schedule_id = ? AND doctor_id = ?");
+            if ($stmt === false) {
+                die("Error preparing statement: " . $con->error);
+            }
             $stmt->bind_param("ii", $scheduleId, $doctorId);
             $stmt->execute();
         }
@@ -36,7 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Get current schedule
-$stmt = $con->prepare("SELECT * FROM doctor_schedule WHERE doctor_id = ? ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time");
+$stmt = $con->prepare("SELECT * FROM doctor_schedules WHERE doctor_id = ? ORDER BY FIELD(day, 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), start_time");
+if ($stmt === false) {
+    die("Error preparing statement: " . $con->error);
+}
 $stmt->bind_param("i", $doctorId);
 $stmt->execute();
 $schedule_result = $stmt->get_result();
@@ -79,13 +88,7 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
             background-color: #f8f9fa;
         }
 
-        .dashboard-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
         .main-content {
-            flex: 1;
             margin-left: 250px;
             padding: 2rem;
         }
@@ -153,67 +156,74 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
+
+        @media (max-width: 991px) {
+            .main-content {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <?php include 'includes/sidebar.php'; ?>
+    <?php include 'includes/navbar.php'; ?>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="schedule-header">
-                <h2>Schedule Timing</h2>
-                <p class="text-muted">Manage your availability for appointments</p>
-            </div>
+    <div class="main-content">
+        <div class="schedule-header">
+            <h2>Schedule Timing</h2>
+            <p class="text-muted">Manage your availability for appointments</p>
+        </div>
 
-            <!-- Add Schedule Form -->
-            <div class="add-schedule-form">
-                <h4 class="mb-3">Add New Schedule</h4>
-                <form method="POST" class="row g-3">
-                    <input type="hidden" name="action" value="add">
-                    <div class="col-md-3">
-                        <select name="day" class="form-select" required>
-                            <option value="">Select Day</option>
-                            <?php foreach ($days as $day): ?>
-                                <option value="<?php echo $day; ?>"><?php echo $day; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="time" name="start_time" class="form-control" required>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="time" name="end_time" class="form-control" required>
-                    </div>
-                    <div class="col-md-2">
-                        <input type="number" name="max_patients" class="form-control" placeholder="Max Patients" min="1" value="1" required>
-                    </div>
-                    <div class="col-md-1">
-                        <button type="submit" class="btn btn-primary w-100">Add</button>
-                    </div>
-                </form>
-            </div>
+        <!-- Add Schedule Form -->
+        <div class="add-schedule-form">
+            <h4 class="mb-3">Add New Schedule</h4>
+            <form method="POST" class="row g-3">
+                <input type="hidden" name="action" value="add">
+                <div class="col-md-3">
+                    <select name="day" class="form-select" required>
+                        <option value="">Select Day</option>
+                        <?php foreach ($days as $day): ?>
+                            <option value="<?php echo $day; ?>"><?php echo $day; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="time" name="start_time" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="time" name="end_time" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" name="max_patients" class="form-control" placeholder="Max Patients" min="1" value="1" required>
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">Add</button>
+                </div>
+            </form>
+        </div>
 
-            <!-- Schedule List -->
-            <?php foreach ($days as $day): ?>
-                <div class="schedule-card">
-                    <h4 class="mb-3"><?php echo $day; ?></h4>
-                    <?php
-                    $daySlots = array_filter($schedule, function($slot) use ($day) {
-                        return $slot['day'] === $day;
-                    });
-                    if (count($daySlots) > 0):
-                        foreach ($daySlots as $slot):
-                    ?>
+        <!-- Schedule List -->
+        <?php foreach ($days as $day): ?>
+            <div class="schedule-card">
+                <h4 class="mb-3"><?php echo $day; ?></h4>
+                <?php
+                $day_schedules = array_filter($schedule, function($slot) use ($day) {
+                    return $slot['day'] === $day;
+                });
+                
+                if (empty($day_schedules)): ?>
+                    <p class="text-muted">No schedule set for this day</p>
+                <?php else: ?>
+                    <?php foreach ($day_schedules as $slot): ?>
                         <div class="time-slot">
                             <div class="time-info">
-                                <span class="time-badge">
-                                    <?php echo date('g:i A', strtotime($slot['start_time'])); ?> - 
-                                    <?php echo date('g:i A', strtotime($slot['end_time'])); ?>
-                                </span>
-                                <small class="text-muted">
+                                <div class="time-badge">
+                                    <i class="far fa-clock"></i>
+                                    <?php echo date('h:i A', strtotime($slot['start_time'])); ?> - 
+                                    <?php echo date('h:i A', strtotime($slot['end_time'])); ?>
+                                </div>
+                                <span class="text-muted">
                                     Max Patients: <?php echo $slot['max_patients']; ?>
-                                </small>
+                                </span>
                             </div>
                             <form method="POST" style="display: inline;">
                                 <input type="hidden" name="action" value="delete">
@@ -223,15 +233,10 @@ $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Su
                                 </button>
                             </form>
                         </div>
-                    <?php
-                        endforeach;
-                    else:
-                    ?>
-                        <p class="text-muted">No schedule slots for this day</p>
-                    <?php endif; ?>
-                </div>
-            <?php endforeach; ?>
-        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

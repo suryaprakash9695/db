@@ -1,62 +1,109 @@
 <?php
+// Include common functions
+require_once __DIR__ . '/functions.php';
+
+// Database configuration
 $host = 'localhost';
-$dbname = 'wecare';
 $username = 'root';
 $password = '';
+$database = 'wecare';
 
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    // Set the PDO error mode to exception
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // Set default fetch mode to associative array
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-} catch(PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+// Create connection
+$con = new mysqli($host, $username, $password, $database);
+
+// Check connection
+if ($con->connect_error) {
+    die("Connection failed: " . $con->connect_error);
 }
 
-// Function to sanitize user input
-function sanitize_input($data) {
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
+// Set charset to utf8mb4
+$con->set_charset("utf8mb4");
+
+// Function to get database connection
+function get_db_connection() {
+    global $con;
+    return $con;
 }
 
-// Function to store password (no encryption for now)
-function hash_password($password) {
-    return $password; // Return password as is
+// Function to close database connection
+function close_db_connection() {
+    global $con;
+    $con->close();
 }
 
-// Function to verify password (direct comparison for now)
-function verify_password($password, $stored_password) {
-    return $password === $stored_password; // Direct comparison
+// Function to execute query and return result
+function execute_query($query, $params = [], $types = '') {
+    global $con;
+    
+    $stmt = $con->prepare($query);
+    if (!$stmt) {
+        die("Query preparation failed: " . $con->error);
+    }
+    
+    if (!empty($params)) {
+        if (empty($types)) {
+            $types = str_repeat('s', count($params));
+        }
+        $stmt->bind_param($types, ...$params);
+    }
+    
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
+    
+    return $result;
 }
 
-// Function to check if user is logged in
-function is_logged_in() {
-    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+// Function to execute query and return affected rows
+function execute_update($query, $params = [], $types = '') {
+    global $con;
+    
+    $stmt = $con->prepare($query);
+    if (!$stmt) {
+        die("Query preparation failed: " . $con->error);
+    }
+    
+    if (!empty($params)) {
+        if (empty($types)) {
+            $types = str_repeat('s', count($params));
+        }
+        $stmt->bind_param($types, ...$params);
+    }
+    
+    $stmt->execute();
+    $affected_rows = $stmt->affected_rows;
+    $stmt->close();
+    
+    return $affected_rows;
 }
 
-// Function to check if user is admin
-function is_admin() {
-    return isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'admin';
+// Function to get last insert ID
+function get_last_insert_id() {
+    global $con;
+    return $con->insert_id;
 }
 
-// Function to check if user is doctor
-function is_doctor() {
-    return isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'doctor';
+// Function to escape string
+function escape_string($string) {
+    global $con;
+    return $con->real_escape_string($string);
 }
 
-// Function to check if user is patient
-function is_patient() {
-    return isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'patient';
+// Function to begin transaction
+function begin_transaction() {
+    global $con;
+    $con->begin_transaction();
 }
 
-// Function to redirect with message
-function redirect_with_message($url, $message, $type = 'success') {
-    $_SESSION['message'] = $message;
-    $_SESSION['message_type'] = $type;
-    header("Location: $url");
-    exit();
+// Function to commit transaction
+function commit_transaction() {
+    global $con;
+    $con->commit();
+}
+
+// Function to rollback transaction
+function rollback_transaction() {
+    global $con;
+    $con->rollback();
 }
 ?> 

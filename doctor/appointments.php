@@ -12,40 +12,61 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'doctor') {
     exit;
 }
 
-$doctorId = $_SESSION['user_id'];
+$doctor_id = $_SESSION['user_id'];
 
 // Handle appointment status updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['appointment_id']) && isset($_POST['status'])) {
     $appointmentId = $_POST['appointment_id'];
     $status = $_POST['status'];
     $stmt = $con->prepare("UPDATE appointments SET status = ? WHERE appointment_id = ? AND doctor_id = ?");
-    $stmt->bind_param("sii", $status, $appointmentId, $doctorId);
+    $stmt->bind_param("sii", $status, $appointmentId, $doctor_id);
     $stmt->execute();
 }
 
-// Get all appointments
+// Get all appointments for the doctor
 $stmt = $con->prepare("
     SELECT a.*, p.full_name as patient_name, p.profile_image as patient_image 
     FROM appointments a 
     JOIN patients p ON a.patient_id = p.patient_id 
     WHERE a.doctor_id = ? 
-    ORDER BY a.appointment_date DESC, a.appointment_time ASC
+    ORDER BY a.appointment_date DESC, a.appointment_time DESC
 ");
-$stmt->bind_param("i", $doctorId);
+$stmt->bind_param("i", $doctor_id);
 $stmt->execute();
-$appointments_result = $stmt->get_result();
-$appointments = [];
-while ($row = $appointments_result->fetch_assoc()) {
-    $appointments[] = $row;
-}
+$appointments = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
 // Get doctor's schedule
 $stmt = $con->prepare("
+    CREATE TABLE IF NOT EXISTS doctor_schedules (
+        schedule_id INT AUTO_INCREMENT PRIMARY KEY,
+        doctor_id INT NOT NULL,
+        day VARCHAR(10) NOT NULL,
+        start_time TIME NOT NULL,
+        end_time TIME NOT NULL,
+        max_patients INT DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id)
+    )
+");
+
+if ($stmt === false) {
+    die("Error creating table: " . $con->error);
+}
+
+$stmt->execute();
+
+// Now get the schedule
+$stmt = $con->prepare("
     SELECT day, start_time, end_time, max_patients 
-    FROM doctor_schedule 
+    FROM doctor_schedules 
     WHERE doctor_id = ?
 ");
-$stmt->bind_param("i", $doctorId);
+
+if ($stmt === false) {
+    die("Error preparing statement: " . $con->error);
+}
+
+$stmt->bind_param("i", $doctor_id);
 $stmt->execute();
 $schedule = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
@@ -69,7 +90,7 @@ foreach ($schedule as $slot) {
                 AND appointment_date = ? 
                 AND appointment_time = ?
             ");
-            $stmt->bind_param("iss", $doctorId, $today, $timeSlot);
+            $stmt->bind_param("iss", $doctor_id, $today, $timeSlot);
             $stmt->execute();
             $count = $stmt->get_result()->fetch_assoc()['count'];
             
@@ -93,301 +114,155 @@ foreach ($schedule as $slot) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #2196f3;
-            --secondary-color: #6c757d;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --light-text: #6c757d;
-            --dark-text: #343a40;
-            --border-color: #dee2e6;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-
         body {
             background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
         }
-
-        .dashboard-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
         .main-content {
-            flex: 1;
-            margin-left: 250px;
+            margin-top: 80px;
             padding: 2rem;
         }
-
-        .appointments-header {
+        .appointments-container {
             background: white;
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
         }
-
         .appointment-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 1rem;
-            padding: 1.5rem;
-        }
-
-        .appointment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .patient-info {
             display: flex;
             align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
         }
-
-        .patient-image {
+        .appointment-card:hover {
+            background-color: #f8f9fa;
+        }
+        .appointment-card:last-child {
+            border-bottom: none;
+        }
+        .patient-avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
             margin-right: 1rem;
-            object-fit: cover;
-        }
-
-        .appointment-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .detail-item {
+            background: #3498db;
+            color: white;
             display: flex;
             align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
-
-        .detail-item i {
-            margin-right: 0.5rem;
-            color: var(--primary-color);
+        .appointment-info {
+            flex-grow: 1;
         }
-
-        .status-badge {
+        .appointment-time {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .appointment-status {
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 500;
         }
-
         .status-scheduled {
-            background-color: #e3f2fd;
+            background: #e3f2fd;
             color: #1976d2;
         }
-
         .status-completed {
-            background-color: #e8f5e9;
+            background: #e8f5e9;
             color: #2e7d32;
         }
-
         .status-cancelled {
-            background-color: #ffebee;
+            background: #ffebee;
             color: #c62828;
         }
-
-        .action-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-action {
-            padding: 0.25rem 0.75rem;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
-        }
-
-        .btn-complete {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        .btn-cancel {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
         .filter-section {
             margin-bottom: 1.5rem;
         }
-
-        .filter-section select {
-            padding: 0.5rem;
-            border-radius: 5px;
-            border: 1px solid var(--border-color);
+        .filter-section .btn-group {
+            margin-right: 1rem;
         }
-
-        .available-slots {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-        }
-
-        .time-slot {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            margin: 0.25rem;
-            background-color: #e3f2fd;
-            color: var(--primary-color);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .time-slot:hover {
-            background-color: var(--primary-color);
-            color: white;
+        .search-box {
+            max-width: 300px;
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <?php include 'includes/sidebar.php'; ?>
+    <?php include 'includes/navbar.php'; ?>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="appointments-header">
-                <h2>Appointments</h2>
-                <p class="text-muted">Manage your patient appointments</p>
-            </div>
-
-            <!-- Available Slots -->
-            <div class="available-slots">
-                <h4 class="mb-3">Available Time Slots for Today</h4>
-                <?php if (empty($availableSlots)): ?>
-                    <p class="text-muted">No available slots for today</p>
-                <?php else: ?>
-                    <?php foreach ($availableSlots as $slot): ?>
-                        <span class="time-slot">
-                            <?php echo date('g:i A', strtotime($slot)); ?>
-                        </span>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-
-            <!-- Filters -->
-            <div class="filter-section">
-                <div class="row">
-                    <div class="col-md-3">
-                        <select class="form-select" id="statusFilter">
-                            <option value="">All Status</option>
-                            <option value="scheduled">Scheduled</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
+    <div class="main-content">
+        <div class="appointments-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>All Appointments</h3>
+                <div class="filter-section d-flex align-items-center">
+                    <div class="btn-group me-3">
+                        <button type="button" class="btn btn-outline-primary active">All</button>
+                        <button type="button" class="btn btn-outline-primary">Today</button>
+                        <button type="button" class="btn btn-outline-primary">Upcoming</button>
                     </div>
-                    <div class="col-md-3">
-                        <input type="date" class="form-control" id="dateFilter">
+                    <div class="search-box">
+                        <input type="text" class="form-control" placeholder="Search appointments...">
                     </div>
                 </div>
             </div>
 
-            <!-- Appointments List -->
-            <?php foreach ($appointments as $appointment): ?>
-                <div class="appointment-card">
-                    <div class="appointment-header">
-                        <div class="patient-info">
-                            <img src="../<?php echo $appointment['patient_image'] ?? 'assets/images/default-profile.png'; ?>" 
-                                 alt="Patient" class="patient-image">
-                            <div>
-                                <h5 class="mb-0"><?php echo htmlspecialchars($appointment['patient_name']); ?></h5>
-                                <small class="text-muted">Appointment #<?php echo $appointment['appointment_id']; ?></small>
+            <?php if (empty($appointments)): ?>
+                <p class="text-muted text-center py-3">No appointments found.</p>
+            <?php else: ?>
+                <?php foreach ($appointments as $appointment): ?>
+                    <div class="appointment-card">
+                        <div class="patient-avatar">
+                            <?php 
+                                if (isset($appointment['patient_image']) && file_exists("../" . $appointment['patient_image'])) {
+                                    echo '<img src="../' . $appointment['patient_image'] . '" alt="Patient" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">';
+                                } else {
+                                    echo strtoupper(substr($appointment['patient_name'], 0, 1));
+                                }
+                            ?>
+                        </div>
+                        <div class="appointment-info">
+                            <h5 class="mb-1"><?php echo htmlspecialchars($appointment['patient_name']); ?></h5>
+                            <div class="appointment-time">
+                                <i class="far fa-calendar"></i> <?php echo date('F d, Y', strtotime($appointment['appointment_date'])); ?>
+                                <i class="far fa-clock ms-3"></i> <?php echo date('h:i A', strtotime($appointment['appointment_time'])); ?>
                             </div>
                         </div>
-                        <div class="action-buttons">
-                            <?php if ($appointment['status'] === 'scheduled'): ?>
-                                <form method="POST" style="display: inline;">
-                                    <input type="hidden" name="appointment_id" value="<?php echo $appointment['appointment_id']; ?>">
-                                    <input type="hidden" name="status" value="completed">
-                                    <button type="submit" class="btn-action btn-complete">
-                                        <i class="fas fa-check"></i> Complete
-                                    </button>
-                                </form>
-                                <form method="POST" style="display: inline;">
-                                    <input type="hidden" name="appointment_id" value="<?php echo $appointment['appointment_id']; ?>">
-                                    <input type="hidden" name="status" value="cancelled">
-                                    <button type="submit" class="btn-action btn-cancel">
-                                        <i class="fas fa-times"></i> Cancel
-                                    </button>
-                                </form>
-                            <?php endif; ?>
+                        <div class="appointment-status status-<?php echo strtolower($appointment['status']); ?>">
+                            <?php echo ucfirst($appointment['status']); ?>
                         </div>
                     </div>
-                    
-                    <div class="appointment-details">
-                        <div class="detail-item">
-                            <i class="far fa-calendar"></i>
-                            <span><?php echo date('F j, Y', strtotime($appointment['appointment_date'])); ?></span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="far fa-clock"></i>
-                            <span><?php echo date('g:i A', strtotime($appointment['appointment_time'])); ?></span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-stethoscope"></i>
-                            <span><?php echo htmlspecialchars($appointment['reason']); ?></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="status-badge status-<?php echo strtolower($appointment['status']); ?>">
-                                <?php echo ucfirst($appointment['status']); ?>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Filter functionality
-        document.getElementById('statusFilter').addEventListener('change', filterAppointments);
-        document.getElementById('dateFilter').addEventListener('change', filterAppointments);
-
-        function filterAppointments() {
-            const status = document.getElementById('statusFilter').value;
-            const date = document.getElementById('dateFilter').value;
-            const appointments = document.querySelectorAll('.appointment-card');
-
-            appointments.forEach(appointment => {
-                const appointmentStatus = appointment.querySelector('.status-badge').textContent.toLowerCase();
-                const appointmentDate = appointment.querySelector('.detail-item:first-child span').textContent;
-                
-                let show = true;
-                
-                if (status && appointmentStatus !== status) {
-                    show = false;
-                }
-                
-                if (date) {
-                    const filterDate = new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                    if (appointmentDate !== filterDate) {
-                        show = false;
-                    }
-                }
-                
-                appointment.style.display = show ? 'block' : 'none';
+        document.querySelectorAll('.btn-group .btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.btn-group .btn').forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                // Add filter logic here
             });
-        }
+        });
+
+        // Search functionality
+        document.querySelector('.search-box input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.appointment-card').forEach(card => {
+                const patientName = card.querySelector('h5').textContent.toLowerCase();
+                const appointmentDate = card.querySelector('.appointment-time').textContent.toLowerCase();
+                if (patientName.includes(searchTerm) || appointmentDate.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html> 

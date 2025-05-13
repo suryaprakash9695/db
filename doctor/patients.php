@@ -43,12 +43,6 @@ if ($search) {
     $stmt->execute();
     $patients = $stmt->get_result();
 }
-
-$schedule_result = $stmt->get_result();
-$schedule = [];
-while ($row = $schedule_result->fetch_assoc()) {
-    $schedule[] = $row;
-}
 ?>
 
 <!DOCTYPE html>
@@ -82,13 +76,7 @@ while ($row = $schedule_result->fetch_assoc()) {
             background-color: #f8f9fa;
         }
 
-        .dashboard-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
         .main-content {
-            flex: 1;
             margin-left: 250px;
             padding: 2rem;
         }
@@ -199,58 +187,66 @@ while ($row = $schedule_result->fetch_assoc()) {
             color: var(--light-text);
             font-size: 0.9rem;
         }
+
+        @media (max-width: 991px) {
+            .main-content {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <?php include 'includes/sidebar.php'; ?>
+    <?php include 'includes/navbar.php'; ?>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="patients-header">
-                <h2>Patients List</h2>
-                <p class="text-muted">View and manage your patients</p>
-            </div>
+    <div class="main-content">
+        <div class="patients-header">
+            <h2>My Patients</h2>
+            <p class="text-muted">View and manage your patient list</p>
+        </div>
 
-            <!-- Search Section -->
-            <div class="search-section">
-                <form method="GET" action="" class="row g-3">
-                    <div class="col-md-8">
-                        <input type="text" class="form-control" name="search" placeholder="Search patients by name, email, or phone..." value="<?php echo htmlspecialchars($search); ?>">
-                    </div>
-                    <div class="col-md-4">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-search"></i> Search
-                        </button>
-                    </div>
-                </form>
-            </div>
+        <div class="search-section">
+            <form method="GET" class="row g-3">
+                <div class="col-md-8">
+                    <input type="text" name="search" class="form-control" placeholder="Search patients by name, email, or phone" value="<?php echo htmlspecialchars($search); ?>">
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+            </form>
+        </div>
 
-            <!-- Patients List -->
+        <?php if ($patients->num_rows > 0): ?>
             <?php while ($patient = $patients->fetch_assoc()): ?>
                 <div class="patient-card">
                     <div class="patient-header">
                         <div class="patient-info">
-                            <img src="../<?php echo $patient['profile_image'] ?? 'assets/images/default-profile.png'; ?>" 
-                                 alt="Patient" class="patient-image">
+                            <?php if (isset($patient['profile_image']) && file_exists("../" . $patient['profile_image'])): ?>
+                                <img src="../<?php echo $patient['profile_image']; ?>" alt="Patient" class="patient-image">
+                            <?php else: ?>
+                                <div class="patient-image" style="background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">
+                                    <?php echo strtoupper(substr($patient['full_name'], 0, 1)); ?>
+                                </div>
+                            <?php endif; ?>
                             <div>
-                                <h5 class="mb-0"><?php echo htmlspecialchars($patient['full_name']); ?></h5>
-                                <small class="text-muted">Patient ID: <?php echo $patient['patient_id']; ?></small>
+                                <h5 class="mb-1"><?php echo htmlspecialchars($patient['full_name']); ?></h5>
+                                <div class="stats-badge">
+                                    <i class="fas fa-calendar-check"></i>
+                                    <?php echo $patient['total_appointments']; ?> Appointments
+                                </div>
                             </div>
                         </div>
                         <div class="action-buttons">
-                            <a href="patient_details.php?id=<?php echo $patient['patient_id']; ?>" class="btn-action btn-view">
-                                <i class="fas fa-eye"></i> View Details
+                            <a href="#" class="btn-action btn-view">
+                                <i class="fas fa-eye"></i> View Profile
                             </a>
-                            <a href="chat.php?patient=<?php echo $patient['patient_id']; ?>" class="btn-action btn-chat">
+                            <a href="#" class="btn-action btn-chat">
                                 <i class="fas fa-comments"></i> Chat
                             </a>
-                            <a href="appointments.php?patient=<?php echo $patient['patient_id']; ?>" class="btn-action btn-appointment">
+                            <a href="#" class="btn-action btn-appointment">
                                 <i class="fas fa-calendar-plus"></i> New Appointment
                             </a>
                         </div>
                     </div>
-                    
                     <div class="patient-details">
                         <div class="detail-item">
                             <i class="fas fa-envelope"></i>
@@ -261,21 +257,17 @@ while ($row = $schedule_result->fetch_assoc()) {
                             <span><?php echo htmlspecialchars($patient['phone']); ?></span>
                         </div>
                         <div class="detail-item">
-                            <i class="fas fa-calendar-check"></i>
-                            <span class="stats-badge">
-                                <?php echo $patient['total_appointments']; ?> Appointments
-                            </span>
-                        </div>
-                        <div class="detail-item">
-                            <i class="fas fa-clock"></i>
-                            <span class="last-visit">
-                                Last Visit: <?php echo $patient['last_visit'] ? date('M d, Y', strtotime($patient['last_visit'])) : 'Never'; ?>
-                            </span>
+                            <i class="fas fa-calendar"></i>
+                            <span>Last Visit: <?php echo date('M d, Y', strtotime($patient['last_visit'])); ?></span>
                         </div>
                     </div>
                 </div>
             <?php endwhile; ?>
-        </div>
+        <?php else: ?>
+            <div class="alert alert-info">
+                No patients found. Patients will appear here once they book appointments with you.
+            </div>
+        <?php endif; ?>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
