@@ -1,15 +1,43 @@
 <?php
 session_start();
+require_once __DIR__ . '/config.php';
 
-// Check if user is already logged in
-if (isset($_SESSION['user_id']) && $_SESSION['user_type'] === 'doctor') {
-    header("Location: dashboard.php");
-    exit;
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    
+    try {
+        $stmt = $con->prepare("SELECT * FROM doctors WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $doctor = $result->fetch_assoc();
+            
+            // Debug information
+            error_log("Stored password hash: " . $doctor['password']);
+            error_log("Input password: " . $password);
+            error_log("Password verification result: " . (password_verify($password, $doctor['password']) ? 'true' : 'false'));
+            
+            if (password_verify($password, $doctor['password'])) {
+                $_SESSION['user_id'] = $doctor['doctor_id'];
+                $_SESSION['user_type'] = 'doctor';
+                $_SESSION['full_name'] = $doctor['full_name'];
+                
+                header("Location: dashboard.php");
+                exit;
+            } else {
+                $error = "Invalid password";
+            }
+        } else {
+            $error = "Doctor not found";
+        }
+    } catch (Exception $e) {
+        $error = "An error occurred. Please try again.";
+        error_log("Login error: " . $e->getMessage());
+    }
 }
-
-// Get logout message if exists
-$logout_message = isset($_SESSION['logout_message']) ? $_SESSION['logout_message'] : '';
-unset($_SESSION['logout_message']); // Clear the message after displaying
 ?>
 
 <!DOCTYPE html>
@@ -22,9 +50,25 @@ unset($_SESSION['logout_message']); // Clear the message after displaying
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2196f3;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-text: #6c757d;
+            --dark-text: #343a40;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
         body {
             background-color: #f8f9fa;
-            font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -32,12 +76,12 @@ unset($_SESSION['logout_message']); // Clear the message after displaying
         }
 
         .login-container {
-            max-width: 400px;
-            width: 100%;
-            padding: 2rem;
             background: white;
+            padding: 2rem;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
         }
 
         .login-header {
@@ -45,8 +89,9 @@ unset($_SESSION['logout_message']); // Clear the message after displaying
             margin-bottom: 2rem;
         }
 
-        .login-header h2 {
-            color: #2c3e50;
+        .login-header h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
             margin-bottom: 0.5rem;
         }
 
@@ -54,94 +99,87 @@ unset($_SESSION['logout_message']); // Clear the message after displaying
             margin-bottom: 1.5rem;
         }
 
-        .form-label {
-            font-weight: 500;
-            color: #2c3e50;
-        }
-
         .form-control {
-            border-radius: 8px;
             padding: 0.75rem 1rem;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
         }
 
         .form-control:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
         }
 
         .btn-login {
-            background: #3498db;
+            background-color: var(--primary-color);
             color: white;
-            padding: 0.75rem;
-            border-radius: 8px;
+            padding: 0.75rem 1rem;
             border: none;
-            font-weight: 500;
+            border-radius: 8px;
+            font-size: 1rem;
             width: 100%;
-            transition: all 0.3s ease;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
         .btn-login:hover {
-            background: #2980b9;
-            transform: translateY(-2px);
+            background-color: #1976d2;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
         }
 
         .alert {
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
             border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
-            <h2>Doctor Login</h2>
-            <p class="text-muted">Welcome back! Please login to your account.</p>
+            <h1>WeCare</h1>
+            <p class="text-muted">Doctor Login</p>
         </div>
-
-        <?php if ($logout_message): ?>
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle me-2"></i>
-                <?php echo htmlspecialchars($logout_message); ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (isset($_SESSION['error'])): ?>
+        
+        <?php if (isset($error)): ?>
             <div class="alert alert-danger">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <?php 
-                    echo htmlspecialchars($_SESSION['error']);
-                    unset($_SESSION['error']);
-                ?>
+                <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
 
-        <form action="process_doctor_login.php" method="POST">
+        <form method="POST" action="">
             <div class="form-group">
-                <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" required>
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
             </div>
+            
             <div class="form-group">
-                <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
             </div>
+            
             <button type="submit" class="btn btn-login">Login</button>
         </form>
+        
+        <div class="register-link">
+            <p>Don't have an account? <a href="/admin_login.php">Register here</a></p>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>

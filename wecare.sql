@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 13, 2025 at 10:01 PM
+-- Generation Time: May 16, 2025 at 11:11 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -105,17 +105,18 @@ CREATE TABLE `doctors` (
   `experience` int(11) NOT NULL,
   `license_no` varchar(50) NOT NULL,
   `is_verified` tinyint(1) DEFAULT 0,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `profile_image` varchar(255) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `doctors`
 --
 
-INSERT INTO `doctors` (`doctor_id`, `full_name`, `email`, `password`, `phone`, `specialization`, `qualification`, `experience`, `license_no`, `is_verified`, `created_at`) VALUES
-(3, 'Aman', 'am@gmail.com', '$2y$10$/ZZSVkziWrHsoE7ZRzv8g.pV6j59TgyRFF1Nw4QLc7o7BGvXnZpRu', NULL, 'Neurology', '', 0, '555', 1, '2025-05-12 02:32:14'),
-(4, 'Surya', 'qq@gmail.com', '$2y$10$e6R7DhLCBGSxZufyMhJGieGB4Ch7.VoUgAd/cwfTBBBEhvj3p1wFK', NULL, 'Cardiology', '', 0, '44', 1, '2025-05-12 02:39:51'),
-(2, 'Doctor', 'd@gmail.com', '$2y$10$oenV8LOm1AZePzINSWNPNOI03S3g4CkbnLkk2aFQNq0FumLLUuY22', NULL, 'Cardiology', '', 0, '', 1, '2025-05-12 02:19:35');
+INSERT INTO `doctors` (`doctor_id`, `full_name`, `email`, `password`, `phone`, `specialization`, `qualification`, `experience`, `license_no`, `is_verified`, `created_at`, `profile_image`) VALUES
+(3, 'Aman', 'am@gmail.com', '$2y$10$/ZZSVkziWrHsoE7ZRzv8g.pV6j59TgyRFF1Nw4QLc7o7BGvXnZpRu', NULL, 'Neurology', '', 0, '555', 1, '2025-05-12 02:32:14', 'private/uploads/doctors/doctor_3_afb4e4322449d9cb.jpg'),
+(4, 'Surya', 'qq@gmail.com', '$2y$10$e6R7DhLCBGSxZufyMhJGieGB4Ch7.VoUgAd/cwfTBBBEhvj3p1wFK', NULL, 'Cardiology', '', 0, '44', 1, '2025-05-12 02:39:51', NULL),
+(2, 'Doctor', 'd@gmail.com', '$2y$10$oenV8LOm1AZePzINSWNPNOI03S3g4CkbnLkk2aFQNq0FumLLUuY22', NULL, 'Cardiology', '', 0, '', 1, '2025-05-12 02:19:35', NULL);
 
 -- --------------------------------------------------------
 
@@ -195,6 +196,7 @@ CREATE TABLE `patients` (
   `date_of_birth` date DEFAULT NULL,
   `gender` enum('Male','Female','Other') DEFAULT NULL,
   `address` text DEFAULT NULL,
+  `profile_image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -202,10 +204,10 @@ CREATE TABLE `patients` (
 -- Dumping data for table `patients`
 --
 
-INSERT INTO `patients` (`patient_id`, `full_name`, `email`, `password`, `phone`, `date_of_birth`, `gender`, `address`, `created_at`) VALUES
-(2, 'Surya Prakash Singh', 's@gmail.com', '123456', 's@gmail.com', NULL, NULL, NULL, '2025-05-12 01:37:59'),
-(4, 'sawan', 'sawan@gmail.com', '123456', '9793711154', NULL, NULL, NULL, '2025-05-12 09:34:23'),
-(6, 'singh', 'singh@gmail.com', '123456', '12345678', NULL, NULL, NULL, '2025-05-12 09:39:19');
+INSERT INTO `patients` (`patient_id`, `full_name`, `email`, `password`, `phone`, `date_of_birth`, `gender`, `address`, `profile_image`, `created_at`) VALUES
+(2, 'Surya Prakash Singh', 's@gmail.com', '123456', 's@gmail.com', NULL, NULL, NULL, NULL, '2025-05-12 01:37:59'),
+(4, 'sawan', 'sawan@gmail.com', '123456', '9793711154', NULL, NULL, NULL, NULL, '2025-05-12 09:34:23'),
+(6, 'singh', 'singh@gmail.com', '123456', '12345678', NULL, NULL, NULL, NULL, '2025-05-12 09:39:19');
 
 -- --------------------------------------------------------
 

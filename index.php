@@ -69,6 +69,10 @@
             transition: all 0.3s ease;
             border: none;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 20px;
         }
         .custom-card:hover {
             transform: translateY(-10px);
@@ -82,9 +86,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
+            margin: 0;
             color: white;
             font-size: 2rem;
+            flex-shrink: 0;
         }
         .custom-section {
             padding: 100px 0;
@@ -188,48 +193,56 @@
                 </div>
             </div>
             <div class="row justify-content-center">
-                <div class="col-12 col-md-6 col-lg-3 mb-4">
-                    <div class="custom-card" style="height: 400px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                        <div class="custom-icon" style="margin-bottom: 1.5rem;">
+                <div class="col-12 col-md-6 col-lg-6 mb-4 d-flex">
+                    <div class="custom-card flex-grow-1" style="display: flex; flex-direction: row; align-items: center; min-height: 220px;">
+                        <div class="custom-icon" style="margin-right: 1.5rem;">
                             <span class="mbr-iconfont mobi-mbri-hearth mobi-mbri"></span>
                         </div>
-                        <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Physical and Mental Health</h5>
-                        <p style="color: #666; line-height: 1.6; flex-grow: 1; display: flex; align-items: center; justify-content: center;">
-                            Comprehensive healthcare tools including physical health diagnosis, menstrual cycle tracking, mental health support, and dedicated Mind and Body Space for holistic wellness.
-                        </p>
+                        <div>
+                            <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Physical and Mental Health</h5>
+                            <p style="color: #666; line-height: 1.6;">
+                                Comprehensive healthcare tools including physical health diagnosis, menstrual cycle tracking, mental health support, and dedicated Mind and Body Space for holistic wellness.
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-3 mb-4">
-                    <div class="custom-card" style="height: 400px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                        <div class="custom-icon" style="margin-bottom: 1.5rem;">
+                <div class="col-12 col-md-6 col-lg-6 mb-4 d-flex">
+                    <div class="custom-card flex-grow-1" style="display: flex; flex-direction: row; align-items: center; min-height: 220px;">
+                        <div class="custom-icon" style="margin-right: 1.5rem;">
                             <span class="mbr-iconfont mobi-mbri-idea mobi-mbri"></span>
                         </div>
-                        <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Diagnosis Tools</h5>
-                        <p style="color: #666; line-height: 1.6; flex-grow: 1; display: flex; align-items: center; justify-content: center;">
-                            Advanced Decision Support System (DSS) tools for medical professionals, featuring AI-powered disease prediction and comprehensive diagnostic assistance for accurate healthcare decisions.
-                        </p>
+                        <div>
+                            <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Diagnosis Tools</h5>
+                            <p style="color: #666; line-height: 1.6;">
+                                Advanced Decision Support System (DSS) tools for medical professionals, featuring AI-powered disease prediction and comprehensive diagnostic assistance for accurate healthcare decisions.
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-3 mb-4">
-                    <div class="custom-card" style="height: 400px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                        <div class="custom-icon" style="margin-bottom: 1.5rem;">
+                <div class="col-12 col-md-6 col-lg-6 mb-4 d-flex">
+                    <div class="custom-card flex-grow-1" style="display: flex; flex-direction: row; align-items: center; min-height: 220px;">
+                        <div class="custom-icon" style="margin-right: 1.5rem;">
                             <span class="mbr-iconfont mobi-mbri-contact-form mobi-mbri"></span>
                         </div>
-                        <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Medical History Dashboard</h5>
-                        <p style="color: #666; line-height: 1.6; flex-grow: 1; display: flex; align-items: center; justify-content: center;">
-                            Comprehensive medical record management system ensuring seamless tracking of patient history, treatments, and progress for better healthcare outcomes and continuity of care.
-                        </p>
+                        <div>
+                            <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Medical History Dashboard</h5>
+                            <p style="color: #666; line-height: 1.6;">
+                                Comprehensive medical record management system ensuring seamless tracking of patient history, treatments, and progress for better healthcare outcomes and continuity of care.
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <div class="col-12 col-md-6 col-lg-3 mb-4">
-                    <div class="custom-card" style="height: 400px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                        <div class="custom-icon" style="margin-bottom: 1.5rem;">
+                <div class="col-12 col-md-6 col-lg-6 mb-4 d-flex">
+                    <div class="custom-card flex-grow-1" style="display: flex; flex-direction: row; align-items: center; min-height: 220px;">
+                        <div class="custom-icon" style="margin-right: 1.5rem;">
                             <span class="mbr-iconfont mobi-mbri-responsive-2 mobi-mbri"></span>
                         </div>
-                        <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Online Expert Consultation</h5>
-                        <p style="color: #666; line-height: 1.6; flex-grow: 1; display: flex; align-items: center; justify-content: center;">
-                            Real-time access to healthcare experts through our integrated platform, ensuring timely medical advice and continuous support for optimal patient care and treatment outcomes.
-                        </p>
+                        <div>
+                            <h5 style="font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem;">Online Expert Consultation</h5>
+                            <p style="color: #666; line-height: 1.6;">
+                                Real-time access to healthcare experts through our integrated platform, ensuring timely medical advice and continuous support for optimal patient care and treatment outcomes.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -238,6 +251,7 @@
 
     <section style="padding: 80px 0; background: #f8f9fa;">
         <div class="container">
+            <div class="row justify-content-center">
                 <div class="col-md-6 mb-4">
                     <div class="custom-card" style="background: linear-gradient(135deg, #0080ff 0%, #00bfff 100%);">
                         <div style="text-align: center; color: white;">
@@ -246,7 +260,7 @@
                             <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9; margin-bottom: 2rem;">
                                 Access personalized healthcare services, schedule appointments, and manage your medical records all in one place.
                             </p>
-                            <a href="main_login_signup.php" class="custom-btn" style="background: white; color: #0080ff;">Get Started</a>
+                            <a href="patient/patient_login.php" class="custom-btn" style="background: white; color: #0080ff;">Get Started</a>
                         </div>
                     </div>
                 </div>
@@ -258,7 +272,7 @@
                             <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9; margin-bottom: 2rem;">
                                 Manage your practice, view patient records, and provide quality healthcare services through our integrated platform.
                             </p>
-                            <a href="main_login_signup.php" class="custom-btn" style="background: white; color: #28a745;">Join Now</a>
+                            <a href="doctor/doctor_login.php" class="custom-btn" style="background: white; color: #28a745;">Join Now</a>
                         </div>
                     </div>
                 </div>
