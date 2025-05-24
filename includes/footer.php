@@ -15,7 +15,7 @@
                         Empowering individuals to take control of their health and well-being through innovative digital solutions.
                     </p>
                     <div class="footer-social">
-                        <a href="https://github.com/Saavanx/wecare_iitm" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="#" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
                         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                         <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
                         <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
