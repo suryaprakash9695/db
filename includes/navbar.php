@@ -29,6 +29,12 @@ require_once('notifications.php');
                         <a class="nav-link link text-black display-4 <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="index.php">Home</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link link text-black display-4 <?php echo ($current_page == 'about.php') ? 'active' : ''; ?>" href="about.php">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link link text-black display-4 <?php echo ($current_page == 'contact.php') ? 'active' : ''; ?>" href="contact.php">Contact</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link link text-black display-4 <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="index.php#features1-n">Features</a>
                     </li>
                     <li class="nav-item">
