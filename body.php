@@ -10,7 +10,7 @@
     <meta name="description" content="">
 
 
-    <title>WeCare</title>
+    <title>WeCare -Body Care</title>
     <link rel="stylesheet" href="styles/homepage.css">
     <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
     <link rel="stylesheet" href="assets/tether/tether.min.css">
@@ -27,94 +27,88 @@
     <!-- Add Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* Updated card styles for better alignment */
-        .features4 .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0;
-            row-gap: 2.5rem !important;
-        }
-        
-        .features4 .item-wrapper {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
+        /* Enhanced, Responsive, and Animated Header */
+        .info3 {
+            position: relative;
+            padding: 3rem 0 1.5rem 0;
             background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            margin-bottom: 1rem;
+            overflow: hidden;
         }
-        
-        .features4 .item {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            margin-bottom: 2rem;
-            padding: 1rem;
-            width: 100%;
+
+        .info3 .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
-        @media (min-width: 768px) {
-            .features4 .item {
-                width: 50%;
-            }
+
+        .info3 .card {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 32px rgba(200,13,125,0.10);
+            padding: 1.5rem 1rem 1.2rem 1rem;
+            backdrop-filter: blur(2px);
+            animation: fadeInDown 1s cubic-bezier(.39,.575,.565,1) both;
         }
-        @media (min-width: 992px) {
-            .features4 .item {
-                width: 25%;
-            }
+
+        @keyframes fadeInDown {
+            0% { opacity: 0; transform: translateY(-40px);}
+            100% { opacity: 1; transform: translateY(0);}
         }
-        .features4 .item-img {
-            position: relative;
-            width: 100%;
-            height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff5f9 0%, #fff 100%);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-        }
-        .features4 .item-img i {
-            font-size: 3.5rem;
-            color: #c80d7d;
-            transition: all 0.3s ease;
-        }
-        .features4 .item-wrapper:hover .item-img {
-            background: linear-gradient(135deg, #c80d7d 0%, #f06292 100%);
-        }
-        .features4 .item-wrapper:hover .item-img i {
+
+        .info3 .card-title {
             color: #fff;
-            transform: scale(1.1);
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            text-align: center;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 8px rgba(200,13,125,0.10);
+            line-height: 1.1;
+            background: linear-gradient(90deg, #fff 60%, #f06292 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .features4 .item-content {
-            flex: 1;
+
+        .info3 .card-box {
+            padding: 0.5rem 0 0.2rem 0;
+        }
+
+        /* Premium Features Section */
+        .features4 {
+            background: #f8f9fa;
+            padding: 1.5rem 0 4rem 0;
+        }
+
+        .features4 .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .features4 .row {
+            margin: 0 -1.5rem;
+        }
+
+        .features4 .item-wrapper {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 16px rgba(200,13,125,0.07);
+            padding: 1.1rem 1rem 1.2rem 1rem;
+            height: 100%;
             display: flex;
             flex-direction: column;
-        }
-        .features4 .item-title {
-            font-family: 'Gloock', serif;
-            font-size: 1.5rem;
-            color: #c80d7d;
-            margin-bottom: 1rem;
-            font-weight: 700;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(200,13,125,0.08);
             position: relative;
-            padding-bottom: 0.5rem;
-            line-height: 1.3;
+            overflow: hidden;
+            margin-bottom: 1.2rem;
+            min-height: 270px;
+            max-width: 340px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .features4 .mbr-text {
-            font-family: 'Source Serif Pro', serif;
-            color: #555;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            flex: 1;
-        }
-        .features4 .mbr-section-btn {
-            margin-top: auto;
-        }
+
         .features4 .item-wrapper::before {
             content: '';
             position: absolute;
@@ -126,27 +120,75 @@
             transform: scaleX(0);
             transition: transform 0.4s ease;
         }
+
+        .features4 .item-wrapper:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(200,13,125,0.1);
+        }
+
         .features4 .item-wrapper:hover::before {
             transform: scaleX(1);
         }
-        .features4 .item-wrapper:hover {
-            box-shadow: 0 8px 32px rgba(200,13,125,0.18);
-            transform: translateY(-6px);
+
+        .features4 .item-img {
+            background: linear-gradient(135deg, #fff5f9 0%, #fff 100%);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        
-        /* Enhanced button styling */
+
+        .features4 .item-img i {
+            font-size: 2.1rem;
+            color: #c80d7d;
+            transition: all 0.3s ease;
+        }
+
+        .features4 .item-wrapper:hover .item-img {
+            background: linear-gradient(135deg, #c80d7d 0%, #f06292 100%);
+        }
+
+        .features4 .item-wrapper:hover .item-img i {
+            color: #fff;
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .features4 .item-title {
+            color: #c80d7d;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .features4 .item-wrapper:hover .item-title {
+            color: #f06292;
+        }
+
+        .features4 .mbr-text {
+            color: #555;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        /* Premium Button Styling */
         .features4 .btn-primary {
-            background: linear-gradient(90deg, #c80d7d 60%, #f06292 100%);
+            background: linear-gradient(90deg, #c80d7d 0%, #f06292 100%);
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
+            padding: 1rem 2rem;
             font-weight: 600;
             letter-spacing: 0.5px;
-            padding: 0.8rem 1.8rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(200,13,125,0.08);
+            transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
         }
+
         .features4 .btn-primary::before {
             content: '';
             position: absolute;
@@ -157,40 +199,33 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: 0.5s;
         }
+
         .features4 .btn-primary:hover::before {
             left: 100%;
         }
+
         .features4 .btn-primary:hover {
             background: linear-gradient(90deg, #f06292 0%, #c80d7d 100%);
-            box-shadow: 0 4px 16px rgba(200,13,125,0.18);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(200,13,125,0.3);
         }
 
-        /* Enhanced Health Tips Section */
+        /* Premium Health Tips Section */
         .health-tips-section {
             background: linear-gradient(135deg, #fff5f9 0%, #fff 100%);
-            padding: 4rem 0;
+            padding: 5rem 0;
             position: relative;
-            overflow: hidden;
         }
-        .health-tips-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('assets/images/pattern.png') repeat;
-            opacity: 0.05;
-        }
+
         .health-tips-section h3 {
             color: #c80d7d;
             font-family: 'Gloock', serif;
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
+            font-size: 2.8rem;
+            margin-bottom: 3rem;
+            text-align: center;
             position: relative;
-            display: inline-block;
         }
+
         .health-tips-section h3::after {
             content: '';
             position: absolute;
@@ -201,173 +236,173 @@
             height: 3px;
             background: linear-gradient(90deg, #c80d7d, #f06292);
         }
+
         .health-tips-section ul {
-            list-style: none;
+            max-width: 900px;
+            margin: 0 auto;
             padding: 0;
+            list-style: none;
         }
+
         .health-tips-section li {
             font-family: 'Source Serif Pro', serif;
             font-size: 1.2rem;
             color: #444;
             line-height: 1.8;
-            margin-bottom: 1rem;
-            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+            padding-left: 2.5rem;
             position: relative;
         }
+
         .health-tips-section li::before {
             content: '•';
             color: #c80d7d;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             position: absolute;
             left: 0;
             top: -0.2rem;
         }
 
-        /* Updated testimonial styles for equal sizing */
+        /* Premium Testimonials Section */
         .testimonials-section {
+            background: #fff;
             padding: 5rem 0;
-            background: linear-gradient(135deg, #fff5f9 0%, #fff 100%);
-            position: relative;
-            overflow: hidden;
         }
 
-        .testimonials-section .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -1rem;
-        }
-
-        .testimonials-section .col-md-4 {
-            padding: 1rem;
-            display: flex;
+        .testimonials-section h3 {
+            color: #c80d7d;
+            font-family: 'Gloock', serif;
+            font-size: 2.8rem;
+            margin-bottom: 3rem;
+            text-align: center;
         }
 
         .testimonial-card {
-            background: #fff;
+            background: #fff5f9;
             border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(200,13,125,0.05);
+            transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            font-size: 120px;
+            font-family: 'Gloock', serif;
+            color: #c80d7d;
+            opacity: 0.1;
+            line-height: 1;
         }
 
         .testimonial-text {
             font-family: 'Source Serif Pro', serif;
             font-style: italic;
-            color: #555;
-            font-size: 1.1rem;
+            color: #444;
+            font-size: 1.2rem;
             line-height: 1.8;
             margin-bottom: 1.5rem;
             position: relative;
             z-index: 1;
-            flex: 1;
-            min-height: 120px; /* Ensure minimum height for text */
         }
 
         .testimonial-author {
             font-family: 'Gloock', serif;
             color: #c80d7d;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            margin-top: auto; /* Push author to bottom */
+            gap: 0.8rem;
         }
 
         .testimonial-author::before {
             content: '';
             display: inline-block;
-            width: 30px;
+            width: 40px;
             height: 2px;
             background: linear-gradient(90deg, #c80d7d, #f06292);
         }
 
-        /* Add animation classes */
-        .fade-in-up {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease;
+        .testimonial-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(200,13,125,0.1);
         }
 
-        .fade-in-up.active {
-            opacity: 1;
-            transform: translateY(0);
+        /* Premium Responsive Design */
+        @media (max-width: 1199.98px) {
+            .info3 .card-title {
+                font-size: 4rem;
+            }
+            
+            .features4 .item-title {
+                font-size: 1.6rem;
+            }
         }
 
-        /* Responsive adjustments */
         @media (max-width: 991.98px) {
-            .testimonials-section .row {
-                margin: 0 -0.75rem;
+            .info3 .card-title {
+                font-size: 3.5rem;
             }
-            .testimonials-section .col-md-4 {
-                padding: 0.75rem;
-            }
-            .testimonial-card {
-                padding: 1.5rem;
-            }
-            .testimonial-text {
-                min-height: 100px;
-                font-size: 1rem;
+            
+            .features4 { padding: 3rem 0; }
+            .features4 .item-wrapper { padding: 1.5rem; }
+            
+            .health-tips-section h3,
+            .testimonials-section h3 {
+                font-size: 3rem;
             }
         }
 
         @media (max-width: 767.98px) {
-            .testimonials-section .row {
-                margin: 0 -0.5rem;
+            .info3 {
+                padding: 1.2rem 0 1rem 0;
             }
-            .testimonials-section .col-md-4 {
-                padding: 0.5rem;
+            
+            .info3 .container {
+                max-width: 98vw;
+                padding: 0 0.5rem;
             }
-            .testimonial-text {
-                min-height: 80px;
+            
+            .info3 .card {
+                padding: 1rem 0.5rem 0.8rem 0.5rem;
             }
-        }
-
-        /* Responsive improvements */
-        @media (max-width: 991.98px) {
-            .features4 .item-title {
+            
+            .info3 .card-title {
                 font-size: 1.3rem;
             }
-            .features4 .mbr-text {
-                font-size: 1rem;
+            
+            .features4 .item-wrapper { padding: 1.5rem; }
+            
+            .health-tips-section h3,
+            .testimonials-section h3 {
+                font-size: 2.5rem;
             }
-            .features4 .item-wrapper {
-                padding: 1.5rem;
-            }
-        }
-        @media (max-width: 767.98px) {
-            .features4 .row {
-                margin: -0.5rem;
-            }
-            .features4 .item {
-                padding: 0.5rem;
-                margin-bottom: 1rem;
-            }
-            .features4 .item-title {
-                font-size: 1.2rem;
-            }
-            .features4 .mbr-text {
-                font-size: 0.95rem;
-                margin-bottom: 1rem;
-            }
-            .features4 .item-wrapper {
-                padding: 1.2rem;
-            }
-        }
-        @media (max-width: 575.98px) {
-            .features4 .item {
-                width: 100%;
-            }
-            .features4 .item-title {
+            
+            .health-tips-section li {
                 font-size: 1.1rem;
+                padding: 1.2rem 1.5rem;
             }
-            .features4 .mbr-text {
-                font-size: 0.9rem;
+            
+            .features4 .item-img i { font-size: 1.5rem; }
+        }
+
+        @media (max-width: 575.98px) {
+            .info3 .card-title {
+                font-size: 1.8rem;
+            }
+            
+            .features4 .item-title {
+                font-size: 1.4rem;
+            }
+            
+            .health-tips-section h3,
+            .testimonials-section h3 {
+                font-size: 2rem;
             }
         }
     </style>
@@ -378,14 +413,27 @@
 <?php include 'includes/navbar.php'; ?>
 
 <section class="info3 cid-smHa3xqxC6 mbr-parallax-background" id="info3-r">
-    <div class="mbr-overlay" style="opacity: 0.6; background-color: rgb(200 13 125);">
-    </div>
-    <div class="container">
+    <div class="mbr-overlay" style="opacity: 0.6; background-color: rgb(255 255 255);"></div>
+    <div class="container" style="max-width: 1400px;">
         <div class="row justify-content-center">
-            <div class="card col-12 col-lg-10">
-                <div class="card-wrapper">
+            <div class="col-12">
+                <div class="card-wrapper" style="background: linear-gradient(120deg, #c80d7d 0%, #f06292 100%); border-radius: 2.5rem; box-shadow: 0 8px 32px rgba(200,13,125,0.13); padding: 3rem 3rem 2.5rem 3rem; position: relative; overflow: hidden; max-width: 1200px; margin: 0 auto; min-height: 320px;">
+                    <!-- Decorative pink circles -->
+                    <div style="position:absolute; top:-40px; left:-40px; width:120px; height:120px; background:rgba(255,255,255,0.08); border-radius:50%;"></div>
+                    <div style="position:absolute; bottom:-30px; right:-30px; width:80px; height:80px; background:rgba(255,255,255,0.12); border-radius:50%;"></div>
                     <div class="card-box align-center">
-                        <h4 class="card-title mbr-fonts-style align-center mb-4 display-1"><strong>Body Care</strong></h4>
+                        <h4 class="card-title mbr-fonts-style align-center mb-3 display-1" style="color: #fff; font-weight: 800; letter-spacing: 2px; text-shadow: 0 2px 12px rgba(200,13,125,0.13); font-size: 3.5rem;">
+                            <i class="fas fa-heartbeat" style="color: #fff5f9; margin-right: 0.5rem; font-size: 2.1rem;"></i>
+                            <strong>Body Care</strong>
+                        </h4>
+                        <div class="header-subtitle" style="color: #fff5f9; font-size: 1.3rem; font-family: 'Source Serif Pro', serif; margin-bottom: 1.2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                            Empower your body with smart tools & daily tips..
+                        </div>
+                        <div class="header-icons" style="margin-top: 1.2rem;">
+                            <i class="fas fa-dumbbell" style="background: #f06292; color: #fff; border-radius: 50%; padding: 0.7rem 1rem; margin: 0 0.3rem; font-size: 2rem;"></i>
+                            <i class="fas fa-stethoscope" style="background: #c80d7d; color: #fff; border-radius: 50%; padding: 0.7rem 1rem; margin: 0 0.3rem; font-size: 2rem;"></i>
+                            <i class="fas fa-heart" style="background: #f06292; color: #fff; border-radius: 50%; padding: 0.7rem 1rem; margin: 0 0.3rem; font-size: 2rem;"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -442,7 +490,7 @@
                         </p>
                     </div>
                     <div class="mbr-section-btn item-footer mt-2">
-                        <a href="bodyspace/index.php" class="btn item-btn btn-primary display-7">Explore Now &gt;</a>
+                        <a href="bodyspace/index.html" class="btn item-btn btn-primary display-7">Explore Now &gt;</a>
                     </div>
                 </div>
             </div>
@@ -459,7 +507,7 @@
                         </p>
                     </div>
                     <div class="mbr-section-btn item-footer mt-2">
-                        <a href="know-your-medicine/medicine.php" class="btn item-btn btn-primary display-7">Explore Now &gt;</a>
+                        <a href="know-your-medicine/medicine.html" class="btn item-btn btn-primary display-7">Explore Now &gt;</a>
                     </div>
                 </div>
             </div>
