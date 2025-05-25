@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/includes/functions.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'patient') {
@@ -17,51 +18,60 @@ try {
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $patientDetails = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
 } catch (Exception $e) {
     // Handle error silently
+    error_log("Error fetching patient details: " . $e->getMessage());
+    $patientDetails = [];
 }
 
 // Fetch upcoming appointments
 try {
     $stmt = $con->prepare("SELECT a.*, d.full_name as doctor_name, d.specialization, d.phone as doctor_phone
-                          FROM appointments a 
-                          JOIN doctors d ON a.doctor_id = d.doctor_id 
-                          WHERE a.patient_id = ? AND a.appointment_date >= CURDATE() 
-                          ORDER BY a.appointment_date ASC 
+                          FROM appointments a
+                          JOIN doctors d ON a.doctor_id = d.doctor_id
+                          WHERE a.patient_id = ? AND a.appointment_date >= CURDATE()
+                          ORDER BY a.appointment_date ASC
                           LIMIT 3");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $upcomingAppointments = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
 } catch (Exception $e) {
     $upcomingAppointments = [];
+    error_log("Error fetching upcoming appointments: " . $e->getMessage());
 }
 
 // Fetch recent medical records
 try {
     $stmt = $con->prepare("SELECT mr.*, d.full_name as doctor_name, d.specialization
-                          FROM medical_records mr 
-                          JOIN doctors d ON mr.doctor_id = d.doctor_id 
-                          WHERE mr.patient_id = ? 
-                          ORDER BY mr.record_date DESC 
+                          FROM medical_records mr
+                          JOIN doctors d ON mr.doctor_id = d.doctor_id
+                          WHERE mr.patient_id = ?
+                          ORDER BY mr.record_date DESC
                           LIMIT 3");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $medicalRecords = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
 } catch (Exception $e) {
     $medicalRecords = [];
+    error_log("Error fetching medical records: " . $e->getMessage());
 }
 
 // Fetch unread notifications
 try {
-    $stmt = $con->prepare("SELECT * FROM notifications 
-                          WHERE user_id = ? AND user_type = 'patient' AND is_read = 0 
-                          ORDER BY created_at DESC 
+    $stmt = $con->prepare("SELECT * FROM notifications
+                          WHERE user_id = ? AND user_type = 'patient' AND is_read = 0
+                          ORDER BY created_at DESC
                           LIMIT 5");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
     $notifications = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
 } catch (Exception $e) {
     $notifications = [];
+    error_log("Error fetching notifications: " . $e->getMessage());
 }
 
 // Handle logout
@@ -79,6 +89,20 @@ if (isset($_GET['logout'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Dashboard - WeCare</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/homepage.css">
+    <link rel="stylesheet" href="assets/web/assets/mobirise-icons2/mobirise2.css">
+    <link rel="stylesheet" href="assets/tether/tether.min.css">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap-reboot.min.css">
+    <link rel="stylesheet" href="assets/dropdown/css/style.css">
+    <link rel="stylesheet" href="assets/socicon/css/styles.css">
+    <link rel="stylesheet" href="assets/theme/css/style.css">
+    <link rel="preload" as="style" href="assets/mobirise/css/mbr-additional.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
+  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -372,7 +396,6 @@ if (isset($_GET['logout'])) {
                     <p style="color: var(--light-text);">Quick access to emergency services and support.</p>
                     <div class="action-buttons">
                         <a href="tel:911" class="btn btn-accent">Call Now</a>
-                        <a href="emergency_contacts.php" class="btn btn-primary">View All</a>
                     </div>
                 </div>
             </div>
@@ -406,7 +429,6 @@ if (isset($_GET['logout'])) {
                                         </span>
                                         <div class="action-buttons" style="margin-top: 0.5rem;">
                                             <a href="tel:<?php echo htmlspecialchars($appointment['doctor_phone']); ?>" class="btn btn-primary">Call</a>
-                                            <a href="reschedule.php?id=<?php echo $appointment['appointment_id']; ?>" class="btn btn-secondary">Reschedule</a>
                                         </div>
                                     </div>
                                 </div>
@@ -450,9 +472,9 @@ if (isset($_GET['logout'])) {
                                 </div>
                             </div>
                         <?php endforeach; ?>
-        </div>
+                    </div>
                 <?php endif; ?>
-    </section>
+            </section>
 
             <!-- Health Tips -->
             <section class="card">
@@ -481,3 +503,4 @@ if (isset($_GET['logout'])) {
     <?php require_once 'includes/footer.php'; ?>
 </body>
 </html>
+

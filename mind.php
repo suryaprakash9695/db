@@ -362,22 +362,22 @@ if (session_status() === PHP_SESSION_NONE) {
     <div class="container" style="max-width: 1400px;">
         <div class="row justify-content-center">
             <div class="col-12">
-                <div class="card-wrapper" style="background: linear-gradient(120deg, #c80d7d 0%, #f06292 100%); border-radius: 2.5rem; box-shadow: 0 8px 32px rgba(200,13,125,0.13); padding: 3rem 3rem 2.5rem 3rem; position: relative; overflow: hidden; max-width: 1200px; margin: 0 auto; min-height: 320px;">
+                <div class="card-wrapper" style="background: linear-gradient(120deg, #c80d7d 0%, #f06292 100%); border-radius: 2.5rem; box-shadow: 0 8px 32px rgba(200,13,125,0.13); padding: 1.5rem 3rem 1rem 3rem; position: relative; overflow: hidden; max-width: 1200px; margin: 0 auto; min-height: 180px;">
                     <!-- Decorative pink circles -->
                     <div style="position:absolute; top:-40px; left:-40px; width:120px; height:120px; background:rgba(255,255,255,0.08); border-radius:50%;"></div>
                     <div style="position:absolute; bottom:-30px; right:-30px; width:80px; height:80px; background:rgba(255,255,255,0.12); border-radius:50%;"></div>
                     <div class="card-box align-center">
-                        <h4 class="card-title mbr-fonts-style align-center mb-3 display-1" style="color: #fff; font-weight: 800; letter-spacing: 2px; text-shadow: 0 2px 12px rgba(200,13,125,0.13); font-size: 3.5rem;">
-                            <i class="fas fa-heartbeat" style="color: #fff5f9; margin-right: 0.5rem; font-size: 2.1rem;"></i>
+                        <h4 class="card-title mbr-fonts-style align-center mb-1 display-1" style="color: #fff; font-weight: 800; letter-spacing: 2px; text-shadow: 0 2px 12px rgba(200,13,125,0.13); font-size: 2.5rem;">
+                            <i class="fas fa-heartbeat" style="color: #fff5f9; margin-right: 0.5rem; font-size: 1.5rem;"></i>
                             <strong>Mind Care</strong>
                         </h4>
-                        <div class="header-subtitle" style="color: #fff5f9; font-size: 1.3rem; font-family: 'Source Serif Pro', serif; margin-bottom: 1.2rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                        <div class="header-subtitle" style="color: #fff5f9; font-size: 1.1rem; font-family: 'Source Serif Pro', serif; margin-bottom: 0.8rem; max-width: 800px; margin-left: auto; margin-right: auto;">
                             Nurture your mind with smart tools & daily tips..
                         </div>
-                        <div class="header-icons" style="margin-top: 1.2rem;">
-                            <i class="fas fa-brain" style="background: #f06292; color: #fff; border-radius: 50%; padding: 0.7rem 1rem; margin: 0 0.3rem; font-size: 2rem;"></i>
-                            <i class="fas fa-spa" style="background: #c80d7d; color: #fff; border-radius: 50%; padding: 0.7rem 1rem; margin: 0 0.3rem; font-size: 2rem;"></i>
-                            <i class="fas fa-heart" style="background: #f06292; color: #fff; border-radius: 50%; padding: 0.7rem 1rem; margin: 0 0.3rem; font-size: 2rem;"></i>
+                        <div class="header-icons" style="margin-top: 0.8rem;">
+                            <i class="fas fa-brain" style="background: #f06292; color: #fff; border-radius: 50%; padding: 0.5rem 0.8rem; margin: 0 0.3rem; font-size: 1.5rem;"></i>
+                            <i class="fas fa-spa" style="background: #c80d7d; color: #fff; border-radius: 50%; padding: 0.5rem 0.8rem; margin: 0 0.3rem; font-size: 1.5rem;"></i>
+                            <i class="fas fa-heart" style="background: #f06292; color: #fff; border-radius: 50%; padding: 0.5rem 0.8rem; margin: 0 0.3rem; font-size: 1.5rem;"></i>
                         </div>
                     </div>
                 </div>

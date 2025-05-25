@@ -18,20 +18,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             // Check if email already exists
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM patients WHERE email = ?");
-            $stmt->execute([$email]);
-            if ($stmt->fetchColumn() > 0) {
+            $stmt = $con->prepare("SELECT COUNT(*) FROM patients WHERE email = ?");
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $stmt->bind_result($count);
+            $stmt->fetch();
+            $stmt->close();
+
+            if ($count > 0) {
                 $error = 'Email already registered';
             } else {
                 // Insert new patient
                 $hashed_password = hash_password($password);
-                $stmt = $pdo->prepare("INSERT INTO patients (full_name, email, phone, password) VALUES (?, ?, ?, ?)");
-                $stmt->execute([$full_name, $email, $phone, $hashed_password]);
+                $stmt = $con->prepare("INSERT INTO patients (full_name, email, phone, password) VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("ssss", $full_name, $email, $phone, $hashed_password);
+                $stmt->execute();
+                $stmt->close();
                 
-                $success = 'Registration successful! You can now login.';
+                // Redirect to login page after successful registration
+                $_SESSION['success_message'] = 'Registration successful! You can now login.';
+                header("Location: patient_login.php");
+                exit;
             }
-        } catch(PDOException $e) {
+        } catch(Exception $e) {
             $error = 'Registration failed. Please try again.';
+            // Log the error for debugging
+            error_log("Registration error: " . $e->getMessage());
         }
     }
 }
@@ -209,11 +221,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p style="color: #666; margin-top: 1rem; font-size: 1.1rem;">Create your account to get started</p>
                 </div>
                 <div class="card-body">
+                    <?php
+                    // Display success message from session if redirected from successful signup
+                    if (isset($_SESSION['success_message'])) {
+                        echo '<div class="alert alert-success">' . $_SESSION['success_message'] . '</div>';
+                        unset($_SESSION['success_message']); // Clear the message
+                    }
+                    ?>
                     <?php if ($error): ?>
                         <div class="alert alert-danger"><?php echo $error; ?></div>
-                    <?php endif; ?>
-                    <?php if ($success): ?>
-                        <div class="alert alert-success"><?php echo $success; ?></div>
                     <?php endif; ?>
                     <form method="POST" action="">
                         <div class="form-group mb-4">

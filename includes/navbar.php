@@ -46,22 +46,7 @@ require_once('notifications.php');
                 </ul>
 
                 <div class="navbar-buttons mbr-section-btn">
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                        <div class="profile-section">
-                            <div class="profile-icon">
-                                <?php echo strtoupper(substr($_SESSION['user_name'], 0, 1)); ?>
-                            </div>
-                            <span style="font-weight: 500;"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-                        </div>
-                        <div style="position: relative;">
-                            <button class="notification-bell" onclick="showNotifications()">
-                                <i class="fas fa-bell"></i>
-                                <span class="notification-badge"></span>
-                            </button>
-                            <div class="notifications-dropdown"></div>
-                        </div>
-                        <a href="?logout=true" class="btn display-4" style="background-color: #e71f68; border-color: #e71f68; color: #fff;">Logout</a>
-                    <?php else: ?>
+                   
                         <div class="dropdown">
                             <button class="btn btn-primary display-4 dropdown-toggle" type="button" id="loginDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-user-circle"></i> Login
@@ -70,13 +55,17 @@ require_once('notifications.php');
                                 <div class="dropdown-header">
                                     <h6>Choose your role</h6>
                                 </div>
-                                <a class="dropdown-item" href="patient/patient_login.php">
+                                <a class="dropdown-item" href="patient_login.php">
                                     <i class="fas fa-user"></i>
                                     <span>Patient Login</span>
                                 </a>
-                                <a class="dropdown-item" href="doctor/doctor_login.php">
+                                <a class="dropdown-item" href="doctor_login.php">
                                     <i class="fas fa-user-md"></i>
                                     <span>Doctor Login</span>
+                                </a>
+                                <a class="dropdown-item" href="admin_login.php">
+                                    <i class="fas fa-user-md"></i>
+                                    <span>Hospital Administrator</span>
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item signup-link" href="patient_signup.php">
@@ -85,7 +74,7 @@ require_once('notifications.php');
                                 </a>
                             </div>
                         </div>
-                    <?php endif; ?>
+
                 </div>
             </div>
         </div>

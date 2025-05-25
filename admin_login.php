@@ -4,26 +4,44 @@ require_once 'includes/db_connect.php';
 
 $error = '';
 
+// --- Default Admin Credentials (for testing/setup) ---
+// !! IMPORTANT: Remove or secure this for production environments !!
+$default_admin_email = 'admin@wecare.com';
+$default_admin_password = 'adminwecare123';
+// ----------------------------------------------------
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = sanitize_input($_POST['email']);
     $password = $_POST['password'];
 
-    try {
-        $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = ?");
-        $stmt->execute([$email]);
-        $admin = $stmt->fetch();
+    // --- Check for Default Admin Login ---
+    if ($email === $default_admin_email && $password === $default_admin_password) {
+        $_SESSION['user_id'] = 0; // Use a distinct ID like 0 for the default admin
+        $_SESSION['user_type'] = 'admin';
+        $_SESSION['user_name'] = 'Default Admin'; // Or simply 'Admin'
 
-        if ($admin && verify_password($password, $admin['password'])) {
-            $_SESSION['user_id'] = $admin['admin_id'];
-            $_SESSION['user_type'] = 'admin';
-            $_SESSION['user_name'] = 'Admin';
-            
-            redirect_with_message('admin_dashboard.php', 'Login successful!');
-        } else {
-            $error = 'Invalid email or password';
+        // Redirect to admin dashboard
+        redirect_with_message('admin_dashboard.php', 'Default Admin Login successful!');
+        exit; // Stop further execution
+    } else {
+    // --- Original Database Login Logic ---
+        try {
+            $result = execute_query("SELECT * FROM admin WHERE email = ?", [$email], 's');
+            $admin = $result->fetch_assoc();
+
+            if ($admin && verify_password($password, $admin['password'])) {
+                $_SESSION['user_id'] = $admin['admin_id'];
+                $_SESSION['user_type'] = 'admin';
+                $_SESSION['user_name'] = 'Admin';
+                
+                redirect_with_message('admin_dashboard.php', 'Login successful!');
+            } else {
+                $error = 'Invalid email or password';
+            }
+        } catch(Exception $e) {
+            $error = 'Login failed. Please try again.';
+            error_log("Login error: " . $e->getMessage());
         }
-    } catch(PDOException $e) {
-        $error = 'Login failed. Please try again.';
     }
 }
 ?>

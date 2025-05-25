@@ -260,7 +260,7 @@
                             <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9; margin-bottom: 2rem;">
                                 Access personalized healthcare services, schedule appointments, and manage your medical records all in one place.
                             </p>
-                            <a href="patient/patient_login.php" class="custom-btn" style="background: white; color: #0080ff;">Get Started</a>
+                            <a href="patient_login.php" class="custom-btn" style="background: white; color: #0080ff;">Get Started</a>
                         </div>
                     </div>
                 </div>
@@ -272,7 +272,7 @@
                             <p style="font-size: 1.1rem; line-height: 1.6; opacity: 0.9; margin-bottom: 2rem;">
                                 Manage your practice, view patient records, and provide quality healthcare services through our integrated platform.
                             </p>
-                            <a href="doctor/doctor_login.php" class="custom-btn" style="background: white; color: #28a745;">Join Now</a>
+                            <a href="doctor_login.php" class="custom-btn" style="background: white; color: #28a745;">Join Now</a>
                         </div>
                     </div>
                 </div>
