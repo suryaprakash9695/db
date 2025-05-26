@@ -83,35 +83,76 @@ if (isset($_POST['action'])) {
 
 // Handle Add Operations
 if (isset($_POST['add_patient'])) {
-    $full_name = $_POST['full_name'];
-    $email = $_POST['email'];
-    $phone = $_POST['phone'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-
+    error_log("Add patient form submitted");
+    
     try {
-        // Check if email already exists
-        $check_email = $con->prepare("SELECT COUNT(*) FROM patients WHERE email = ?");
-        $check_email->bind_param("s", $email);
-        $check_email->execute();
-        $check_email->bind_result($email_count);
-        $check_email->fetch();
-        $check_email->close();
+        // Get and sanitize input
+        $full_name = trim($_POST['full_name']);
+        $email = trim($_POST['email']);
+        $phone = trim($_POST['phone']);
+        $password = $_POST['password'];
 
-        if ($email_count > 0) {
-            throw new Exception("A patient with this email already exists.");
+        error_log("Received data - Name: $full_name, Email: $email, Phone: $phone");
+
+        // Validate input
+        if (empty($full_name) || empty($email) || empty($phone) || empty($password)) {
+            throw new Exception("All fields are required");
         }
 
-        $add_query = "INSERT INTO patients (full_name, email, phone, password) VALUES (?, ?, ?, ?)";
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Invalid email format");
+        }
+
+        // Check if email already exists
+        $check_email = $con->prepare("SELECT COUNT(*) as count FROM patients WHERE email = ?");
+        if (!$check_email) {
+            error_log("Database error in email check: " . $con->error);
+            throw new Exception("Database error: " . $con->error);
+        }
+        
+        $check_email->bind_param("s", $email);
+        $check_email->execute();
+        $result = $check_email->get_result();
+        $row = $result->fetch_assoc();
+        
+        if ($row['count'] > 0) {
+            throw new Exception("A patient with this email already exists");
+        }
+
+        // Hash password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        // Insert the new patient
+        $add_query = "INSERT INTO patients (full_name, email, phone, password, is_active) VALUES (?, ?, ?, ?, 1)";
         $stmt = $con->prepare($add_query);
-        $stmt->bind_param("ssss", $full_name, $email, $phone, $password);
+        if (!$stmt) {
+            error_log("Database error in insert: " . $con->error);
+            throw new Exception("Database error: " . $con->error);
+        }
+        
+        $stmt->bind_param("ssss", $full_name, $email, $phone, $hashed_password);
         
         if ($stmt->execute()) {
+            error_log("Patient added successfully");
             $success_message = "Patient added successfully!";
+            // Refresh the page with the patients tab active
+            echo "<script>
+                window.location.href = 'admin_dashboard.php?active_tab=patients&success=Patient added successfully!';
+            </script>";
+            exit();
         } else {
+            error_log("Error executing insert: " . $stmt->error);
             throw new Exception("Error adding patient: " . $stmt->error);
         }
     } catch (Exception $e) {
+        error_log("Error in add patient: " . $e->getMessage());
         $error_message = $e->getMessage();
+        // Refresh the page with the patients tab active and error message
+        echo "<script>
+            window.location.href = 'admin_dashboard.php?active_tab=patients&error=" . urlencode($e->getMessage()) . "';
+        </script>";
+        exit();
     }
 }
 
@@ -382,6 +423,28 @@ $appointments_query = "SELECT a.*, p.full_name as patient_name, d.full_name as d
                       JOIN doctors d ON a.doctor_id = d.doctor_id 
                       ORDER BY a.appointment_date DESC";
 $appointments_result = $con->query($appointments_query);
+
+if (isset($_POST['action']) && $_POST['action'] === 'delete_appointment' && isset($_POST['appointment_id'])) {
+    $appointment_id = (int)$_POST['appointment_id'];
+    
+    try {
+        // Delete the appointment
+        $delete_query = "DELETE FROM appointments WHERE appointment_id = ?";
+        $stmt = $con->prepare($delete_query);
+        $stmt->bind_param("i", $appointment_id);
+        
+        if ($stmt->execute()) {
+            $success_message = "Appointment deleted successfully!";
+            // Redirect back to admin dashboard with appointments tab active
+            header("Location: admin_dashboard.php?active_tab=appointments");
+            exit();
+        } else {
+            throw new Exception("Error deleting appointment: " . $stmt->error);
+        }
+    } catch (Exception $e) {
+        $error_message = $e->getMessage();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -908,31 +971,31 @@ $appointments_result = $con->query($appointments_query);
                                 <h5 class="mb-0"><i class="fas fa-user-plus"></i> Add New Patient</h5>
                             </div>
                             <div class="card-body">
-                                <form method="POST" action="">
+                                <form method="POST" action="admin_dashboard.php" id="addPatientForm">
                                     <input type="hidden" name="active_tab" value="patients">
                                     <div class="row">
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <input type="text" class="form-control" name="full_name" placeholder="Full Name" required>
+                                                <input type="text" class="form-control" name="full_name" id="full_name" placeholder="Full Name" required>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <input type="email" class="form-control" name="email" placeholder="Email" required>
+                                                <input type="email" class="form-control" name="email" id="email" placeholder="Email" required>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <input type="tel" class="form-control" name="phone" placeholder="Phone" required>
+                                                <input type="tel" class="form-control" name="phone" id="phone" placeholder="Phone" required>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
-                                                <input type="password" class="form-control" name="password" placeholder="Password" required>
+                                                <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="submit" name="add_patient" class="btn btn-primary">
+                                    <button type="submit" name="add_patient" class="btn btn-primary" id="addPatientBtn">
                                         <i class="fas fa-plus"></i> Add Patient
                                     </button>
                                 </form>
@@ -1803,37 +1866,76 @@ $appointments_result = $con->query($appointments_query);
 
         // Function to handle appointment actions
         function viewAppointment(id) {
+            console.log('Fetching appointment details for ID:', id);
+            
+            // Show loading state
+            $('#viewAppointmentModal').modal('show');
+            $('.modal-body').html('<div class="text-center"><i class="fas fa-spinner fa-spin fa-2x"></i><p>Loading appointment details...</p></div>');
+            
             // Fetch appointment details using AJAX
             $.ajax({
                 url: 'get_appointment_details.php',
                 type: 'POST',
                 data: { appointment_id: id },
-                success: function(response) {
-                    const data = JSON.parse(response);
+                dataType: 'json',
+                success: function(data) {
+                    console.log('Received data:', data);
                     
-                    // Update modal content
-                    $('#view_appointment_id').text(data.appointment_id);
-                    $('#view_appointment_date').text(data.appointment_date);
-                    $('#view_appointment_time').text(data.appointment_time);
-                    $('#view_appointment_status').html(
-                        `<span class="badge badge-${getStatusClass(data.status)}">${data.status}</span>`
-                    );
-                    $('#view_appointment_reason').text(data.reason);
-                    $('#view_appointment_notes').text(data.notes);
-                    $('#view_appointment_communication').text(data.preferred_communication);
+                    if (data.error) {
+                        console.error('Error in response:', data.error);
+                        $('.modal-body').html(`<div class="alert alert-danger">${data.error}</div>`);
+                        return;
+                    }
                     
-                    $('#view_patient_name').text(data.patient_name);
-                    $('#view_patient_phone').text(data.patient_phone || 'Not specified');
-                    $('#view_doctor_name').text(data.doctor_name);
-                    $('#view_doctor_phone').text(data.doctor_phone || 'Not specified');
-                    $('#view_doctor_specialization').text(data.specialization);
-                    $('#view_doctor_license').text(data.license_no || 'Not specified');
-                    
-                    // Show the modal
-                    $('#viewAppointmentModal').modal('show');
+                    try {
+                        // Update modal content with appointment information
+                        $('#view_appointment_id').text(data.appointment_id || 'N/A');
+                        $('#view_appointment_date').text(data.appointment_date || 'N/A');
+                        $('#view_appointment_time').text(data.appointment_time || 'N/A');
+                        
+                        // Set status with appropriate badge
+                        let statusClass = 'badge-secondary';
+                        switch(data.status) {
+                            case 'Scheduled':
+                                statusClass = 'badge-info';
+                                break;
+                            case 'Completed':
+                                statusClass = 'badge-success';
+                                break;
+                            case 'Cancelled':
+                                statusClass = 'badge-danger';
+                                break;
+                        }
+                        $('#view_appointment_status').html(`<span class="badge ${statusClass}">${data.status || 'N/A'}</span>`);
+                        
+                        $('#view_appointment_reason').text(data.reason || 'Not specified');
+                        $('#view_appointment_notes').text(data.notes || 'No additional notes');
+                        $('#view_appointment_communication').text(data.preferred_communication || 'Not specified');
+                        
+                        // Update patient information
+                        $('#view_patient_name').text(data.patient_name || 'Not specified');
+                        $('#view_patient_phone').text(data.patient_phone || 'Not specified');
+                        
+                        // Update doctor information
+                        $('#view_doctor_name').text(data.doctor_name || 'Not specified');
+                        $('#view_doctor_phone').text(data.doctor_phone || 'Not specified');
+                        $('#view_doctor_specialization').text(data.specialization || 'Not specified');
+                        $('#view_doctor_license').text(data.license_no || 'Not specified');
+                        
+                        // Show the modal
+                        $('#viewAppointmentModal').modal('show');
+                    } catch (error) {
+                        console.error('Error updating modal content:', error);
+                        $('.modal-body').html(`<div class="alert alert-danger">Error displaying appointment details: ${error.message}</div>`);
+                    }
                 },
-                error: function() {
-                    alert('Error fetching appointment details');
+                error: function(xhr, status, error) {
+                    console.error('AJAX error:', {
+                        status: status,
+                        error: error,
+                        response: xhr.responseText
+                    });
+                    $('.modal-body').html(`<div class="alert alert-danger">Error fetching appointment details: ${error}</div>`);
                 }
             });
         }
@@ -1857,9 +1959,48 @@ $appointments_result = $con->query($appointments_query);
         }
 
         function deleteAppointment(id) {
-            if(confirm('Are you sure you want to delete this appointment?')) {
-                // Implement delete appointment
-                alert('Delete appointment ' + id);
+            if (confirm('Are you sure you want to delete this appointment?')) {
+                $.ajax({
+                    url: 'admin_dashboard.php',
+                    type: 'POST',
+                    data: {
+                        action: 'delete_appointment',
+                        appointment_id: id,
+                        active_tab: 'appointments'
+                    },
+                    success: function(response) {
+                        // Show success message
+                        const successAlert = $('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
+                            '<i class="fas fa-check-circle"></i> Appointment deleted successfully!' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                            '<span aria-hidden="true">&times;</span></button></div>');
+                        $('.container-fluid').prepend(successAlert);
+                        
+                        // Remove the row from the table
+                        $(`tr:has(button[onclick="deleteAppointment(${id})"])`).fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        
+                        // Remove alert after 3 seconds
+                        setTimeout(() => {
+                            successAlert.alert('close');
+                        }, 3000);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error deleting appointment:', error);
+                        // Show error message
+                        const errorAlert = $('<div class="alert alert-danger alert-dismissible fade show" role="alert">' +
+                            '<i class="fas fa-exclamation-circle"></i> Error deleting appointment: ' + error +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                            '<span aria-hidden="true">&times;</span></button></div>');
+                        $('.container-fluid').prepend(errorAlert);
+                        
+                        // Remove alert after 3 seconds
+                        setTimeout(() => {
+                            errorAlert.alert('close');
+                        }, 3000);
+                    }
+                });
             }
         }
 
@@ -1968,6 +2109,101 @@ $appointments_result = $con->query($appointments_query);
                         submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                     }
                 });
+            });
+        });
+
+        $(document).ready(function() {
+            $('#addPatientForm').on('submit', function(e) {
+                const fullName = $('input[name="full_name"]').val().trim();
+                const email = $('input[name="email"]').val().trim();
+                const phone = $('input[name="phone"]').val().trim();
+                const password = $('input[name="password"]').val();
+
+                // Basic validation
+                if (!fullName || !email || !phone || !password) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields');
+                    return false;
+                }
+
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    e.preventDefault();
+                    alert('Please enter a valid email address');
+                    return false;
+                }
+
+                // Phone validation (basic)
+                const phoneRegex = /^[0-9+\-\s()]{10,}$/;
+                if (!phoneRegex.test(phone)) {
+                    e.preventDefault();
+                    alert('Please enter a valid phone number');
+                    return false;
+                }
+
+                // Password validation
+                if (password.length < 6) {
+                    e.preventDefault();
+                    alert('Password must be at least 6 characters long');
+                    return false;
+                }
+
+                // Show loading state
+                const submitBtn = $(this).find('button[type="submit"]');
+                submitBtn.prop('disabled', true);
+                submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Adding Patient...');
+            });
+        });
+
+        function validateAddPatientForm() {
+            const fullName = document.getElementById('full_name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Basic validation
+            if (!fullName || !email || !phone || !password) {
+                alert('Please fill in all required fields');
+                return false;
+            }
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address');
+                return false;
+            }
+
+            // Phone validation (basic)
+            const phoneRegex = /^[0-9+\-\s()]{10,}$/;
+            if (!phoneRegex.test(phone)) {
+                alert('Please enter a valid phone number');
+                return false;
+            }
+
+            // Password validation
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long');
+                return false;
+            }
+
+            // Show loading state
+            const submitBtn = document.getElementById('addPatientBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding Patient...';
+
+            return true;
+        }
+
+        // Add this at the beginning of your script section
+        document.addEventListener('DOMContentLoaded', function() {
+            // Clear any existing messages when the page loads
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.remove();
+                }, 5000);
             });
         });
     </script>
