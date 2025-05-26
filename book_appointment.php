@@ -79,6 +79,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $preferred_communication = $_POST['preferred_communication'];
 
         try {
+            // Validate date is not in the past
+            if (strtotime($appointment_date) < strtotime(date('Y-m-d'))) {
+                throw new Exception("Cannot book appointments for past dates.");
+            }
+
+            // Check if the doctor is active
+            $check_doctor = $con->prepare("SELECT is_active FROM doctors WHERE doctor_id = ?");
+            $check_doctor->bind_param("i", $doctor_id);
+            $check_doctor->execute();
+            $doctor_result = $check_doctor->get_result();
+            $doctor_data = $doctor_result->fetch_assoc();
+
+            if (!$doctor_data['is_active']) {
+                throw new Exception("This doctor is currently not available for appointments.");
+            }
+
             // Check if the time slot is available
             $stmt = $con->prepare("SELECT COUNT(*) as count FROM appointments 
                                   WHERE doctor_id = ? AND appointment_date = ? AND appointment_time = ? 
@@ -98,16 +114,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $reason, $notes, $preferred_communication);
 
                 if ($stmt->execute()) {
-                    // Only show success message, do not send email or notification
-                    $success = "Appointment booked successfully!";
+                    $success = "Appointment booked successfully! You will receive a confirmation shortly.";
                     // Clear form data after successful submission
                     $_POST = array();
                 } else {
-                    $error = "Failed to book appointment. Please try again.";
+                    throw new Exception("Failed to book appointment. Please try again.");
                 }
             }
         } catch (Exception $e) {
-            $error = "An error occurred. Please try again.";
+            $error = $e->getMessage();
             error_log("Error in book_appointment.php: " . $e->getMessage());
         }
     }
@@ -699,6 +714,53 @@ try {
                 alert('Please fill in all required fields marked with *');
             }
         });
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const appointmentForm = document.getElementById('appointmentForm');
+        const doctorSelect = document.getElementById('doctor_id');
+        const dateInput = document.getElementById('appointment_date');
+        const timeSelect = document.getElementById('appointment_time');
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+
+        // Handle form submission
+        appointmentForm.addEventListener('submit', function(e) {
+            const submitButton = this.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Booking...';
+        });
+
+        // Validate doctor selection
+        doctorSelect.addEventListener('change', function() {
+            if (!this.value) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
+
+        // Validate date selection
+        dateInput.addEventListener('change', function() {
+            if (!this.value) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
+
+        // Validate time selection
+        timeSelect.addEventListener('change', function() {
+            if (!this.value) {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+            }
+        });
+    });
     </script>
 </body>
 </html>
