@@ -1,3 +1,74 @@
+<?php
+session_start();
+require_once 'config.php';
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $last_period = $_POST['last_period'] ?? '';
+    $cycle_length = $_POST['cycle_length'] ?? '';
+    $mood = $_POST['mood'] ?? '';
+    $flow = $_POST['flow'] ?? '';
+    $symptoms = $_POST['symptoms'] ?? [];
+    $notes = $_POST['notes'] ?? '';
+
+    // Calculate next period date
+    $next_period = date('Y-m-d', strtotime($last_period . ' + ' . $cycle_length . ' days'));
+    
+    // Calculate fertile window (5 days before and including ovulation)
+    $ovulation = date('Y-m-d', strtotime($last_period . ' + 14 days'));
+    $fertile_start = date('Y-m-d', strtotime($ovulation . ' - 5 days'));
+    $fertile_end = date('Y-m-d', strtotime($ovulation . ' + 1 day'));
+
+    // Save to database
+    try {
+        $stmt = $conn->prepare("INSERT INTO cycle_tracker (user_id, last_period, cycle_length, mood, flow, symptoms, notes, next_period, fertile_start, fertile_end) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $user_id = $_SESSION['user_id'] ?? 1; // Default to 1 if not logged in
+        $symptoms_json = json_encode($symptoms);
+        
+        $stmt->bind_param("iissssssss", 
+            $user_id, 
+            $last_period, 
+            $cycle_length, 
+            $mood, 
+            $flow, 
+            $symptoms_json, 
+            $notes, 
+            $next_period, 
+            $fertile_start, 
+            $fertile_end
+        );
+        
+        if ($stmt->execute()) {
+            $_SESSION['success'] = "Cycle data updated successfully!";
+        } else {
+            $_SESSION['error'] = "Error updating cycle data.";
+        }
+    } catch (Exception $e) {
+        $_SESSION['error'] = "Database error: " . $e->getMessage();
+    }
+}
+
+// Get user's cycle data
+$cycle_data = [];
+$symptom_data = [];
+try {
+    $user_id = $_SESSION['user_id'] ?? 1;
+    $stmt = $conn->prepare("SELECT * FROM cycle_tracker WHERE user_id = ? ORDER BY last_period DESC LIMIT 6");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    while ($row = $result->fetch_assoc()) {
+        $cycle_data[] = [
+            'date' => $row['last_period'],
+            'length' => $row['cycle_length']
+        ];
+        $symptom_data[] = json_decode($row['symptoms'], true);
+    }
+} catch (Exception $e) {
+    $_SESSION['error'] = "Error fetching cycle data: " . $e->getMessage();
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,25 +92,28 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-   <style>
+    <style>
         :root {
-            --primary-color: #c80d7d;
+            --primary-color: #ff69b4;
             --secondary-color: #f8f9fa;
+            --accent-color: #ff1493;
             --text-color: #2c3e50;
             --border-radius: 12px;
             --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --gradient: linear-gradient(135deg, #ff69b4, #ff1493);
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f7fa;
+            background-color: #fff5f8;
             color: var(--text-color);
             line-height: 1.6;
         }
 
         .tracker-container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 3rem auto;
             padding: 2.5rem;
             background: #fff;
@@ -52,6 +126,11 @@
             margin-bottom: 3rem;
             padding-bottom: 2rem;
             border-bottom: 1px solid #eee;
+            background: var(--gradient);
+            margin: -2.5rem -2.5rem 3rem -2.5rem;
+            padding: 3rem 2.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            color: white;
         }
         
         .tracker-header img {
@@ -61,6 +140,9 @@
             margin-left: auto;
             margin-right: auto;
             transition: transform 0.3s ease;
+            background: white;
+            padding: 1rem;
+            border-radius: 50%;
         }
 
         .tracker-header img:hover {
@@ -68,17 +150,39 @@
         }
         
         .tracker-header h1 {
-            color: var(--primary-color);
+            color: white;
             font-weight: 600;
             margin-bottom: 1rem;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         
         .tracker-header .lead {
-            color: #666;
-            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
         }
-        
+
+        .nav-pills {
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .nav-pills .nav-link {
+            color: var(--text-color);
+            border-radius: 25px;
+            padding: 0.8rem 1.5rem;
+            margin: 0 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-pills .nav-link.active {
+            background: var(--gradient);
+            color: white;
+        }
+
         .tracker-form {
             background: var(--secondary-color);
             padding: 2rem;
@@ -114,7 +218,7 @@
 
         .form-control:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(200, 13, 125, 0.15);
+            box-shadow: 0 0 0 0.2rem rgba(255, 105, 180, 0.15);
         }
         
         .mood-flow-section {
@@ -172,7 +276,7 @@
         }
         
         .predict-button {
-            background: var(--primary-color);
+            background: var(--gradient);
             color: #fff;
             border: none;
             padding: 1rem 2rem;
@@ -187,7 +291,6 @@
         }
         
         .predict-button:hover {
-            background: #a00a65;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
@@ -222,10 +325,12 @@
             border-radius: var(--border-radius);
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             transition: transform 0.3s ease;
+            border: 1px solid #f0f0f0;
         }
 
         .suggestion-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
         .suggestion-card h3 {
@@ -242,6 +347,78 @@
             margin-bottom: 0.8rem;
         }
 
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .symptom-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .symptom-tag {
+            background: var(--gradient);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .symptom-tag:hover {
+            transform: scale(1.05);
+        }
+
+        .notes-section {
+            margin-top: 2rem;
+        }
+
+        .notes-section textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            resize: vertical;
+        }
+
+        .reminder-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+            box-shadow: var(--box-shadow);
+        }
+
+        .reminder-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .reminder-item:last-child {
+            border-bottom: none;
+        }
+
+        .reminder-item i {
+            color: var(--primary-color);
+            margin-right: 1rem;
+            font-size: 1.2rem;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .tracker-container {
@@ -249,18 +426,13 @@
                 padding: 1.5rem;
             }
 
-            .tracker-header h1 {
-                font-size: 1.8rem;
+            .nav-pills .nav-link {
+                margin: 0.25rem;
+                padding: 0.5rem 1rem;
             }
 
-            .radio-group {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .radio-label {
-                width: 100%;
-                justify-content: center;
+            .suggestions {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -271,118 +443,153 @@
     <div class="container">
         <div class="tracker-container">
             <div class="tracker-header">
-                <img src="assets/images/tracker.png" alt="Period Tracker" class="img-fluid">
-                <h1>Menstrual Cycle Tracker</h1>
-                <p class="lead">Track your cycle and get personalized health recommendations</p>
+                <img src="assets/images/thrive_small_logo.png" alt="WeCare Logo">
+                <h1>WeCare - Your Personal Cycle Companion</h1>
+                <p class="lead">Track, understand, and take control of your menstrual health</p>
             </div>
-            
-            <form id="trackerForm" class="tracker-form">
-                <h2>Enter your last period details</h2>
-                
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-label">Month</label>
-                            <select class="form-control" name="month" required>
-                                <option value="">Select Month</option>
-                                <option value="Jan">January</option>
-                                <option value="Feb">February</option>
-                                <option value="Mar">March</option>
-                                <option value="Apr">April</option>
-                                <option value="May">May</option>
-                                <option value="Jun">June</option>
-                                <option value="Jul">July</option>
-                                <option value="Aug">August</option>
-                                <option value="Sep">September</option>
-                                <option value="Oct">October</option>
-                                <option value="Nov">November</option>
-                                <option value="Dec">December</option>
-                            </select>
+
+            <ul class="nav nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pills-track-tab" data-bs-toggle="pill" data-bs-target="#pills-track" type="button" role="tab">Track Cycle</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-stats-tab" data-bs-toggle="pill" data-bs-target="#pills-stats" type="button" role="tab">Statistics</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-notes-tab" data-bs-toggle="pill" data-bs-target="#pills-notes" type="button" role="tab">Notes</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="pills-reminders-tab" data-bs-toggle="pill" data-bs-target="#pills-reminders" type="button" role="tab">Reminders</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-track" role="tabpanel">
+                    <form class="tracker-form" method="post" action="">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Last Period Start Date</label>
+                                    <input type="date" class="form-control" name="last_period" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="form-label">Cycle Length (days)</label>
+                                    <input type="number" class="form-control" name="cycle_length" min="21" max="35" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mood-flow-section">
+                            <div class="mood-flow-title">
+                                <i class="fas fa-heart"></i>
+                                <h3>How are you feeling today?</h3>
+                            </div>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="mood" value="happy"> Happy
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="mood" value="calm"> Calm
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="mood" value="irritable"> Irritable
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="mood" value="anxious"> Anxious
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="mood" value="tired"> Tired
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mood-flow-section">
+                            <div class="mood-flow-title">
+                                <i class="fas fa-tint"></i>
+                                <h3>Flow Intensity</h3>
+                            </div>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="flow" value="light"> Light
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="flow" value="medium"> Medium
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="flow" value="heavy"> Heavy
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mood-flow-section">
+                            <div class="mood-flow-title">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <h3>Symptoms</h3>
+                            </div>
+                            <div class="symptom-tags">
+                                <span class="symptom-tag">Cramps</span>
+                                <span class="symptom-tag">Headache</span>
+                                <span class="symptom-tag">Bloating</span>
+                                <span class="symptom-tag">Breast Tenderness</span>
+                                <span class="symptom-tag">Acne</span>
+                                <span class="symptom-tag">Fatigue</span>
+                                <span class="symptom-tag">Back Pain</span>
+                                <span class="symptom-tag">Mood Swings</span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="predict-button">
+                            <i class="fas fa-calendar-alt"></i> Update Tracker
+                        </button>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="pills-stats" role="tabpanel">
+                    <div class="chart-container">
+                        <h3>Cycle Statistics</h3>
+                        <canvas id="cycleChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Symptom Analysis</h3>
+                        <canvas id="symptomChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="pills-notes" role="tabpanel">
+                    <div class="notes-section">
+                        <h3>Personal Notes</h3>
+                        <textarea class="form-control" placeholder="How are you feeling today? Any special notes?"></textarea>
+                        <button class="predict-button mt-3">Save Notes</button>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="pills-reminders" role="tabpanel">
+                    <div class="reminder-section">
+                        <h3>Important Reminders</h3>
+                        <div class="reminder-item">
+                            <i class="fas fa-pills"></i>
+                            <div>
+                                <h5>Take your vitamins</h5>
+                                <p>Daily at 9:00 AM</p>
+                            </div>
+                        </div>
+                        <div class="reminder-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <div>
+                                <h5>Next period expected</h5>
+                                <p>In 14 days</p>
+                            </div>
+                        </div>
+                        <div class="reminder-item">
+                            <i class="fas fa-heartbeat"></i>
+                            <div>
+                                <h5>Fertility window</h5>
+                                <p>Starts in 5 days</p>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-label">Start Date</label>
-                            <input type="date" class="form-control" name="start" required>
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-label">End Date</label>
-                            <input type="date" class="form-control" name="end" required>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mood-flow-section">
-                    <div class="mood-flow-title">
-                        <img src="assets/images/flow.png" alt="Flow">
-                        <h3>Flow Intensity</h3>
-                    </div>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="flow" value="low" required> Low
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="flow" value="medium"> Medium
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="flow" value="high"> High
-                        </label>
-                    </div>
-                </div>
-                
-                <div class="mood-flow-section">
-                    <div class="mood-flow-title">
-                        <img src="assets/images/mood.png" alt="Mood">
-                        <h3>Mood</h3>
-                    </div>
-                    <div class="radio-group">
-                        <label class="radio-label">
-                            <input type="radio" name="mood" value="happy" required> Happy
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="mood" value="normal"> Normal
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="mood" value="stressed"> Stressed
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="mood" value="sad"> Sad
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" name="mood" value="anxious"> Anxious
-                        </label>
-                    </div>
-                </div>
-                
-                <button type="submit" class="predict-button">
-                    <i class="fas fa-calendar-alt me-2"></i> Predict Your Next Period
-                </button>
-            </form>
-            
-            <div id="predictionResult" class="prediction-result" style="display: none;">
-                <div class="alert alert-info">
-                    <i class="fas fa-calendar-check me-2"></i>
-                    Your next period is predicted to be on <span id="predictedDate"></span>
-                </div>
-                <div class="alert alert-warning">
-                    <i class="fas fa-clock me-2"></i>
-                    Fertile window: <span id="fertileWindow"></span>
-                </div>
-            </div>
-            
-            <div id="suggestions" class="suggestions" style="display: none;">
-                <div class="suggestion-card">
-                    <h3><i class="fas fa-utensils me-2"></i> Dietary Suggestions</h3>
-                    <div id="dietSuggestions"></div>
-                </div>
-                
-                <div class="suggestion-card">
-                    <h3><i class="fas fa-dumbbell me-2"></i> Workout Suggestions</h3>
-                    <div id="workoutSuggestions"></div>
                 </div>
             </div>
         </div>
@@ -393,129 +600,154 @@
     <script src="assets/web/assets/jquery/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script>
-    document.getElementById('trackerForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+        // Initialize charts with real data
+        const cycleCtx = document.getElementById('cycleChart').getContext('2d');
+        const symptomCtx = document.getElementById('symptomChart').getContext('2d');
 
-        // Validate dates
-        const start = new Date(this.start.value);
-        const end = new Date(this.end.value);
-        const today = new Date();
+        // Prepare chart data from PHP
+        const cycleData = <?php echo json_encode($cycle_data); ?>;
+        const symptomData = <?php echo json_encode($symptom_data); ?>;
 
-        if (start > end) {
-            alert('Start date cannot be after end date');
-            return;
-        }
-
-        if (start > today || end > today) {
-            alert('Dates cannot be in the future');
-            return;
-        }
-
-        // Calculate cycle length (average of last 3 cycles if available)
-        const cycleLength = 28; // Default cycle length
-        const nextPeriod = new Date(start.getTime() + cycleLength * 24 * 60 * 60 * 1000);
-        const predictedDate = nextPeriod.toISOString().split('T')[0];
-
-        // Calculate fertile window (5 days before and including ovulation)
-        const ovulation = new Date(start.getTime() + 14 * 24 * 60 * 60 * 1000);
-        const fertileStart = new Date(ovulation.getTime() - 5 * 24 * 60 * 60 * 1000);
-        const fertileEnd = new Date(ovulation.getTime() + 1 * 24 * 60 * 60 * 1000);
-        
-        const fertileWindow = `${fertileStart.toISOString().split('T')[0]} to ${fertileEnd.toISOString().split('T')[0]}`;
-
-        // Show prediction
-        document.getElementById('predictedDate').textContent = predictedDate;
-        document.getElementById('fertileWindow').textContent = fertileWindow;
-        document.getElementById('predictionResult').style.display = 'block';
-        document.getElementById('suggestions').style.display = 'grid';
-
-        // Get mood and flow values
-        const mood = document.querySelector('input[name="mood"]:checked')?.value;
-        const flow = document.querySelector('input[name="flow"]:checked')?.value;
-
-        // Generate personalized suggestions
-        let diet = '';
-        let workout = '';
-
-        // Diet suggestions based on cycle phase and mood
-        if (today > ovulation) {
-            diet = `
-                <p>Consider taking more carbohydrates to maintain good energy levels while working out.</p>
-                <p>Increase protein intake because generally breakdown of muscles is increased during this phase.</p>
-                <p>Keep yourself hydrated, drink enough water.</p>
-                <p>Take diet focusing more on fibre and consume food which induces melatonin, it helps in getting good sleep.</p>
-                <p>Target nutrient rich food and reduce junk and processed food.</p>
-            `;
-        } else {
-            diet = `
-                <p>Increase anti-inflammatory foods like fish oils, calcium, Vitamin-D.</p>
-                <p>Consume more protein and restore iron levels.</p>
-                <p>Take in more anti-oxidants; helps in maintenance of menstrual cycle.</p>
-                <p>Increase food with carbohydrates like raisin, sweet potato etc.</p>
-                <p>Include sources of collagen such as jelly alongside Vitamin C.</p>
-            `;
-        }
-
-        // Add mood-specific diet suggestions
-        if (mood === 'stressed' || mood === 'anxious') {
-            diet += `
-                <p>Include magnesium-rich foods like dark chocolate, nuts, and leafy greens.</p>
-                <p>Consider chamomile tea or other calming herbal teas.</p>
-            `;
-        }
-
-        // Workout suggestions based on flow and cycle phase
-        if (flow === 'high') {
-            workout = `
-                <p>Light walking or gentle stretching</p>
-                <p>Yoga or meditation</p>
-                <p>Avoid intense workouts</p>
-            `;
-        } else if (today > ovulation) {
-            workout = `
-                <p>Endurance training</p>
-                <p>Low-intensity weight training</p>
-                <p>Light strength training</p>
-            `;
-        } else {
-            workout = `
-                <p>High intensity strength training</p>
-                <p>Intensive cardio workout</p>
-                <p>Weight training</p>
-                <p>Strength training</p>
-            `;
-        }
-
-        // Add mood-specific workout suggestions
-        if (mood === 'sad' || mood === 'stressed') {
-            workout += `
-                <p>Consider gentle yoga or meditation</p>
-                <p>Outdoor walking or light jogging</p>
-            `;
-        }
-
-        document.getElementById('dietSuggestions').innerHTML = diet;
-        document.getElementById('workoutSuggestions').innerHTML = workout;
-
-        // Save data to server
-        const formData = new FormData(this);
-        formData.append('predictedDate', predictedDate);
-        formData.append('fertileWindow', fertileWindow);
-
-        fetch('save_tracker.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                console.error('Error saving data:', data.message);
+        // Cycle Chart
+        new Chart(cycleCtx, {
+            type: 'line',
+            data: {
+                labels: cycleData.map(item => new Date(item.date).toLocaleDateString('en-US', { month: 'short' })),
+                datasets: [{
+                    label: 'Cycle Length',
+                    data: cycleData.map(item => item.length),
+                    borderColor: '#ff69b4',
+                    tension: 0.4,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                }
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
         });
-    });
+
+        // Symptom Chart
+        new Chart(symptomCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Cramps', 'Headache', 'Bloating', 'Breast Tenderness', 'Acne', 'Fatigue'],
+                datasets: [{
+                    label: 'Symptom Intensity',
+                    data: calculateSymptomAverages(symptomData),
+                    backgroundColor: 'rgba(255, 105, 180, 0.2)',
+                    borderColor: '#ff69b4',
+                    pointBackgroundColor: '#ff69b4'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 5
+                    }
+                }
+            }
+        });
+
+        // Calculate average symptom intensities
+        function calculateSymptomAverages(symptomData) {
+            const symptoms = ['Cramps', 'Headache', 'Bloating', 'Breast Tenderness', 'Acne', 'Fatigue'];
+            return symptoms.map(symptom => {
+                const sum = symptomData.reduce((acc, curr) => {
+                    return acc + (curr[symptom] || 0);
+                }, 0);
+                return sum / symptomData.length || 0;
+            });
+        }
+
+        // Form submission handling
+        document.querySelector('.tracker-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get selected symptoms
+            const selectedSymptoms = {};
+            document.querySelectorAll('.symptom-tag.active').forEach(tag => {
+                selectedSymptoms[tag.textContent] = 1;
+            });
+
+            // Add symptoms to form data
+            const formData = new FormData(this);
+            formData.append('symptoms', JSON.stringify(selectedSymptoms));
+
+            // Submit form
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Show success message
+                const successAlert = document.createElement('div');
+                successAlert.className = 'alert alert-success';
+                successAlert.innerHTML = 'Cycle data updated successfully!';
+                this.insertBefore(successAlert, this.firstChild);
+                
+                // Reset form after 2 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorAlert = document.createElement('div');
+                errorAlert.className = 'alert alert-danger';
+                errorAlert.innerHTML = 'Error updating cycle data. Please try again.';
+                this.insertBefore(errorAlert, this.firstChild);
+            });
+        });
+
+        // Symptom tag selection
+        document.querySelectorAll('.symptom-tag').forEach(tag => {
+            tag.addEventListener('click', function() {
+                this.classList.toggle('active');
+                if (this.classList.contains('active')) {
+                    this.style.background = '#ff1493';
+                } else {
+                    this.style.background = 'var(--gradient)';
+                }
+            });
+        });
+
+        // Notes saving
+        document.querySelector('#pills-notes .predict-button').addEventListener('click', function() {
+            const notes = document.querySelector('#pills-notes textarea').value;
+            const formData = new FormData();
+            formData.append('notes', notes);
+
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(html => {
+                const successAlert = document.createElement('div');
+                successAlert.className = 'alert alert-success';
+                successAlert.innerHTML = 'Notes saved successfully!';
+                document.querySelector('#pills-notes').insertBefore(successAlert, document.querySelector('#pills-notes .notes-section'));
+                
+                setTimeout(() => {
+                    successAlert.remove();
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorAlert = document.createElement('div');
+                errorAlert.className = 'alert alert-danger';
+                errorAlert.innerHTML = 'Error saving notes. Please try again.';
+                document.querySelector('#pills-notes').insertBefore(errorAlert, document.querySelector('#pills-notes .notes-section'));
+            });
+        });
     </script>
 </body>
 </html>

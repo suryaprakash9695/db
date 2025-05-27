@@ -1,5 +1,5 @@
 <?php
-require_once('config.php');
+require_once __DIR__ . '/../config.php';
 
 function getUnreadNotifications($userId, $userType) {
     global $con;
@@ -65,5 +65,19 @@ if (isset($_POST['action']) && $_POST['action'] === 'get_notifications') {
     $notifications = getUnreadNotifications($_SESSION['user_id'], $_SESSION['user_type']);
     echo json_encode(['success' => true, 'notifications' => $notifications]);
     exit;
+}
+
+// Get unread notifications count
+$user_id = $_SESSION['user_id'] ?? 0;
+$unread_count = 0;
+
+if ($user_id) {
+    $stmt = $con->prepare("SELECT COUNT(*) as count FROM notifications WHERE user_id = ? AND is_read = 0");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $unread_count = $row['count'];
+    $stmt->close();
 }
 ?> 

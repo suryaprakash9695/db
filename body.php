@@ -473,7 +473,7 @@
                         </p>
                     </div>
                     <div class="mbr-section-btn item-footer mt-2">
-                        <a href="Tracker.php" class="btn item-btn btn-primary display-7">Track Now &gt;</a>
+                        <a href="../tracker/index.php" class="btn item-btn btn-primary display-7">Track Now &gt;</a>
                     </div>
                 </div>
             </div>
