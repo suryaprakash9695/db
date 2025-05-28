@@ -1,0 +1,26 @@
+   <div id="app"
+        onmousemove="cursorMove(event)" onmouseleave="cursorLeave(event)">
+     <div id="cursor">
+       <div id="circle1"></div>
+     </div>
+     <div class="menu-wrapper" onmousemove="menuFocusIn(event)" onmouseleave="cursorDefault(event)" onclick="menuClick(event)" onmousedown="menuMouseDown(event)">
+       <div class="container-menu">
+         <div class="line-icon active animatable">
+           <div class="icon-row">
+             <div class="line"></div>
+             <div class="line"></div>
+           </div>
+           <div class="icon-row">
+             <div class="line"></div>
+             <div class="line"></div>
+           </div>
+         </div>
+         <div class="close-icon">
+           <div class="close">
+             <div class="left animatable"></div>
+             <div class="right animatable"></div>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>

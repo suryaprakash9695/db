@@ -1,0 +1,418 @@
+#app {
+  overflow: hidden;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+html {
+  cursor: none;
+  background: #0cb2a6;
+}
+
+body {
+  margin: unset;
+  overflow: hidden;
+  margin:0;
+  padding:0;
+}
+
+// Start: Custom Cursor
+#cursor {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  #circle1 {
+    position: absolute;
+    // border: 1px solid white;
+    box-shadow: 0 0 1px 0 white inset, 0 0 1px 0 white;
+    border-radius: 50%;
+    mix-blend-mode: exclusion;
+    // height: 14px;
+    // width: 14px;
+    // margin-top: -7px;
+    // margin-left: -7px;
+    background: #fff;
+
+    &.default {
+      animation: circleDefault 0.3s cubic-bezier(0.64, 0.57, 0.67, 1.1) forwards;
+    }
+
+    &.enter {
+      animation: cursorEnter 0.5s forwards;
+    }
+
+    &.leave {
+      animation: cursorLeave 0.3s forwards;
+    }
+
+    &.cursorFocusTitle {
+      animation: cursorFocusTitle 0.3s forwards;
+    }
+
+    &.menuFocusIn {
+      animation: menuFocusIn 0.4s cubic-bezier(0.34, 0.07, 0.37, 1.43) forwards;
+    }
+
+    &.menuMouseDown {
+      animation: menuMouseDown 0.5s cubic-bezier(0.34, 0.07, 0.37, 1.53)
+        forwards;
+    }
+
+    &.menuClick {
+      animation: menuClick 0.5s cubic-bezier(0.34, 0.07, 0.37, 1.9) forwards;
+    }
+
+    &.mouse-down-to-default {
+      animation: mouseDownToDefault 0.3s forwards;
+    }
+  }
+}
+
+@keyframes cursorFocusTitle {
+  from {
+    background: transparent;
+    margin-left: -28px;
+    margin-top: -28px;
+    width: 56px;
+    height: 56px;
+  }
+  to {
+    background: #fff;
+    margin-left: -2em;
+    margin-top: -2em;
+    width: 4em;
+    height: 4em;
+  }
+}
+
+@keyframes cursorEnter {
+  from {
+    height: 0px;
+    width: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+    border: 0px solid white;
+  }
+  to {
+    height: 14px;
+    width: 14px;
+    margin-top: -7px;
+    margin-left: -7px;
+    border: 1px solid white;
+  }
+}
+
+@keyframes cursorLeave {
+  from {
+    height: 14px;
+    width: 14px;
+    margin-top: -7px;
+    margin-left: -7px;
+    border: 1px solid white;
+  }
+  to {
+    height: 0px;
+    width: 0px;
+    margin-top: 0px;
+    margin-left: 0px;
+    border: 0px solid white;
+  }
+}
+
+@keyframes circleDefault {
+  from {
+    margin-left: -1.8em;
+    margin-top: -1.8em;
+    width: 3.6em;
+    height: 3.6em;
+    background: white;
+  }
+  to {
+    height: 14px;
+    width: 14px;
+    margin-top: -7px;
+    margin-left: -7px;
+    background: #fff;
+  }
+}
+
+@keyframes menuFocusIn {
+  from {
+    animation-delay: 0.1s;
+    border: 1px solid white;
+    height: 14px;
+    width: 14px;
+    margin-top: -7px;
+    margin-left: -7px;
+    background: white;
+    box-shadow: 0 0 1px 0 white inset, 0 0 1px 0 white;
+  }
+  to {
+    border: 1px solid white;
+    box-shadow: 0 0 1px 0 white inset, 0 0 1px 0 white;
+    background: transparent;
+    margin-left: -28px;
+    margin-top: -28px;
+    width: 56px;
+    height: 56px;
+  }
+}
+
+@keyframes mouseDownToDefault {
+  from {
+    border: 1px solid white;
+    box-shadow: 0 0 1px 0 white inset, 0 0 1px 0 white;
+    background: transparent;
+    margin-left: -7px;
+    margin-top: -7px;
+    width: 14px;
+    height: 14px;
+  }
+  to {
+    border: 1px solid white;
+    box-shadow: 0 0 1px 0 white inset, 0 0 1px 0 white;
+    background: white;
+    height: 14px;
+    width: 14px;
+    margin-top: -7px;
+    margin-left: -7px;
+  }
+}
+
+@keyframes menuMouseDown {
+  from {
+    border: 1px solid white;
+    box-shadow: 0 0 1px 0 white inset, 0 0 1px 0 white;
+    background: transparent;
+    margin-left: -28px;
+    margin-top: -28px;
+    width: 56px;
+    height: 56px;
+  }
+
+  to {
+    border: 1px solid white;
+    box-shadow: 0 0 1px 0 white inset, 0 0 1px 0 white;
+    background: transparent;
+    margin-left: -7px;
+    margin-top: -7px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@keyframes menuClick {
+  from {
+    border: 1px solid white;
+    background: transparent;
+    margin-left: -7px;
+    margin-top: -7px;
+    width: 14px;
+    height: 14px;
+  }
+  to {
+    border: 1px solid white;
+    background: transparent;
+    margin-left: -28px;
+    margin-top: -28px;
+    width: 56px;
+    height: 56px;
+  }
+}
+// End: Custom Cursor
+
+// Start: Menu Animations
+
+.menu-wrapper {
+  position: absolute;
+  right: 45%;
+  top: 40%;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 100%;
+}
+
+.container-menu {
+  display: flex;
+  justify-content: center;
+  transition: 0.3s cubic-bezier(0.24, 0.37, 0.67, 1.6);
+
+  .line-icon {
+    width: 26px;
+    overflow: hidden;
+
+    &.menu-in {
+      width: 0;
+      animation: menu-in 0.3s linear forwards;
+      animation-delay: 0.2s;
+    }
+
+    &.menu-out {
+      animation: menu-out 0.25s linear forwards;
+
+      .icon-row:nth-child(1) .line {
+        animation: icon-line-menu-out 0.25s;
+      }
+    }
+
+    .icon-row.animate {
+      animation: iconLine 0.5s;
+    }
+
+    .icon-row.default {
+      animation: iconLineDefault 0.5s;
+    }
+
+    .icon-row:nth-child(1) {
+      animation-delay: 0.3s;
+
+      .line {
+        margin-bottom: 10px;
+      }
+    }
+
+    .icon-row:nth-child(2) {
+      animation-delay: 0.55s;
+    }
+
+    .icon-row {
+      display: flex;
+      justify-content: center;
+      width: 100px;
+      margin-left: -19px;
+
+      .line {
+        width: 26px;
+        display: inline-table;
+        height: 1.2px;
+        background-color: white;
+      }
+
+      .line:nth-child(2) {
+        margin-left: 10px;
+      }
+    }
+  }
+
+  .close-icon {
+    .close {
+      display: none;
+      width: 20px;
+      height: 26px;
+
+      &.active,
+      &.last-active {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+      }
+
+      .left,
+      .right {
+        height: 0px;
+        width: 1.3px;
+        background-color: white;
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+
+      .left {
+        transform: rotate(45deg);
+      }
+      .right {
+        transform: rotate(-45deg);
+      }
+
+      &.close-in {
+        .left,
+        .right {
+          animation: close-in 0.25s linear forwards;
+          animation-delay: 0.3s;
+        }
+
+        .left {
+          animation-delay: 0.48s;
+        }
+      }
+
+      &.close-out {
+        .left,
+        .right {
+          animation: close-out 0.2s linear forwards;
+        }
+      }
+    }
+  }
+}
+
+@keyframes iconLine {
+  to {
+    transform: translate(0px, 0px);
+  }
+  from {
+    transform: translate(-36px, 0px);
+  }
+}
+
+@keyframes iconLineDefault {
+  to {
+    transform: translate(-36px, 0px);
+  }
+  from {
+    transform: translate(0px, 0px);
+  }
+}
+
+@keyframes close-in {
+  to {
+    height: 26px;
+  }
+}
+
+@keyframes close-out {
+  from {
+    height: 26px;
+  }
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 1;
+    width: 0;
+  }
+
+  to {
+    opacity: 1;
+    width: 26px;
+  }
+}
+
+@keyframes menu-out {
+  to {
+    width: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes icon-line-menu-out {
+  to {
+    margin-bottom: 4px;
+  }
+}
+
+// End: Menu Animations
+

@@ -51,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $appointment_time = $_POST['appointment_time'];
     $reason = $_POST['reason'];
     $notes = $_POST['notes'] ?? '';
+    $preferred_communication = $_POST['preferred_communication'] ?? 'email'; // Default to email if not specified
 
     try {
         // Check if the time slot is available
@@ -68,10 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Insert new appointment
             $insert_stmt = $con->prepare("INSERT INTO appointments 
                                         (doctor_id, patient_id, appointment_date, appointment_time, 
-                                         reason, notes, status, created_at) 
-                                        VALUES (?, ?, ?, ?, ?, ?, 'Scheduled', NOW())");
-            $insert_stmt->bind_param("iissss", $doctor_id, $patient_id, $appointment_date, 
-                                   $appointment_time, $reason, $notes);
+                                         reason, notes, preferred_communication, status, created_at) 
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, 'Scheduled', NOW())");
+            $insert_stmt->bind_param("iisssss", $doctor_id, $patient_id, $appointment_date, 
+                                   $appointment_time, $reason, $notes, $preferred_communication);
             
             if ($insert_stmt->execute()) {
                 $success = "Appointment scheduled successfully!";
@@ -81,6 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $appointment_time = '';
                 $reason = '';
                 $notes = '';
+                $preferred_communication = 'email';
             } else {
                 $error = "Failed to schedule appointment. Please try again.";
             }
@@ -295,6 +297,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="reason">Reason for Visit</label>
                     <input type="text" name="reason" id="reason" class="form-control" 
                            required placeholder="Enter reason for visit">
+                </div>
+
+                <div class="form-group">
+                    <label for="preferred_communication">Preferred Communication Method</label>
+                    <select name="preferred_communication" id="preferred_communication" class="form-control" required>
+                        <option value="email">Email</option>
+                        <option value="phone">Phone</option>
+                        <option value="sms">SMS</option>
+                    </select>
                 </div>
 
                 <div class="form-group">

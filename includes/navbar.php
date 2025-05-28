@@ -6,9 +6,33 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $is_tracker = strpos($_SERVER['PHP_SELF'], '/tracker/') !== false;
 
 // Set the base path for links
-$base_path = $is_tracker ? '../db/' : '';
+$base_path = $is_tracker ? '../' : '';
 
-require_once($is_tracker ? '../db/includes/notifications.php' : 'notifications.php');
+// Include notifications
+require_once __DIR__ . '/notifications.php';
+
+// Get user data if logged in
+$user_name = '';
+$user_role = '';
+if (isset($_SESSION['user_id'])) {
+    try {
+        $user_id = $_SESSION['user_id'];
+        $stmt = $con->prepare("SELECT name, role FROM users WHERE id = ?");
+        if ($stmt) {
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($row = $result->fetch_assoc()) {
+                $user_name = $row['name'];
+                $user_role = $row['role'];
+            }
+            $stmt->close();
+        }
+    } catch (Exception $e) {
+        // Table doesn't exist or other database error
+        error_log("Database error in navbar: " . $e->getMessage());
+    }
+}
 ?>
 
 <section class="menu cid-s48OLK6784" once="menu" id="menu1-h">

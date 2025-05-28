@@ -1,0 +1,76 @@
+/* Custom Cursor Styles */
+.custom-cursor {
+    width: 20px;
+    height: 20px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    mix-blend-mode: difference;
+    z-index: 9999;
+    transition: transform 0.2s ease;
+}
+
+.custom-cursor-follower {
+    width: 40px;
+    height: 40px;
+    background: rgba(200, 13, 125, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.6s ease, width 0.3s ease, height 0.3s ease;
+}
+
+/* Cursor States */
+.cursor-link {
+    transform: scale(1.5);
+}
+
+.cursor-link-follower {
+    transform: scale(1.5);
+    background: rgba(200, 13, 125, 0.2);
+}
+
+.cursor-text {
+    transform: scale(1.5);
+}
+
+.cursor-text-follower {
+    transform: scale(1.5);
+    background: rgba(200, 13, 125, 0.2);
+}
+
+/* Cursor Icons */
+.cursor-icon {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9997;
+    color: white;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cursor-icon.visible {
+    opacity: 1;
+}
+
+/* Hide default cursor */
+* {
+    cursor: none !important;
+}
+
+/* Show default cursor for touch devices */
+@media (hover: none) {
+    .custom-cursor,
+    .custom-cursor-follower,
+    .cursor-icon {
+        display: none;
+    }
+    
+    * {
+        cursor: auto !important;
+    }
+} 

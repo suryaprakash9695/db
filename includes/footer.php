@@ -15,7 +15,7 @@
                 <h5>Quick Links</h5>
                 <ul class="list-unstyled">
                     <li><a href="../index.php">Home</a></li>
-                    <li><a href="../tracker/index.php">Cycle Tracker</a></li>
+                    <li><a href="../db/tracker/index.php">Cycle Tracker</a></li>
                     <li><a href="../resources.php">Resources</a></li>
                     <li><a href="../contact.php">Contact</a></li>
                 </ul>
