@@ -1,62 +1,52 @@
 ![](./Image-Assets/We.png)
-# WeCare
-A web and mobile application aimed at providing tools for the complete physical and mental health and well-being of users.
+# WECARE - Next-Gen Diagnosis in Healthcare
 
 ## Overview
+WECARE is an innovative healthcare diagnosis system that leverages cutting-edge technologies to provide advanced medical diagnosis and healthcare solutions. This project aims to revolutionize the healthcare industry by implementing artificial intelligence and machine learning techniques for improved patient care and diagnosis accuracy.
 
-WeCare is a comprehensive Medical Consultation System which is available both in web and android versions.
-
-The website offers people better access to healthcare support beyond their bounds of convenience and connects them to doctors, specialists and healthcare experts on a digital platform, which provides them access to an online expert without a physical visit. For doctors, it includes a feature to view-track the medical record of the patient regularly and efficiently.
-
-It also has a series of AI tools that assist the doctors in determining the probabilities of diseases like Breast Cancer etc. It also has a dedicated dashboard which keeps track of medical history of the patients.
-
-## Problem Statement :
+## Problem Statement
 Rural and Remote residents encounter barriers to healthcare that restrain their ability to get the medical services they need. The problem of handling and keeping a note and regular monitoring is serious in India. Also, it has been continuously observed in no. of surveys that the nurses and doctors in India suffer through burnout due to heavy workload and hectic schedule, which is a matter of concern. The records of patients are not well-maintained on either grounds and hence seems to be a greater problem in the picture.
-and regular checkup is difficult. 
 
-May it be a pandemic or the problem of distance, consulting a good doctor even for a regular checkup and urgent situations that need to be dealt with as soon as possible is a big issue. There's a need for proper management of a patient's historical record and, tracking of current health-stats is one of the challenges in front of the Medical System in India.
+## Why This Issue? 🔒
+India has a vital shortage of trained doctors universally when compared to the WHO recommended ratio. Additionally, with about 80 per cent of the medicinal workforce focused in the top 8-10 towns and treating only 28 per cent of the total residents, access to healthcare remains a hope for many. In rural India, a patient may have to travel to another city to meet a doctor.
 
-Hence, a solution needs to be proposed that solves the problems efficiently and is even accessible to all.
+## Objectives 📚
+- Develop an AI-powered diagnostic system for accurate disease prediction
+- Create a user-friendly interface for both healthcare providers and patients
+- Implement real-time monitoring and analysis of patient health data
+- Provide personalized treatment recommendations based on patient history
+- Enable secure and efficient telemedicine consultations
+- Reduce healthcare costs and improve accessibility to quality healthcare
 
-## Why this issue? :lock:
-India has a vital shortage of trained doctors universally when compared to the WHO recommended ratio. Additionally, with about 80 per cent of the medicinal workforce focused in the top 8-10 towns and treating only 28 per cent of the total residents, access to healthcare remains a hope for many. In rural India, a patient may have to travel to another city to meet a doctor. The necessity of time is to provide good quality healthcare and a home-monitored healthcare system, to minimize the workload on the medical workforce monitor and patients with low or mild problems remotely.
-# MEDICARE - Drug Recommender System
+## Solution 🔑
 
-**Objective:**
+### Product Features
+1. **AI-Powered Diagnosis**
+   - Real-time disease prediction
+   - Symptom analysis and correlation
+   - Risk assessment and early warning system
+   - Personalized treatment recommendations
 
+2. **Patient Management**
+   - Digital patient records
+   - Medical history tracking
+   - Appointment scheduling
+   - Prescription management
+   - Follow-up care coordination
 
--The objective of this project is to develop a drug recommendation system for medical practitioners to get information on the popular drugs in the market at any point of time.
+3. **Healthcare Analytics**
+   - Disease pattern analysis
+   - Treatment effectiveness tracking
+   - Population health insights
+   - Resource utilization optimization
 
-**Functionality and Usage:**
+4. **Telemedicine Integration**
+   - Virtual consultations
+   - Remote patient monitoring
+   - Secure video conferencing
+   - Digital prescription delivery
 
--The main functionality of this tool is to recommend drugs available in the market to doctors based on a recommended rating score provided by patient’s reviews and medical conditions.<br/>
--We intend to create this tool to help doctors get an idea about different drugs, with respect to the condition, based on reviews and ratings given by the patients. This would help them to shortlist the best drugs for each ailment and prescribe them accordingly.<br/> 
--This tool potentially eliminates the role of an intermediate medical representative from different pharmaceutical companies for briefing and awareness about the available drugs in the market.
-
-
-## Objectives :  	:notebook_with_decorative_cover:
-- To connect patients in remote and rural areas with the best doctors of their choice.
-- To provide essential medical services at the lowest possible cost.
-- To provide a proper patient medical history management system.
-- To provide proper patient monitoring equipment in remote areas, where medical reach is hard or disconnected due to lack of connectivity.
-- To assist the medical workforce by using custom made AI tools.
-- To ensure physical as well as mental well-being of patients.
-
-# Solution  	:key:
-
-## Product 
-1. Website and Android App - For health monitoring and medical consultation
-
-## Features :  	:notebook_with_decorative_cover:
-- Dedicated dashboards for both patient and doctor
-- Chat and Video Conferencing based Consulation with verified experts around the nation
-- Prepares Patient Medical History
-- Provides physical and mental health assessment with actionable items
-- Period Tracker (for women)
-- Chatbot
-- Allows you to meditate while listening to the sound of rain/beach
-
-## Tools and Technology Used:
+## Tools and Technology Used
 ![Python](https://img.shields.io/badge/Python-9FEF00?style=flat-square&logo=Python&logoColor=black)
 ![Firebase](https://img.shields.io/badge/Firebase-ffcb2c?style=flat-square&logo=Firebase&logoColor=DD1100)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=HTML5&logoColor=white)
@@ -72,21 +62,92 @@ India has a vital shortage of trained doctors universally when compared to the W
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=flat-square&logo=scikit-learn&logoColor=white)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=flat-square&logo=TensorFlow&logoColor=white)
 
-## Business Model / StartUp Potential  	:moneybag:
+## Team Members
 
-WeCare would be available both as a product and service for the customers. The customer will subscribe to our services. We would market our system to the general public and aware the doctors and medical fraternity of the benefits of our product. Our product is helful for all kinds of patients who aren't comfortable/able to visit the doctors/physicians physically. It is equally beneficial and convinient for the doctors as well.
+### Core Development Team
+
+#### Sawan Singh (2101921640047)
+- **Role**: Project Lead & Backend Developer
+- **Responsibilities**:
+  - Project coordination and management
+  - Backend architecture design
+  - Database management
+  - API development
+  - System integration
+
+#### Himanshu Tiwari (2101921640018)
+- **Role**: Frontend Developer & UI/UX Designer
+- **Responsibilities**:
+  - User interface design
+  - Frontend development
+  - User experience optimization
+  - Responsive design implementation
+  - Cross-browser compatibility
+
+#### Gautam Kumar (2201921649003)
+- **Role**: AI/ML Engineer
+- **Responsibilities**:
+  - Machine learning model development
+  - Data analysis and processing
+  - AI algorithm implementation
+  - Model training and optimization
+  - Predictive analytics
+
+#### Krishna Sharma (2101921640020)
+- **Role**: Full Stack Developer & Security Expert
+- **Responsibilities**:
+  - Full stack development
+  - Security implementation
+  - System testing
+  - Performance optimization
+  - Documentation
+
+### Project Supervisor
+**Dr. Pinki Sagar**  
+Assistant Professor  
+G.L. Bajaj Institute of Technology & Management, Greater Noida
+
+## Installation and Setup
+1. **Prerequisites**
+   - PHP 8.0 or higher
+   - MySQL 5.7 or higher
+   - Apache/Nginx web server
+   - Composer (PHP package manager)
+   - XAMPP/WAMP/MAMP (for local development)
+
+2. **Server Setup**
+   - Install XAMPP/WAMP/MAMP on your system
+   - Start Apache and MySQL services
+   - Ensure PHP is properly configured in your system
+
+3. **Project Installation**
+   ```bash
+   # Clone the repository
+   git clone https://github.com/your-username/wecare.git
+   cd wecare
+
+   # Install dependencies using Composer
+   composer install
+
+   # Create database
+   # Access phpMyAdmin (http://localhost/phpmyadmin)
+   # Create a new database named 'wecare_db'
+   ```
+
+4. **Configuration**
+   - Copy the configuration file:
+     ```bash
+     cp config/config.example.php config/config.php
+     ```
+   - Update the database credentials in `config/config.php`
+
+## Business Model 💰
+WeCare would be available both as a product and service for the customers. The customer will subscribe to our services. We would market our system to the general public and aware the doctors and medical fraternity of the benefits of our product. Our product is helpful for all kinds of patients who aren't comfortable/able to visit the doctors/physicians physically. It is equally beneficial and convenient for the doctors as well.
 
 ### ScreenShots of WeCare
 <pre>
-<img src="./images/1.jpg" alt="1" width="300" height="600" /> <img src="./images/2.jpg" alt="1" width="300" height="600" /> <img src="./images/3.jpg" alt="1" width="300" height="600" /> <img src="./images/4.jpg" alt="1" width="300" height="600" /> <img src="./images/5.jpg" alt="1" width="300" height="600" /> <img src="./images/7.jpg" alt="1"
-	 width="300" height="600" /> <img src="./images/8.jpg" alt="1"
-	 width="300" height="600" />
-
+<img src="./images/1.jpg" alt="1" width="300" height="600" /> <img src="./images/2.jpg" alt="1" width="300" height="600" /> <img src="./images/3.jpg" alt="1" width="300" height="600" /> <img src="./images/4.jpg" alt="1" width="300" height="600" /> <img src="./images/5.jpg" alt="1" width="300" height="600" /> <img src="./images/7.jpg" alt="1" width="300" height="600" /> <img src="./images/8.jpg" alt="1" width="300" height="600" />
 </pre>
-### Contributors
-- Sawan
-- Arunima
-- Divyum
 
-Built with ❤️ by Team ENIGMA
+Built with ❤️ by Team WECARE
 
