@@ -25,6 +25,40 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="../assets/mobirise/css/mbr-additional.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* Navbar Dropdown Styles */
+        .navbar .dropdown:hover .dropdown-menu {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu {
+            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .navbar .dropdown {
+            position: relative;
+        }
+
+        .navbar .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            min-width: 10rem;
+            padding: 0.5rem 0;
+            margin: 0.125rem 0 0;
+            background-color: #fff;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: 0.25rem;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
+        }
+
         body {
             background: #f8f9fa;
             font-family: 'Poppins', sans-serif;
@@ -101,90 +135,7 @@ if (session_status() === PHP_SESSION_NONE) {
     </style>
 </head>
 <body>
-<?php
-// Get the current page name to highlight active link
-$current_page = basename($_SERVER['PHP_SELF']);
-?>
-<section class="menu cid-s48OLK6784" once="menu" id="menu1-h">
-    <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
-        <div class="container-fluid">
-            <div class="navbar-brand">
-                <span class="navbar-logo">
-                    <a href="../index.php">
-                        <img src="../assets/images/thrive_logo.png" alt="Mobirise" style="height: 5rem;">
-                    </a>
-                </span>
-            </div>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <div class="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav nav-dropdown" data-app-modern-menu="true">
-                    <li class="nav-item">
-                        <a class="nav-link link text-black display-4" href="../index.php">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link link text-black display-4" href="../about.php">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link link text-black display-4" href="../contact.php">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link link text-black display-4" href="../index.php#features1-n">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link link text-black display-4" href="../body.php">Body Care</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link link text-black display-4" href="../mind.php">Mind Care</a>
-                    </li>
-                </ul>
-                <div class="navbar-buttons mbr-section-btn">
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                        <div class="profile-section">
-                            <div class="profile-icon">
-                                <?php echo strtoupper(substr($_SESSION['user_name'], 0, 1)); ?>
-                            </div>
-                            <span style="font-weight: 500;">
-                                <?php echo htmlspecialchars($_SESSION['user_name']); ?>
-                            </span>
-                        </div>
-                        <a href="?logout=true" class="btn display-4" style="background-color: #e71f68; border-color: #e71f68; color: #fff;">Logout</a>
-                    <?php else: ?>
-                        <div class="dropdown">
-                            <button class="btn btn-primary display-4 dropdown-toggle" type="button" id="loginDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-user-circle"></i> Login
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="loginDropdown">
-                                <div class="dropdown-header">
-                                    <h6>Choose your role</h6>
-                                </div>
-                                <a class="dropdown-item" href="../patient/patient_login.php">
-                                    <i class="fas fa-user"></i>
-                                    <span>Patient Login</span>
-                                </a>
-                                <a class="dropdown-item" href="../doctor/doctor_login.php">
-                                    <i class="fas fa-user-md"></i>
-                                    <span>Doctor Login</span>
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item signup-link" href="../patient_signup.php">
-                                    <i class="fas fa-user-plus"></i>
-                                    <span>New User? Sign Up</span>
-                                </a>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </nav>
-</section>
+<?php include '../includes/navbar.php'; ?>
 
 <div class="recipes-container">
     <h1><i class="fas fa-utensils"></i> Healthy Recipes</h1>

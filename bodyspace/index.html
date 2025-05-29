@@ -1,68 +1,93 @@
 <!DOCTYPE html>
 <!-- Website template by freewebsitetemplates.com -->
-<html>
+<html lang="en">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="user-scalable=0, width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-	<title>Mental Health Check</title>
+	<title>BodySpace - Healthy Body, Healthy Lifestyle</title>
 	<link rel="stylesheet" type="text/css" href="css/style.css">
 	<link rel="stylesheet" type="text/css" href="css/mobile.css">
+	<script src="js/jquery-1.11.1.min.js"></script>
 	<script type='text/javascript' src='js/mobile.js'></script>
+	<script type='text/javascript' src='js/function.js'></script>
 </head>
 <body>
 	<div id="header">
-		<h1 style="color: black;">✨Healthy Body, Healthy Lifestyle!✨</h1>
+		<h1>✨Healthy Body, Healthy Lifestyle!✨</h1>
 		<ul id="navigation">
 			<li class="current">
-				<a href="index.html" style="color: blue;">Home</a>
+				<a href="index.html">Home</a>
 			</li>
 			<li>
-				<a href="about.html" style="color: blue;">About</a>
-			</li>
-			
-			<li>
-				<a href="blog.html" style="color: blue;">Applications</a>
+				<a href="about.html">About</a>
 			</li>
 			<li>
-				<a href="blog1.html" style="color: blue;">Articles</a>
+				<a href="blog.html">Applications</a>
 			</li>
 			<li>
-				<a href="blog2.html" style="color: blue;">Books</a>
+				<a href="blog1.html">Articles</a>
 			</li>
 			<li>
-				<a href="blog3.html" style="color: blue;">Conferences and Meetups</a>
+				<a href="blog2.html">Books</a>
 			</li>
 			<li>
-				<a href="blog4.html" style="color: blue;">Organizations</a>
+				<a href="blog3.html">Conferences</a>
 			</li>
 			<li>
-				<a href="blog5.html" style="color: blue;">Podcasts and Talks</a>
+				<a href="blog4.html">Organizations</a>
+			</li>
+			<li>
+				<a href="blog5.html">Podcasts</a>
 			</li>
 		</ul>
 	</div>
-	<div id="body" style="background-color: rgb(196, 235, 247);">
-		<center><img src="images/body.jpg" alt="lady doing yoga" class="figure"></center>
-		<div id="tagline">
-			<h1>Body Space</h1>
-			<p>
-				A curated list of awesome articles, websites and resources about physical health. 
-			</p>
+	<div id="body">
+		<div class="hero-section">
+			<img src="images/body.jpg" alt="lady doing yoga" class="figure">
+			<div id="tagline">
+				<h1>Body Space</h1>
+				<p>A curated list of awesome articles, websites and resources about physical health.</p>
+				<a href="about.html" class="cta-button">Learn More</a>
+			</div>
 		</div>
-		
+		<div class="featured-content">
+			<div class="feature-box">
+				<h2>Latest Articles</h2>
+				<p>Discover the latest insights about physical health and wellness.</p>
+				<a href="blog1.html" class="read-more">Read More</a>
+			</div>
+			<div class="feature-box">
+				<h2>Recommended Books</h2>
+				<p>Explore our collection of health and fitness books.</p>
+				<a href="blog2.html" class="read-more">View Books</a>
+			</div>
+			<div class="feature-box">
+				<h2>Upcoming Events</h2>
+				<p>Join our community at conferences and meetups.</p>
+				<a href="blog3.html" class="read-more">See Events</a>
+			</div>
+		</div>
 	</div>
 	<div id="footer">
-		<!-- <div>
-			<span>123 St. City Location, Country | 987654321</span>
-			<p>
-				&copy; 2023 by Belle &amp; Carrie Rehabilitation Yoga. All rights reserved.
-			</p>
-		</div> -->
-		<!-- <div id="connect">
-			<a href="https://freewebsitetemplates.com/go/facebook/" id="facebook" target="_blank">Facebook</a>
-			<a href="https://freewebsitetemplates.com/go/twitter/" id="twitter" target="_blank">Twitter</a>
-			<a href="https://freewebsitetemplates.com/go/googleplus/" id="googleplus" target="_blank">Google&#43;</a>
-			<a href="https://freewebsitetemplates.com/go/pinterest/" id="pinterest" target="_blank">Pinterest</a>
-		</div> -->
+		<div class="footer-content">
+			<div class="footer-section">
+				<h3>Contact Us</h3>
+				<p>Email: info@bodyspace.com</p>
+				<p>Phone: (123) 456-7890</p>
+			</div>
+			<div class="footer-section">
+				<h3>Follow Us</h3>
+				<div id="connect">
+					<a href="#" id="facebook" target="_blank">Facebook</a>
+					<a href="#" id="twitter" target="_blank">Twitter</a>
+					<a href="#" id="instagram" target="_blank">Instagram</a>
+					<a href="#" id="youtube" target="_blank">YouTube</a>
+				</div>
+			</div>
+		</div>
+		<div class="footer-bottom">
+			<p>&copy; 2024 BodySpace. All rights reserved.</p>
+		</div>
 	</div>
 </body>
 </html>

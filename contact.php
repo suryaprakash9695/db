@@ -13,8 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <!-- Custom Cursor CSS -->
-    <link rel="stylesheet" href="assets/css/custom-cursor.css">
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Popper.js -->
@@ -23,8 +21,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
     <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <!-- Custom Cursor JS -->
-    <script src="assets/js/custom-cursor.js"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="styles/homepage.css">
@@ -42,60 +38,9 @@
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
 
     <style>
-        /* Navbar Hover Styles */
-        .navbar-nav .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: var(--primary-color) !important;
-        }
-
-        .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .navbar-nav .nav-link.active {
-            color: var(--primary-color) !important;
-        }
-
-        .navbar-nav .nav-link.active::after {
-            width: 100%;
-        }
-
-        .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            padding: 10px 0;
-        }
-
-        .dropdown-item {
-            padding: 8px 20px;
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-item:hover {
-            background-color: #fff5f8;
-            color: var(--primary-color);
-            transform: translateX(5px);
-        }
-
-        .dropdown-item i {
-            margin-right: 10px;
-            color: var(--primary-color);
+        /* Navbar Dropdown Styles */
+        .navbar .dropdown:hover .dropdown-menu {
+            display: block;
         }
 
         .contact-page {
@@ -346,6 +291,29 @@
                 <!-- Contact Form -->
                 <div class="col-lg-8" data-aos="fade-left">
                     <div class="contact-form">
+                        <?php
+                        // Display success message
+                        if (isset($_SESSION['success'])) {
+                            echo '<div class="alert alert-success alert-dismissible fade show" role="alert">
+                                    ' . $_SESSION['success'] . '
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>';
+                            unset($_SESSION['success']);
+                        }
+                        
+                        // Display error message
+                        if (isset($_SESSION['error'])) {
+                            echo '<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    ' . $_SESSION['error'] . '
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>';
+                            unset($_SESSION['error']);
+                        }
+                        ?>
                         <form action="process_contact.php" method="POST">
                             <div class="row">
                                 <div class="col-md-6 mb-3">

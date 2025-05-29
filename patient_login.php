@@ -16,14 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     try {
-        $stmt = $con->prepare("SELECT * FROM patients WHERE email = ?");
-        $stmt->bind_param("s", $email);
+        $stmt = $con->prepare("SELECT * FROM patients WHERE email = ? AND password = ?");
+        $stmt->bind_param("ss", $email, $password);
         $stmt->execute();
         $result = $stmt->get_result();
         $patient = $result->fetch_assoc();
         $stmt->close();
 
-        if ($patient && verify_password($password, $patient['password'])) {
+        if ($patient) {
             $_SESSION['user_id'] = $patient['patient_id'];
             $_SESSION['user_type'] = 'patient';
             $_SESSION['user_name'] = $patient['full_name'];

@@ -1,40 +1,34 @@
 <?php
-require_once('includes/db_connect.php');
+require_once 'includes/db_connect.php';
 
-// New admin credentials
-$email = 'test@admin.com';
-$password = 'admin123';
-$hashed_password = password_hash($password, PASSWORD_BCRYPT);
+$email = 'admin@wecare.com';
+$password = 'admin123'; // Store plain text password
 
 try {
-    // First check if admin already exists
-    $stmt = $con->prepare("SELECT COUNT(*) FROM admin WHERE email = ?");
+    // Check if admin already exists
+    $stmt = $con->prepare("SELECT * FROM admin WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
-    $stmt->bind_result($count);
-    $stmt->fetch();
-    $stmt->close();
-
-    if ($count > 0) {
-        // Update existing admin
-        $stmt = $con->prepare("UPDATE admin SET password = ? WHERE email = ?");
-        $stmt->bind_param("ss", $hashed_password, $email);
-        $stmt->execute();
-        echo "Admin password updated successfully.\n";
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        echo "Admin with email $email already exists.";
     } else {
-        // Create new admin
+        // Insert new admin
         $stmt = $con->prepare("INSERT INTO admin (email, password) VALUES (?, ?)");
-        $stmt->bind_param("ss", $email, $hashed_password);
-        $stmt->execute();
-        echo "New admin account created successfully.\n";
+        $stmt->bind_param("ss", $email, $password);
+        
+        if ($stmt->execute()) {
+            echo "Admin account created successfully!";
+        } else {
+            echo "Error creating admin account: " . $stmt->error;
+        }
     }
     
-    echo "Admin credentials:\n";
-    echo "Email: " . $email . "\n";
-    echo "Password: " . $password . "\n";
-    echo "Hashed password: " . $hashed_password . "\n";
-    
-} catch (Exception $e) {
+    $stmt->close();
+} catch(Exception $e) {
     echo "Error: " . $e->getMessage();
 }
+
+$con->close();
 ?> 

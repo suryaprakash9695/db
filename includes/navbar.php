@@ -2,11 +2,21 @@
 // Get the current page name to highlight active link
 $current_page = basename($_SERVER['PHP_SELF']);
 
-// Determine if we're in the tracker directory
-$is_tracker = strpos($_SERVER['PHP_SELF'], '/tracker/') !== false;
+// Determine if we're in a subdirectory
+$is_subdirectory = strpos($_SERVER['PHP_SELF'], '/tracker/') !== false || 
+                  strpos($_SERVER['PHP_SELF'], '/questionnaire/') !== false ||
+                  strpos($_SERVER['PHP_SELF'], '/chatbot/') !== false ||
+                  strpos($_SERVER['PHP_SELF'], '/mindspace/') !== false ||
+                  strpos($_SERVER['PHP_SELF'], '/blog/') !== false ||
+                  strpos($_SERVER['PHP_SELF'], '/support/') !== false ||
+                  strpos($_SERVER['PHP_SELF'], '/fitness/') !== false ||
+                  strpos($_SERVER['PHP_SELF'], '/healthChecker/') !== false ||
+                  strpos($_SERVER['PHP_SELF'], '/know-your-medicine/') !== false ||
+                  strpos($_SERVER['PHP_SELF'], '/bodyspace/') !== false ||
+                  strpos($_SERVER['PHP_SELF'], '/recipes/') !== false;
 
 // Set the base path for links
-$base_path = $is_tracker ? '../' : '';
+$base_path = $is_subdirectory ? '../' : '';
 
 // Include notifications
 require_once __DIR__ . '/notifications.php';

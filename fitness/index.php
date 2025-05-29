@@ -1,8 +1,6 @@
 <?php
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Get the current page name to highlight active link
+$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,6 +21,13 @@ if (session_status() === PHP_SESSION_NONE) {
     <link href="https://fonts.googleapis.com/css2?family=Gloock&family=Source+Serif+Pro:ital@0;1&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/mobirise/css/mbr-additional.css" type="text/css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="../assets/jquery/jquery.min.js"></script>
+    <script src="../assets/tether/tether.min.js"></script>
+    <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/smoothscroll/smooth-scroll.js"></script>
+    <script src="../assets/dropdown/js/script.min.js"></script>
+    <script src="../assets/touchswipe/jquery.touch-swipe.min.js"></script>
+    <script src="../assets/theme/js/script.js"></script>
     <style>
         body {
             background: #f8f9fa;
@@ -75,144 +80,128 @@ if (session_status() === PHP_SESSION_NONE) {
             margin-right: 0.7rem;
             vertical-align: middle;
         }
+        /* Fitness Navigation Styles */
+        .fitness-nav {
+            background: #fff;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 80px;
+        }
+        .fitness-nav .nav-link {
+            color: #333;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        .fitness-nav .nav-link:hover,
+        .fitness-nav .nav-link.active {
+            background: #c80d7d;
+            color: #fff;
+        }
+        .fitness-nav .nav-link i {
+            margin-right: 0.5rem;
+        }
         @media (max-width: 600px) {
             .fitness-container { padding: 1rem; }
+            .fitness-nav .nav-link {
+                margin: 0.25rem 0;
+                display: block;
+                text-align: center;
+            }
         }
     </style>
 </head>
 <body>
-<?php
-// Get the current page name to highlight active link
-$current_page = basename($_SERVER['PHP_SELF']);
-?>
-<section class="menu cid-s48OLK6784" once="menu" id="menu1-h">
-    <nav class="navbar navbar-dropdown navbar-fixed-top navbar-expand-lg">
-        <div class="container-fluid">
-            <div class="navbar-brand">
-                <span class="navbar-logo">
-                    <a href="index.php">
-                        <img src="../assets/images/thrive_logo.png" alt="Mobirise" style="height: 5rem;">
-                    </a>
-                </span>
-            </div>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <div class="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav nav-dropdown" data-app-modern-menu="true">
+<?php include '../includes/navbar.php'; ?>
+
+<!-- Fitness Navigation -->
+<nav class="fitness-nav">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <ul class="nav justify-content-center">
                     <li class="nav-item">
-                        <a class="nav-link link text-black display-4 <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="index.php">Home</a>
+                        <a class="nav-link active" href="index.php">
+                            <i class="fas fa-home"></i>Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link link text-black display-4 <?php echo ($current_page == 'about.php') ? 'active' : ''; ?>" href="about.php">About</a>
+                        <a class="nav-link" href="workouts.php">
+                            <i class="fas fa-dumbbell"></i>Workouts
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link link text-black display-4 <?php echo ($current_page == 'contact.php') ? 'active' : ''; ?>" href="contact.php">Contact</a>
+                        <a class="nav-link" href="nutrition.php">
+                            <i class="fas fa-apple-alt"></i>Nutrition
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link link text-black display-4 <?php echo ($current_page == 'index.php') ? 'active' : ''; ?>" href="index.php#features1-n">Features</a>
+                        <a class="nav-link" href="progress.php">
+                            <i class="fas fa-chart-line"></i>Progress
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link link text-black display-4 <?php echo ($current_page == 'body.php') ? 'active' : ''; ?>" href="body.php">Body Care</a>
+                        <a class="nav-link" href="community.php">
+                            <i class="fas fa-users"></i>Community
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link link text-black display-4 <?php echo ($current_page == 'mind.php') ? 'active' : ''; ?>" href="mind.php">Mind Care</a>
+                        <a class="nav-link" href="resources.php">
+                            <i class="fas fa-book"></i>Resources
+                        </a>
                     </li>
                 </ul>
-                <div class="navbar-buttons mbr-section-btn">
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                        <div class="profile-section">
-                            <div class="profile-icon">
-                                <?php echo strtoupper(substr($_SESSION['user_name'], 0, 1)); ?>
-                            </div>
-                            <span style="font-weight: 500;">
-                                <?php echo htmlspecialchars($_SESSION['user_name']); ?>
-                            </span>
-                        </div>
-                        <a href="?logout=true" class="btn display-4" style="background-color: #e71f68; border-color: #e71f68; color: #fff;">Logout</a>
-                    <?php else: ?>
-                        <div class="dropdown">
-                            <button class="btn btn-primary display-4 dropdown-toggle" type="button" id="loginDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-user-circle"></i> Login
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="loginDropdown">
-                                <div class="dropdown-header">
-                                    <h6>Choose your role</h6>
-                                </div>
-                                <a class="dropdown-item" href="patient/patient_login.php">
-                                    <i class="fas fa-user"></i>
-                                    <span>Patient Login</span>
-                                </a>
-                                <a class="dropdown-item" href="doctor/doctor_login.php">
-                                    <i class="fas fa-user-md"></i>
-                                    <span>Doctor Login</span>
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item signup-link" href="patient_signup.php">
-                                    <i class="fas fa-user-plus"></i>
-                                    <span>New User? Sign Up</span>
-                                </a>
-                            </div>
-                        </div>
-                    <?php endif; ?>
-                </div>
             </div>
         </div>
-    </nav>
-</section>
+    </div>
+</nav>
 
-<!-- Add Font Awesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"> 
-    <div class="fitness-container">
-        <h1><i class="fas fa-dumbbell"></i> Fitness & Exercise Plans</h1>
-        <p class="lead">Discover routines and tips to help you stay active, healthy, and motivated—no matter your fitness level!</p>
-        
-        <div class="workout-card">
-            <div class="workout-title"><i class="fas fa-walking workout-icon"></i>Beginner Full Body Routine</div>
-            <div class="workout-desc">A simple plan for those just starting out. Focuses on all major muscle groups with bodyweight exercises.</div>
-            <ul>
-                <li>10 squats</li>
-                <li>10 push-ups (knee or wall if needed)</li>
-                <li>10 lunges (each leg)</li>
-                <li>15-second plank</li>
-                <li>Repeat 2-3 times</li>
-            </ul>
-        </div>
-        
-        <div class="workout-card">
-            <div class="workout-title"><i class="fas fa-running workout-icon"></i>Cardio Blast</div>
-            <div class="workout-desc">Boost your heart health and burn calories with this quick cardio circuit.</div>
-            <ul>
-                <li>30 seconds jumping jacks</li>
-                <li>30 seconds high knees</li>
-                <li>30 seconds mountain climbers</li>
-                <li>30 seconds rest</li>
-                <li>Repeat 3-5 times</li>
-            </ul>
-        </div>
-        
-        <div class="workout-card">
-            <div class="workout-title"><i class="fas fa-child workout-icon"></i>Stretch & Flexibility</div>
-            <div class="workout-desc">Improve your flexibility and reduce injury risk with these stretches.</div>
-            <ul>
-                <li>Neck rolls</li>
-                <li>Shoulder stretches</li>
-                <li>Hamstring stretch</li>
-                <li>Quad stretch</li>
-                <li>Hold each for 20-30 seconds</li>
-            </ul>
-        </div>
-        
-        <div class="workout-card">
-            <div class="workout-title"><i class="fas fa-heartbeat workout-icon"></i>Wellness Tips</div>
-            <div class="workout-desc">Remember: Stay hydrated, listen to your body, and rest when needed. Consistency is key!</div>
-        </div>
+<div class="fitness-container">
+    <h1><i class="fas fa-dumbbell"></i> Fitness & Exercise Plans</h1>
+    <p class="lead">Discover routines and tips to help you stay active, healthy, and motivated—no matter your fitness level!</p>
+    
+    <div class="workout-card">
+        <div class="workout-title"><i class="fas fa-walking workout-icon"></i>Beginner Full Body Routine</div>
+        <div class="workout-desc">A simple plan for those just starting out. Focuses on all major muscle groups with bodyweight exercises.</div>
+        <ul>
+            <li>10 squats</li>
+            <li>10 push-ups (knee or wall if needed)</li>
+            <li>10 lunges (each leg)</li>
+            <li>15-second plank</li>
+            <li>Repeat 2-3 times</li>
+        </ul>
     </div>
     
-    <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+    <div class="workout-card">
+        <div class="workout-title"><i class="fas fa-running workout-icon"></i>Cardio Blast</div>
+        <div class="workout-desc">Boost your heart health and burn calories with this quick cardio circuit.</div>
+        <ul>
+            <li>30 seconds jumping jacks</li>
+            <li>30 seconds high knees</li>
+            <li>30 seconds mountain climbers</li>
+            <li>30 seconds rest</li>
+            <li>Repeat 3-5 times</li>
+        </ul>
+    </div>
+    
+    <div class="workout-card">
+        <div class="workout-title"><i class="fas fa-child workout-icon"></i>Stretch & Flexibility</div>
+        <div class="workout-desc">Improve your flexibility and reduce injury risk with these stretches.</div>
+        <ul>
+            <li>Neck rolls</li>
+            <li>Shoulder stretches</li>
+            <li>Hamstring stretch</li>
+            <li>Quad stretch</li>
+            <li>Hold each for 20-30 seconds</li>
+        </ul>
+    </div>
+    
+    <div class="workout-card">
+        <div class="workout-title"><i class="fas fa-heartbeat workout-icon"></i>Wellness Tips</div>
+        <div class="workout-desc">Remember: Stay hydrated, listen to your body, and rest when needed. Consistency is key!</div>
+    </div>
+</div>
+
 <?php include_once '../includes/footer.php'; ?> 

@@ -6,11 +6,11 @@
 /**
  * Verify password against hash
  * @param string $password The password to verify
- * @param string $hash The hash to verify against
- * @return bool True if password matches hash, false otherwise
+ * @param string $stored_password The stored password to verify against
+ * @return bool True if password matches stored password, false otherwise
  */
-function verify_password($password, $hash) {
-    return password_verify($password, $hash);
+function verify_password($password, $stored_password) {
+    return $password === $stored_password;
 }
 
 /**
@@ -19,7 +19,7 @@ function verify_password($password, $hash) {
  * @return string The hashed password
  */
 function hash_password($password) {
-    return password_hash($password, PASSWORD_DEFAULT);
+    return $password; // Return plain text password
 }
 
 /**

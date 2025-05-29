@@ -1,22 +1,23 @@
 <?php
-require_once('includes/db_connect.php');
+require_once 'includes/db_connect.php';
 
-// New password to set
-$new_password = 'admin1';
-$hashed_password = password_hash($new_password, PASSWORD_BCRYPT);
+$admin_id = 1; // Replace with actual admin ID
+$new_password = 'admin123'; // New plain text password
 
 try {
-    // Update both admin accounts
-    $stmt = $con->prepare("UPDATE admin SET password = ? WHERE email IN ('admin@gmail.com', 'testadmin@gmail.com')");
-    $stmt->bind_param("s", $hashed_password);
-    $stmt->execute();
-    if ($stmt->affected_rows > 0) {
-        echo "Admin passwords updated successfully.\n";
+    $stmt = $con->prepare("UPDATE admin SET password = ? WHERE admin_id = ?");
+    $stmt->bind_param("si", $new_password, $admin_id);
+    
+    if ($stmt->execute()) {
+        echo "Admin password updated successfully!";
     } else {
-        echo "No admin accounts updated.\n";
+        echo "Error updating password: " . $stmt->error;
     }
+    
     $stmt->close();
-} catch (Exception $e) {
+} catch(Exception $e) {
     echo "Error: " . $e->getMessage();
 }
+
+$con->close();
 ?> 

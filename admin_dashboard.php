@@ -208,14 +208,28 @@ if (isset($_POST['add_doctor'])) {
 // Handle Edit Operations
 if (isset($_POST['update_patient'])) {
     $id = $_POST['edit_patient_id'];
-    $name = $_POST['edit_full_name'];
-    $email = $_POST['edit_email'];
-    $phone = $_POST['edit_phone'];
-    $password = $_POST['edit_password'];
+    $name = trim($_POST['edit_full_name']);
+    $email = trim($_POST['edit_email']);
+    $phone = trim($_POST['edit_phone']);
+    $password = trim($_POST['edit_password']);
 
     try {
+        // Validate input
+        if (empty($name) || empty($email) || empty($phone)) {
+            throw new Exception("Name, email, and phone are required fields.");
+        }
+
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception("Invalid email format.");
+        }
+
         // Check if email already exists for other patients
         $check_email = $con->prepare("SELECT COUNT(*) FROM patients WHERE email = ? AND patient_id != ?");
+        if (!$check_email) {
+            throw new Exception("Database error: " . $con->error);
+        }
+        
         $check_email->bind_param("si", $email, $id);
         $check_email->execute();
         $check_email->bind_result($email_count);
@@ -226,24 +240,37 @@ if (isset($_POST['update_patient'])) {
             throw new Exception("A patient with this email already exists.");
         }
 
+        // Update query based on whether password is being changed
         if (!empty($password)) {
-            $password_hashed = password_hash($password, PASSWORD_DEFAULT);
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $update_query = "UPDATE patients SET full_name=?, email=?, phone=?, password=? WHERE patient_id=?";
             $stmt = $con->prepare($update_query);
-            $stmt->bind_param("ssssi", $name, $email, $phone, $password_hashed, $id);
+            if (!$stmt) {
+                throw new Exception("Database error: " . $con->error);
+            }
+            $stmt->bind_param("ssssi", $name, $email, $phone, $hashed_password, $id);
         } else {
             $update_query = "UPDATE patients SET full_name=?, email=?, phone=? WHERE patient_id=?";
             $stmt = $con->prepare($update_query);
+            if (!$stmt) {
+                throw new Exception("Database error: " . $con->error);
+            }
             $stmt->bind_param("sssi", $name, $email, $phone, $id);
         }
 
         if ($stmt->execute()) {
             $success_message = "Patient updated successfully!";
+            // Redirect to refresh the page
+            header("Location: admin_dashboard.php?active_tab=patients&success=Patient updated successfully!");
+            exit();
         } else {
             throw new Exception("Error updating patient: " . $stmt->error);
         }
     } catch (Exception $e) {
         $error_message = $e->getMessage();
+        // Redirect with error message
+        header("Location: admin_dashboard.php?active_tab=patients&error=" . urlencode($e->getMessage()));
+        exit();
     }
 }
 
@@ -1020,30 +1047,23 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete_appointment' && isse
                                             <?php while($patient = $patients_result->fetch_assoc()): ?>
                                             <tr>
                                                 <td><?php echo $patient['patient_id']; ?></td>
-                                                <td><?php echo $patient['full_name']; ?></td>
-                                                <td><?php echo $patient['email']; ?></td>
-                                                <td><?php echo $patient['phone']; ?></td>
+                                                <td><?php echo htmlspecialchars($patient['full_name']); ?></td>
+                                                <td><?php echo htmlspecialchars($patient['email']); ?></td>
+                                                <td><?php echo htmlspecialchars($patient['phone']); ?></td>
                                                 <td>
                                                     <div class="action-buttons">
                                                         <button class="btn btn-info btn-sm" onclick="viewPatient(<?php echo $patient['patient_id']; ?>)" title="View Details">
                                                             <i class="fas fa-eye"></i>
                                                         </button>
-                                                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editPatientModal" 
-                                                            onclick="fillEditPatientModal(
-                                                                '<?php echo $patient['patient_id']; ?>',
-                                                                '<?php echo htmlspecialchars($patient['full_name'], ENT_QUOTES); ?>',
-                                                                '<?php echo htmlspecialchars($patient['email'], ENT_QUOTES); ?>',
-                                                                '<?php echo htmlspecialchars($patient['phone'], ENT_QUOTES); ?>'
-                                                            )" title="Edit Patient">
-                                                            <i class="fas fa-edit"></i>
+                                                        <button type="button" class="btn btn-sm btn-primary" onclick="editPatient(<?php echo $patient['patient_id']; ?>, '<?php echo addslashes($patient['full_name']); ?>', '<?php echo addslashes($patient['email']); ?>', '<?php echo addslashes($patient['phone']); ?>')" title="Edit Patient">
+                                                            <i class="fas fa-edit"></i> Edit
                                                         </button>
-                                                        <form method="POST" action="" style="display: inline;">
+                                                        <form method="POST" style="display: inline;">
                                                             <input type="hidden" name="action" value="delete_patient">
                                                             <input type="hidden" name="patient_id" value="<?php echo $patient['patient_id']; ?>">
                                                             <input type="hidden" name="active_tab" value="patients">
-                                                            <button type="submit" class="btn btn-danger btn-sm" 
-                                                                onclick="return confirm('Are you sure you want to delete this patient?')" title="Delete Patient">
-                                                                <i class="fas fa-trash"></i>
+                                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this patient?')">
+                                                                <i class="fas fa-trash"></i> Delete
                                                             </button>
                                                         </form>
                                                     </div>
@@ -1308,39 +1328,42 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete_appointment' && isse
     <!-- Edit Patient Modal -->
     <div class="modal fade" id="editPatientModal" tabindex="-1" role="dialog" aria-labelledby="editPatientModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
-            <form method="POST" id="editPatientForm">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editPatientModalLabel">Edit Patient</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPatientModalLabel">Edit Patient</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="admin_dashboard.php">
                     <div class="modal-body">
                         <input type="hidden" name="edit_patient_id" id="edit_patient_id">
+                        <input type="hidden" name="active_tab" value="patients">
                         <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" class="form-control" name="edit_full_name" id="edit_full_name" required>
+                            <label for="edit_full_name">Full Name</label>
+                            <input type="text" class="form-control" id="edit_full_name" name="edit_full_name" required>
                         </div>
                         <div class="form-group">
-                            <label>Email</label>
-                            <input type="email" class="form-control" name="edit_email" id="edit_email" required>
+                            <label for="edit_email">Email</label>
+                            <input type="email" class="form-control" id="edit_email" name="edit_email" required>
                         </div>
                         <div class="form-group">
-                            <label>Phone</label>
-                            <input type="text" class="form-control" name="edit_phone" id="edit_phone" required>
+                            <label for="edit_phone">Phone</label>
+                            <input type="text" class="form-control" id="edit_phone" name="edit_phone" required>
                         </div>
                         <div class="form-group">
-                            <label>New Password (leave blank to keep unchanged)</label>
-                            <input type="password" class="form-control" name="edit_password" id="edit_password">
+                            <label for="edit_password">New Password (leave blank to keep current)</label>
+                            <input type="password" class="form-control" id="edit_password" name="edit_password">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="submit" name="update_patient" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" name="update_patient" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -1722,9 +1745,16 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete_appointment' && isse
             });
         }
 
-        function editPatient(id) {
-            // Implement edit patient
-            alert('Edit patient ' + id);
+        function editPatient(id, name, email, phone) {
+            // Populate the edit form fields
+            document.getElementById('edit_patient_id').value = id;
+            document.getElementById('edit_full_name').value = name;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_phone').value = phone;
+            document.getElementById('edit_password').value = '';
+            
+            // Show the edit modal
+            $('#editPatientModal').modal('show');
         }
 
         function deletePatient(id) {
@@ -2153,6 +2183,68 @@ if (isset($_POST['action']) && $_POST['action'] === 'delete_appointment' && isse
                 const submitBtn = $(this).find('button[type="submit"]');
                 submitBtn.prop('disabled', true);
                 submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Adding Patient...');
+            });
+
+            // Handle edit patient form submission
+            $('#editPatientForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                $('#updatePatientBtn').prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Saving...');
+                
+                // Hide any existing alerts
+                $('#editPatientAlert').hide();
+                
+                // Get form data
+                var formData = $(this).serialize();
+                
+                // Send AJAX request
+                $.ajax({
+                    url: 'admin_dashboard.php',
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Show success message in modal
+                            $('#editPatientAlert')
+                                .removeClass('alert-danger')
+                                .addClass('alert-success')
+                                .html('<i class="fas fa-check-circle"></i> ' + response.message)
+                                .show();
+                            
+                            // Close modal after delay
+                            setTimeout(function() {
+                                $('#editPatientModal').modal('hide');
+                                // Reload the page
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            // Show error message in modal
+                            $('#editPatientAlert')
+                                .removeClass('alert-success')
+                                .addClass('alert-danger')
+                                .html('<i class="fas fa-exclamation-circle"></i> ' + response.message)
+                                .show();
+                            
+                            // Re-enable submit button
+                            $('#updatePatientBtn').prop('disabled', false).html('<i class="fas fa-save"></i> Save Changes');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Show error message in modal
+                        $('#editPatientAlert')
+                            .removeClass('alert-success')
+                            .addClass('alert-danger')
+                            .html('<i class="fas fa-exclamation-circle"></i> Error updating patient. Please try again.')
+                            .show();
+                        
+                        // Re-enable submit button
+                        $('#updatePatientBtn').prop('disabled', false).html('<i class="fas fa-save"></i> Save Changes');
+                        
+                        console.error('Error:', error);
+                    }
+                });
             });
         });
 

@@ -16,14 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     try {
-        $stmt = $con->prepare("SELECT * FROM doctors WHERE email = ?");
-        $stmt->bind_param("s", $email);
+        $stmt = $con->prepare("SELECT * FROM doctors WHERE email = ? AND password = ?");
+        $stmt->bind_param("ss", $email, $password);
         $stmt->execute();
         $result = $stmt->get_result();
         $doctor = $result->fetch_assoc();
         $stmt->close();
 
-        if ($doctor && verify_password($password, $doctor['password'])) {
+        if ($doctor) {
             $_SESSION['user_id'] = $doctor['doctor_id'];
             $_SESSION['user_type'] = 'doctor';
             $_SESSION['user_name'] = $doctor['full_name'];
@@ -81,69 +81,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="assets/mobirise/css/mbr-additional.css" type="text/css">
 
     <style>
-        /* Navbar Hover Styles */
-        .navbar-nav .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            color: var(--primary-color) !important;
-        }
-
-        .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .navbar-nav .nav-link.active {
-            color: var(--primary-color) !important;
-        }
-
-        .navbar-nav .nav-link.active::after {
-            width: 100%;
+        /* Navbar Dropdown Styles */
+        .navbar .dropdown:hover .dropdown-menu {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
         }
 
         .dropdown-menu {
-            border: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border-radius: 10px;
-            padding: 10px 0;
-        }
-
-        .dropdown-item {
-            padding: 8px 20px;
+            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
             transition: all 0.3s ease;
         }
 
-        .dropdown-item:hover {
-            background-color: #fff5f8;
-            color: var(--primary-color);
-            transform: translateX(5px);
+        .navbar .dropdown {
+            position: relative;
         }
 
-        .dropdown-item i {
-            margin-right: 10px;
-            color: var(--primary-color);
-        }
-
-        /* Custom Properties */
-        :root {
-            --primary-color: #c80d7d;
-            --secondary-color: #2c3e50;
-            --accent-color: #e74c3c;
-            --light-bg: #f8f9fa;
-            --dark-bg: #1a1a1a;
+        .navbar .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            min-width: 10rem;
+            padding: 0.5rem 0;
+            margin: 0.125rem 0 0;
+            background-color: #fff;
+            border: 1px solid rgba(0,0,0,.15);
+            border-radius: 0.25rem;
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,.175);
         }
     </style>
 </head>

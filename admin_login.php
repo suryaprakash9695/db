@@ -3,58 +3,28 @@ session_start();
 require_once 'includes/db_connect.php';
 
 $error = '';
+$success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = sanitize_input($_POST['email']);
     $password = $_POST['password'];
 
-    // Debug: Log the login attempt
-    error_log("Login attempt - Email: " . $email);
-    error_log("Password received: " . $password);
-
     try {
-        // Debug: Check database connection
-        if ($con->connect_error) {
-            throw new Exception("Database connection failed: " . $con->connect_error);
-        }
-
-        // Direct query to check admin
-        $stmt = $con->prepare("SELECT * FROM admin WHERE email = ?");
-        if (!$stmt) {
-            throw new Exception("Prepare failed: " . $con->error);
-        }
-        
-        $stmt->bind_param("s", $email);
-        if (!$stmt->execute()) {
-            throw new Exception("Execute failed: " . $stmt->error);
-        }
-        
+        $stmt = $con->prepare("SELECT * FROM admin WHERE email = ? AND password = ?");
+        $stmt->bind_param("ss", $email, $password);
+        $stmt->execute();
         $result = $stmt->get_result();
         $admin = $result->fetch_assoc();
         $stmt->close();
 
-        // Debug: Log if admin was found
-        error_log("Admin found: " . ($admin ? "Yes" : "No"));
         if ($admin) {
-            error_log("Stored password hash: " . $admin['password']);
-            error_log("Attempting password verification...");
+            $_SESSION['user_id'] = $admin['admin_id'];
+            $_SESSION['user_type'] = 'admin';
+            $_SESSION['user_name'] = 'Administrator';
             
-            // Verify password
-            if (password_verify($password, $admin['password'])) {
-                error_log("Password verification successful");
-                
-                $_SESSION['user_id'] = $admin['admin_id'];
-                $_SESSION['user_type'] = 'admin';
-                $_SESSION['user_name'] = 'Admin';
-                
-                header("Location: admin_dashboard.php");
-                exit;
-            } else {
-                error_log("Password verification failed");
-                $error = 'Invalid email or password';
-            }
+            header("Location: admin_dashboard.php");
+            exit;
         } else {
-            error_log("No admin found with email: " . $email);
             $error = 'Invalid email or password';
         }
     } catch(Exception $e) {

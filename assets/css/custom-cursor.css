@@ -58,7 +58,7 @@
 }
 
 /* Hide default cursor */
-* {
+body:not(.contact-page):not(.about-page) * {
     cursor: none !important;
 }
 
